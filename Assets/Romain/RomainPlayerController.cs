@@ -6,101 +6,359 @@ public class RomainPlayerController : MonoBehaviour
 {
     [Header("Déplacement")]
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float sprintSpeed = 9f;
+    [SerializeField] private float rotationLerp = 0.15f;
 
     [Header("Saut")]
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float groundCheckDistance = 0.3f;
+    [SerializeField] private float jumpForce = 7f;
+
+    [Header("Détection du sol")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.25f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Jump Feel")]
+    [SerializeField] private float coyoteTime = 0.15f;
+    [SerializeField] private float jumpBufferTime = 0.15f;
+    [SerializeField] private float fallGravityMultiplier = 2f;
+    [SerializeField] private float lowJumpMultiplier = 2f;
+
+    [Header("Double saut")]
+    [SerializeField] private int maxJumps = 2;
+    private int jumpCount = 0;
+
+    [Header("Dash aérien")]
+    [SerializeField] private float dashSpeed = 12f;
+    [SerializeField] private float dashDuration = 0.2f;
+    private bool isDashing = false;
+    private bool hasAirDashed = false;
+    private float dashTimer = 0f;
+    private Vector3 dashDirection = Vector3.zero;
+    private bool dashRequested = false;
+
+    [Header("Input (New Input System)")]
+    [SerializeField] private InputActionReference moveAction;
+    [SerializeField] private InputActionReference jumpAction;
+    [SerializeField] private InputActionReference dashAction;
+    [SerializeField] private InputActionReference sprintAction;
+
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
     private Rigidbody rb;
-    private Vector3 moveInput;
-    private bool jumpPressed;
+    private Camera cam;
+
+    // Input brut (caméra-indépendant)
+    private Vector2 moveInputRaw = Vector2.zero;
+
+    // Déplacement calculé par rapport à la caméra
+    private Vector3 moveDirection = Vector3.zero;
+
     private bool canMove = true;
 
-    private InputSystem_Actions input;
+    private bool isGrounded;
+    private float coyoteTimer;
+    private float jumpBufferTimer;
+    private bool jumpPressedThisFrame;
+    private bool isJumpHeld;
+
+    private bool isSprinting = false;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-        input = new InputSystem_Actions();
+        cam = Camera.main;
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
     }
 
     private void OnEnable()
     {
-        input.Enable();
-
-        input.Player.Move.performed += ctx =>
+        if (moveAction != null)
         {
-            Vector2 v = ctx.ReadValue<Vector2>();
-            moveInput = new Vector3(v.x, 0f, v.y);
-        };
+            moveAction.action.Enable();
+            moveAction.action.performed += OnMovePerformed;
+            moveAction.action.canceled  += OnMoveCanceled;
+        }
 
-        input.Player.Move.canceled += ctx =>
+        if (jumpAction != null)
         {
-            moveInput = Vector3.zero;
-        };
+            jumpAction.action.Enable();
+            jumpAction.action.performed += OnJumpPerformed;
+            jumpAction.action.canceled  += OnJumpCanceled;
+        }
 
-        input.Player.Jump.performed += ctx =>
+        if (dashAction != null)
         {
-            jumpPressed = true;
-        };
+            dashAction.action.Enable();
+            dashAction.action.performed += OnDashPerformed;
+        }
+
+        if (sprintAction != null)
+        {
+            sprintAction.action.Enable();
+            sprintAction.action.performed += ctx => isSprinting = true;
+            sprintAction.action.canceled  += ctx => isSprinting = false;
+        }
     }
 
     private void OnDisable()
     {
-        input.Disable();
+        if (moveAction != null)
+        {
+            moveAction.action.performed -= OnMovePerformed;
+            moveAction.action.canceled  -= OnMoveCanceled;
+            moveAction.action.Disable();
+        }
+
+        if (jumpAction != null)
+        {
+            jumpAction.action.performed -= OnJumpPerformed;
+            jumpAction.action.canceled  -= OnJumpCanceled;
+            jumpAction.action.Disable();
+        }
+
+        if (dashAction != null)
+        {
+            dashAction.action.performed -= OnDashPerformed;
+            dashAction.action.Disable();
+        }
+
+        if (sprintAction != null)
+        {
+            sprintAction.action.Disable();
+        }
     }
+
+    // ===== INPUT CALLBACKS =====
+
+    private void OnMovePerformed(InputAction.CallbackContext ctx)
+    {
+        // On ne projette PAS ici, on garde juste l'input brut
+        moveInputRaw = ctx.ReadValue<Vector2>();
+    }
+
+    private void OnMoveCanceled(InputAction.CallbackContext ctx)
+    {
+        moveInputRaw = Vector2.zero;
+    }
+
+    private void OnJumpPerformed(InputAction.CallbackContext ctx)
+    {
+        jumpPressedThisFrame = true;
+        isJumpHeld = true;
+    }
+
+    private void OnJumpCanceled(InputAction.CallbackContext ctx)
+    {
+        isJumpHeld = false;
+    }
+
+    private void OnDashPerformed(InputAction.CallbackContext ctx)
+    {
+        dashRequested = true;
+    }
+
+    // ===== UPDATE =====
 
     private void Update()
     {
-        if (!canMove) return;
+        if (cam == null)
+            cam = Camera.main;
 
-        if (jumpPressed && IsGrounded())
+        UpdateGrounded();
+
+        if (jumpPressedThisFrame)
+            jumpBufferTimer = jumpBufferTime;
+
+        jumpBufferTimer -= Time.deltaTime;
+
+        if (isGrounded)
         {
-            Jump();
+            coyoteTimer = coyoteTime;
+            jumpCount = 0;
+            hasAirDashed = false;
+        }
+        else
+        {
+            coyoteTimer -= Time.deltaTime;
         }
 
-        jumpPressed = false;
+        bool canFirstJump  = (jumpBufferTimer > 0 && coyoteTimer > 0);
+        bool canDoubleJump = (!isGrounded && jumpCount < maxJumps && jumpBufferTimer > 0);
+
+        if (canMove && (canFirstJump || canDoubleJump))
+        {
+            DoJump();
+            jumpBufferTimer = 0;
+            coyoteTimer = 0;
+        }
+
+        jumpPressedThisFrame = false;
+
+        if (canMove && dashRequested && !isGrounded && !isDashing && !hasAirDashed)
+        {
+            StartDash();
+        }
+
+        dashRequested = false;
+
+        UpdateAnimatorParameters();
     }
+
+    // ===== FIXEDUPDATE =====
 
     private void FixedUpdate()
-{
-    if (!canMove)
     {
-        rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-        return;
+        if (isDashing)
+        {
+            dashTimer -= Time.fixedDeltaTime;
+
+            rb.linearVelocity = new Vector3(
+                dashDirection.x * dashSpeed,
+                0f,
+                dashDirection.z * dashSpeed
+            );
+
+            if (dashTimer <= 0f)
+            {
+                isDashing = false;
+            }
+
+            return;
+        }
+
+        // === ICI : projection de l'input sur la caméra *à chaque frame* ===
+        if (cam == null)
+            cam = Camera.main;
+
+        Vector3 camForward = cam.transform.forward;
+        Vector3 camRight   = cam.transform.right;
+        camForward.y = 0f;
+        camRight.y   = 0f;
+        camForward.Normalize();
+        camRight.Normalize();
+
+        // Input brut → direction monde relative à la caméra
+        Vector3 targetDir = camForward * moveInputRaw.y + camRight * moveInputRaw.x;
+
+        if (targetDir.sqrMagnitude > 1f)
+            targetDir.Normalize();
+
+        moveDirection = targetDir;
+
+        float currentSpeed = isSprinting ? sprintSpeed : moveSpeed;
+
+        Vector3 velocity = rb.linearVelocity;
+        Vector3 horizontal = (canMove && moveDirection.sqrMagnitude > 0.001f)
+            ? moveDirection.normalized * currentSpeed
+            : Vector3.zero;
+
+        rb.linearVelocity = new Vector3(
+            horizontal.x,
+            velocity.y,
+            horizontal.z
+        );
+
+        // Gravité "better jump"
+        if (rb.linearVelocity.y < 0f)
+        {
+            rb.linearVelocity += Vector3.up * Physics.gravity.y * (fallGravityMultiplier - 1f) * Time.fixedDeltaTime;
+        }
+        else if (rb.linearVelocity.y > 0f && !isJumpHeld)
+        {
+            rb.linearVelocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
+        }
+
+        // Rotation vers la caméra (TPS)
+        if (!isDashing && cam != null)
+        {
+            Vector3 forward = cam.transform.forward;
+            forward.y = 0f;
+            forward.Normalize();
+
+            if (forward.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(forward, Vector3.up);
+                Quaternion smoothRot = Quaternion.Slerp(rb.rotation, targetRot, rotationLerp);
+                rb.MoveRotation(smoothRot);
+            }
+        }
     }
 
-    Vector3 velocity = rb.linearVelocity;
-    Vector3 horizontal = moveInput.normalized * moveSpeed;
+    // ===== SAUT / SOL =====
 
-    rb.linearVelocity = new Vector3(
-        horizontal.x,
-        velocity.y,
-        horizontal.z
-    );
-
-    // >>> ROTATION automatique selon le mouvement <<<
-    if (moveInput.sqrMagnitude > 0.01f)
+    private void UpdateGrounded()
     {
-        Quaternion targetRot = Quaternion.LookRotation(moveInput, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, 0.15f);
-    }
-}
+        if (groundCheck == null)
+        {
+            isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckRadius * 2f, groundLayer);
+            return;
+        }
 
-
-    private bool IsGrounded()
-    {
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
     }
 
-    private void Jump()
+    private void DoJump()
     {
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
+        jumpCount++;
+        Vector3 vel = rb.linearVelocity;
+        rb.linearVelocity = new Vector3(vel.x, jumpForce, vel.z);
+        isGrounded = false;
     }
+
+    private void StartDash()
+    {
+        hasAirDashed = true;
+        isDashing = true;
+        dashTimer = dashDuration;
+
+        // On dash dans la direction actuelle du mouvement (caméra-relative)
+        if (moveDirection.sqrMagnitude > 0.1f)
+            dashDirection = moveDirection.normalized;
+        else
+            dashDirection = transform.forward;
+
+        rb.linearVelocity = new Vector3(dashDirection.x * dashSpeed, 0f, dashDirection.z * dashSpeed);
+    }
+
+    // ===== ANIMATION =====
+
+    private void UpdateAnimatorParameters()
+    {
+        if (animator == null) return;
+
+        Vector3 horizontalVel = rb.linearVelocity;
+        horizontalVel.y = 0f;
+
+        float speed = horizontalVel.magnitude;
+
+        Vector3 localVel = Vector3.zero;
+        if (speed > 0.1f)
+            localVel = transform.InverseTransformDirection(horizontalVel).normalized;
+
+        animator.SetFloat("Hor", localVel.x, 0.1f, Time.deltaTime);
+        animator.SetFloat("Vert", localVel.z, 0.1f, Time.deltaTime);
+
+        float state = 0f;
+        if (speed > 0.1f)
+        {
+            if (isSprinting || isDashing)
+                state = 1f;
+            else
+                state = 0.5f;
+        }
+
+        animator.SetFloat("State", state, 0.1f, Time.deltaTime);
+        animator.SetBool("IsJump", !isGrounded);
+    }
+
+    // ===== UTILITIES =====
 
     public void SetCanMove(bool value)
     {
@@ -108,7 +366,9 @@ public class RomainPlayerController : MonoBehaviour
 
         if (!value)
         {
-            rb.linearVelocity = Vector3.zero;
+            moveInputRaw = Vector2.zero;
+            moveDirection = Vector3.zero;
+            rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         }
     }
 
@@ -120,7 +380,9 @@ public class RomainPlayerController : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        if (groundCheck == null) return;
+
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.position + Vector3.down * groundCheckDistance);
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 }
