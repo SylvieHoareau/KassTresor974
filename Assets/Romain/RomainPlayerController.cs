@@ -48,10 +48,10 @@ public class RomainPlayerController : MonoBehaviour
     private Rigidbody rb;
     private Camera cam;
 
-    // Input brut (caméra-indépendant)
+    // Input brut
     private Vector2 moveInputRaw = Vector2.zero;
 
-    // Déplacement calculé par rapport à la caméra
+    // Direction de déplacement (relative caméra)
     private Vector3 moveDirection = Vector3.zero;
 
     private bool canMove = true;
@@ -139,7 +139,6 @@ public class RomainPlayerController : MonoBehaviour
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)
     {
-        // On ne projette PAS ici, on garde juste l'input brut
         moveInputRaw = ctx.ReadValue<Vector2>();
     }
 
@@ -225,6 +224,14 @@ public class RomainPlayerController : MonoBehaviour
                 dashDirection.z * dashSpeed
             );
 
+            // On regarde dans la direction du dash
+            if (dashDirection.sqrMagnitude > 0.001f)
+            {
+                Quaternion dashRot = Quaternion.LookRotation(dashDirection, Vector3.up);
+                Quaternion smoothDashRot = Quaternion.Slerp(rb.rotation, dashRot, rotationLerp);
+                rb.MoveRotation(smoothDashRot);
+            }
+
             if (dashTimer <= 0f)
             {
                 isDashing = false;
@@ -233,10 +240,10 @@ public class RomainPlayerController : MonoBehaviour
             return;
         }
 
-        // === ICI : projection de l'input sur la caméra *à chaque frame* ===
         if (cam == null)
             cam = Camera.main;
 
+        // Projection de l'input brut dans l'espace caméra (Z = avant caméra)
         Vector3 camForward = cam.transform.forward;
         Vector3 camRight   = cam.transform.right;
         camForward.y = 0f;
@@ -244,7 +251,6 @@ public class RomainPlayerController : MonoBehaviour
         camForward.Normalize();
         camRight.Normalize();
 
-        // Input brut → direction monde relative à la caméra
         Vector3 targetDir = camForward * moveInputRaw.y + camRight * moveInputRaw.x;
 
         if (targetDir.sqrMagnitude > 1f)
@@ -275,19 +281,12 @@ public class RomainPlayerController : MonoBehaviour
             rb.linearVelocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
         }
 
-        // Rotation vers la caméra (TPS)
-        if (!isDashing && cam != null)
+        // ✅ Rotation automatique vers la direction de déplacement
+        if (moveDirection.sqrMagnitude > 0.001f)
         {
-            Vector3 forward = cam.transform.forward;
-            forward.y = 0f;
-            forward.Normalize();
-
-            if (forward.sqrMagnitude > 0.001f)
-            {
-                Quaternion targetRot = Quaternion.LookRotation(forward, Vector3.up);
-                Quaternion smoothRot = Quaternion.Slerp(rb.rotation, targetRot, rotationLerp);
-                rb.MoveRotation(smoothRot);
-            }
+            Quaternion targetRot = Quaternion.LookRotation(moveDirection, Vector3.up);
+            Quaternion smoothRot = Quaternion.Slerp(rb.rotation, targetRot, rotationLerp);
+            rb.MoveRotation(smoothRot);
         }
     }
 
@@ -310,6 +309,13 @@ public class RomainPlayerController : MonoBehaviour
         Vector3 vel = rb.linearVelocity;
         rb.linearVelocity = new Vector3(vel.x, jumpForce, vel.z);
         isGrounded = false;
+
+        // Trigger JumpStart si tu l'as dans l'Animator
+        if (animator != null)
+        {
+            animator.ResetTrigger("JumpStart");
+            animator.SetTrigger("JumpStart");
+        }
     }
 
     private void StartDash()
@@ -318,7 +324,6 @@ public class RomainPlayerController : MonoBehaviour
         isDashing = true;
         dashTimer = dashDuration;
 
-        // On dash dans la direction actuelle du mouvement (caméra-relative)
         if (moveDirection.sqrMagnitude > 0.1f)
             dashDirection = moveDirection.normalized;
         else
@@ -338,6 +343,7 @@ public class RomainPlayerController : MonoBehaviour
 
         float speed = horizontalVel.magnitude;
 
+        // Vitesse dans l'espace local du perso
         Vector3 localVel = Vector3.zero;
         if (speed > 0.1f)
             localVel = transform.InverseTransformDirection(horizontalVel).normalized;
@@ -349,9 +355,9 @@ public class RomainPlayerController : MonoBehaviour
         if (speed > 0.1f)
         {
             if (isSprinting || isDashing)
-                state = 1f;
+                state = 1f;      // Run
             else
-                state = 0.5f;
+                state = 0.5f;    // Walk
         }
 
         animator.SetFloat("State", state, 0.1f, Time.deltaTime);
