@@ -304,19 +304,21 @@ public class RomainPlayerController : MonoBehaviour
     }
 
     private void DoJump()
-    {
-        jumpCount++;
-        Vector3 vel = rb.linearVelocity;
-        rb.linearVelocity = new Vector3(vel.x, jumpForce, vel.z);
-        isGrounded = false;
+{
+    jumpCount++;
 
-        // Trigger JumpStart si tu l'as dans l'Animator
-        if (animator != null)
-        {
-            animator.ResetTrigger("JumpStart");
-            animator.SetTrigger("JumpStart");
-        }
+    Vector3 vel = rb.linearVelocity;
+    rb.linearVelocity = new Vector3(vel.x, jumpForce, vel.z);
+    isGrounded = false;
+
+    // Animation : seulement pour le premier saut
+    if (animator != null && jumpCount == 1)
+    {
+        animator.ResetTrigger("JumpStart");
+        animator.SetTrigger("JumpStart");
     }
+}
+
 
     private void StartDash()
     {

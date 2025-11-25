@@ -630,6 +630,7 @@ MonoBehaviour:
   sprintSpeed: 4
   rotationLerp: 0.15
   jumpForce: 5
+  jumpStartDelay: 0.25
   groundCheck: {fileID: 360417194}
   groundCheckRadius: 0.25
   groundLayer:
@@ -1585,6 +1586,7 @@ MonoBehaviour:
   sprintSpeed: 9
   rotationLerp: 0.15
   jumpForce: 5
+  jumpStartDelay: 0.15
   groundCheck: {fileID: 1400759030}
   groundCheckRadius: 0.25
   groundLayer:
