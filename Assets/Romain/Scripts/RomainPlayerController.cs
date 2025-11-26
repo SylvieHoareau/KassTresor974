@@ -23,6 +23,11 @@ public class RomainPlayerController : MonoBehaviour
     [SerializeField] private float fallGravityMultiplier = 2f;
     [SerializeField] private float lowJumpMultiplier = 2f;
 
+    [Header("Timing du saut")]
+    [SerializeField] private float jumpDelay = 0.1f; // délai avant l'impulsion (pour caler avec l'anim)
+    private bool jumpQueued = false;
+    private float jumpDelayTimer = 0f;
+
     [Header("Double saut")]
     [SerializeField] private int maxJumps = 2;
     private int jumpCount = 0;
@@ -210,11 +215,13 @@ public class RomainPlayerController : MonoBehaviour
 
         UpdateGrounded();
 
+        // Jump buffer
         if (jumpPressedThisFrame)
             jumpBufferTimer = jumpBufferTime;
 
         jumpBufferTimer -= Time.deltaTime;
 
+        // Coyote + reset sauts & dash
         if (isGrounded)
         {
             coyoteTimer = coyoteTime;
@@ -229,17 +236,43 @@ public class RomainPlayerController : MonoBehaviour
         bool canFirstJump  = (jumpBufferTimer > 0 && coyoteTimer > 0);
         bool canDoubleJump = (!isGrounded && jumpCount < maxJumps && jumpBufferTimer > 0);
 
-        if (canMove && (canFirstJump || canDoubleJump))
+        // On ne déclenche le saut que si pas déjà en attente
+        if (canMove && !jumpQueued && (canFirstJump || canDoubleJump))
         {
-            DoJump();
+            jumpQueued = true;
+            jumpDelayTimer = jumpDelay;
             jumpBufferTimer = 0;
             coyoteTimer = 0;
+
+            // On lance l'animation de "pré-saut" pour le premier saut seulement
+            if (animator != null && jumpCount == 0)
+            {
+                animator.ResetTrigger("JumpStart");
+                animator.SetTrigger("JumpStart");
+            }
+        }
+
+        // Gestion du délai de saut
+        if (jumpQueued)
+        {
+            jumpDelayTimer -= Time.deltaTime;
+
+            // Si on ne peut plus bouger (dialogue, cinématique) → on annule
+            if (!canMove)
+            {
+                jumpQueued = false;
+            }
+            else if (jumpDelayTimer <= 0f)
+            {
+                DoJump();
+                jumpQueued = false;
+            }
         }
 
         jumpPressedThisFrame = false;
 
         // ROULADE AU SOL
-        if (canMove && rollRequested && isGrounded && !isRolling)
+        if (canMove && rollRequested && isGrounded && !isRolling && !isDashing)
         {
             StartRoll();
         }
@@ -395,12 +428,8 @@ public class RomainPlayerController : MonoBehaviour
         rb.linearVelocity = new Vector3(vel.x, jumpForce, vel.z);
         isGrounded = false;
 
-        // Animation : seulement pour le premier saut
-        if (animator != null && jumpCount == 1)
-        {
-            animator.ResetTrigger("JumpStart");
-            animator.SetTrigger("JumpStart");
-        }
+        // Si tu veux une anim spécifique pour le double saut, tu peux la gérer ici :
+        // if (animator != null && jumpCount > 1) { ... }
     }
 
     private void StartDash()
@@ -489,6 +518,7 @@ public class RomainPlayerController : MonoBehaviour
             isRolling = false;
             isSprinting = false;
             sprintLatched = false;
+            jumpQueued = false;
         }
     }
 
