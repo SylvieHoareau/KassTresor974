@@ -36,11 +36,20 @@ public class RomainPlayerController : MonoBehaviour
     private Vector3 dashDirection = Vector3.zero;
     private bool dashRequested = false;
 
+    [Header("Roulade (au sol)")]
+    [SerializeField] private float rollSpeed = 8f;
+    [SerializeField] private float rollDuration = 0.4f;
+    private bool isRolling = false;
+    private float rollTimer = 0f;
+    private Vector3 rollDirection = Vector3.zero;
+    private bool rollRequested = false;
+
     [Header("Input (New Input System)")]
     [SerializeField] private InputActionReference moveAction;
     [SerializeField] private InputActionReference jumpAction;
     [SerializeField] private InputActionReference dashAction;
-    [SerializeField] private InputActionReference sprintAction;
+    [SerializeField] private InputActionReference sprintAction;  // Sprint toggle
+    [SerializeField] private InputActionReference rollAction;    // Roulade
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
@@ -62,7 +71,9 @@ public class RomainPlayerController : MonoBehaviour
     private bool jumpPressedThisFrame;
     private bool isJumpHeld;
 
-    private bool isSprinting = false;
+    // Sprint
+    private bool isSprinting = false;      // utilisé pour la vitesse & l'anim
+    private bool sprintLatched = false;    // états du toggle
 
     private void Awake()
     {
@@ -102,8 +113,13 @@ public class RomainPlayerController : MonoBehaviour
         if (sprintAction != null)
         {
             sprintAction.action.Enable();
-            sprintAction.action.performed += ctx => isSprinting = true;
-            sprintAction.action.canceled  += ctx => isSprinting = false;
+            sprintAction.action.performed += OnSprintPerformed; // toggle
+        }
+
+        if (rollAction != null)
+        {
+            rollAction.action.Enable();
+            rollAction.action.performed += OnRollPerformed;
         }
     }
 
@@ -131,7 +147,14 @@ public class RomainPlayerController : MonoBehaviour
 
         if (sprintAction != null)
         {
+            sprintAction.action.performed -= OnSprintPerformed;
             sprintAction.action.Disable();
+        }
+
+        if (rollAction != null)
+        {
+            rollAction.action.performed -= OnRollPerformed;
+            rollAction.action.Disable();
         }
     }
 
@@ -161,6 +184,21 @@ public class RomainPlayerController : MonoBehaviour
     private void OnDashPerformed(InputAction.CallbackContext ctx)
     {
         dashRequested = true;
+    }
+
+    private void OnRollPerformed(InputAction.CallbackContext ctx)
+    {
+        rollRequested = true;
+    }
+
+    private void OnSprintPerformed(InputAction.CallbackContext ctx)
+    {
+        // Toggle du sprint
+        sprintLatched = !sprintLatched;
+
+        // On applique immédiatement si on bouge déjà
+        if (moveInputRaw.sqrMagnitude > 0.01f)
+            isSprinting = sprintLatched;
     }
 
     // ===== UPDATE =====
@@ -200,12 +238,32 @@ public class RomainPlayerController : MonoBehaviour
 
         jumpPressedThisFrame = false;
 
-        if (canMove && dashRequested && !isGrounded && !isDashing && !hasAirDashed)
+        // ROULADE AU SOL
+        if (canMove && rollRequested && isGrounded && !isRolling)
+        {
+            StartRoll();
+        }
+        rollRequested = false;
+
+        // DASH AÉRIEN
+        if (canMove && dashRequested && !isGrounded && !isDashing && !hasAirDashed && !isRolling)
         {
             StartDash();
         }
-
         dashRequested = false;
+
+        // Gestion du sprint : 
+        // - si plus de mouvement → on désactive tout
+        // - si on bouge → on suit le latch
+        if (moveInputRaw.sqrMagnitude < 0.01f)
+        {
+            isSprinting = false;
+            sprintLatched = false; // il faudra rappuyer pour resprinter
+        }
+        else
+        {
+            isSprinting = sprintLatched;
+        }
 
         UpdateAnimatorParameters();
     }
@@ -214,6 +272,33 @@ public class RomainPlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // 1) ROULADE
+        if (isRolling)
+        {
+            rollTimer -= Time.fixedDeltaTime;
+
+            rb.linearVelocity = new Vector3(
+                rollDirection.x * rollSpeed,
+                rb.linearVelocity.y,
+                rollDirection.z * rollSpeed
+            );
+
+            if (rollDirection.sqrMagnitude > 0.001f)
+            {
+                Quaternion rollRot = Quaternion.LookRotation(rollDirection, Vector3.up);
+                Quaternion smoothRollRot = Quaternion.Slerp(rb.rotation, rollRot, rotationLerp);
+                rb.MoveRotation(smoothRollRot);
+            }
+
+            if (rollTimer <= 0f)
+            {
+                isRolling = false;
+            }
+
+            return;
+        }
+
+        // 2) DASH
         if (isDashing)
         {
             dashTimer -= Time.fixedDeltaTime;
@@ -224,7 +309,6 @@ public class RomainPlayerController : MonoBehaviour
                 dashDirection.z * dashSpeed
             );
 
-            // On regarde dans la direction du dash
             if (dashDirection.sqrMagnitude > 0.001f)
             {
                 Quaternion dashRot = Quaternion.LookRotation(dashDirection, Vector3.up);
@@ -243,7 +327,7 @@ public class RomainPlayerController : MonoBehaviour
         if (cam == null)
             cam = Camera.main;
 
-        // Projection de l'input brut dans l'espace caméra (Z = avant caméra)
+        // Projection input dans l'espace caméra
         Vector3 camForward = cam.transform.forward;
         Vector3 camRight   = cam.transform.right;
         camForward.y = 0f;
@@ -281,7 +365,7 @@ public class RomainPlayerController : MonoBehaviour
             rb.linearVelocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
         }
 
-        // ✅ Rotation automatique vers la direction de déplacement
+        // Rotation automatique vers la direction de déplacement
         if (moveDirection.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(moveDirection, Vector3.up);
@@ -304,21 +388,20 @@ public class RomainPlayerController : MonoBehaviour
     }
 
     private void DoJump()
-{
-    jumpCount++;
-
-    Vector3 vel = rb.linearVelocity;
-    rb.linearVelocity = new Vector3(vel.x, jumpForce, vel.z);
-    isGrounded = false;
-
-    // Animation : seulement pour le premier saut
-    if (animator != null && jumpCount == 1)
     {
-        animator.ResetTrigger("JumpStart");
-        animator.SetTrigger("JumpStart");
-    }
-}
+        jumpCount++;
 
+        Vector3 vel = rb.linearVelocity;
+        rb.linearVelocity = new Vector3(vel.x, jumpForce, vel.z);
+        isGrounded = false;
+
+        // Animation : seulement pour le premier saut
+        if (animator != null && jumpCount == 1)
+        {
+            animator.ResetTrigger("JumpStart");
+            animator.SetTrigger("JumpStart");
+        }
+    }
 
     private void StartDash()
     {
@@ -332,6 +415,29 @@ public class RomainPlayerController : MonoBehaviour
             dashDirection = transform.forward;
 
         rb.linearVelocity = new Vector3(dashDirection.x * dashSpeed, 0f, dashDirection.z * dashSpeed);
+    }
+
+    private void StartRoll()
+    {
+        isRolling = true;
+        rollTimer = rollDuration;
+
+        if (moveDirection.sqrMagnitude > 0.1f)
+            rollDirection = moveDirection.normalized;
+        else
+            rollDirection = transform.forward;
+
+        rb.linearVelocity = new Vector3(
+            rollDirection.x * rollSpeed,
+            rb.linearVelocity.y,
+            rollDirection.z * rollSpeed
+        );
+
+        if (animator != null)
+        {
+            animator.ResetTrigger("Roll");
+            animator.SetTrigger("Roll");
+        }
     }
 
     // ===== ANIMATION =====
@@ -350,7 +456,7 @@ public class RomainPlayerController : MonoBehaviour
         if (speed > 0.1f)
             localVel = transform.InverseTransformDirection(horizontalVel).normalized;
 
-        animator.SetFloat("Hor", localVel.x, 0.1f, Time.deltaTime);
+        animator.SetFloat("Hor",  localVel.x, 0.1f, Time.deltaTime);
         animator.SetFloat("Vert", localVel.z, 0.1f, Time.deltaTime);
 
         float state = 0f;
@@ -364,6 +470,7 @@ public class RomainPlayerController : MonoBehaviour
 
         animator.SetFloat("State", state, 0.1f, Time.deltaTime);
         animator.SetBool("IsJump", !isGrounded);
+        animator.SetBool("IsRolling", isRolling);
     }
 
     // ===== UTILITIES =====
@@ -377,6 +484,11 @@ public class RomainPlayerController : MonoBehaviour
             moveInputRaw = Vector2.zero;
             moveDirection = Vector3.zero;
             rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+
+            isDashing = false;
+            isRolling = false;
+            isSprinting = false;
+            sprintLatched = false;
         }
     }
 

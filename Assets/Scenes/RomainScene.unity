@@ -119,6 +119,99 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &17044216
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 17044219}
+  - component: {fileID: 17044218}
+  - component: {fileID: 17044217}
+  m_Layer: 0
+  m_Name: Terrain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!154 &17044217
+TerrainCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17044216}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_TerrainData: {fileID: 15600000, guid: 3177198bbddc774448bd9cd9f16fde4b, type: 2}
+  m_EnableTreeColliders: 1
+--- !u!218 &17044218
+Terrain:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17044216}
+  m_Enabled: 1
+  serializedVersion: 6
+  m_TerrainData: {fileID: 15600000, guid: 3177198bbddc774448bd9cd9f16fde4b, type: 2}
+  m_TreeDistance: 5000
+  m_TreeBillboardDistance: 50
+  m_TreeCrossFadeLength: 5
+  m_TreeMaximumFullLODCount: 50
+  m_DetailObjectDistance: 80
+  m_DetailObjectDensity: 1
+  m_HeightmapPixelError: 5
+  m_SplatMapDistance: 1000
+  m_HeightmapMinimumLODSimplification: 0
+  m_HeightmapMaximumLOD: 0
+  m_ShadowCastingMode: 2
+  m_DrawHeightmap: 1
+  m_DrawInstanced: 0
+  m_DrawTreesAndFoliage: 1
+  m_StaticShadowCaster: 0
+  m_IgnoreQualitySettings: 0
+  m_ReflectionProbeUsage: 1
+  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
+  m_BakeLightProbesForTrees: 1
+  m_PreserveTreePrototypeLayers: 0
+  m_DeringLightProbesForTrees: 1
+  m_ReceiveGI: 1
+  m_ScaleInLightmap: 0.0256
+  m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
+  m_GroupingID: 0
+  m_RenderingLayerMask: 1
+  m_AllowAutoConnect: 1
+  m_EnableHeightmapRayTracing: 1
+  m_EnableTreesAndDetailsRayTracing: 0
+  m_TreeMotionVectorModeOverride: 3
+--- !u!4 &17044219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17044216}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &130813676 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 381734096511123301, guid: 5736e576bae68ca4393c5441179cace9, type: 3}
@@ -630,7 +723,6 @@ MonoBehaviour:
   sprintSpeed: 4
   rotationLerp: 0.15
   jumpForce: 5
-  jumpStartDelay: 0.25
   groundCheck: {fileID: 360417194}
   groundCheckRadius: 0.25
   groundLayer:
@@ -643,10 +735,13 @@ MonoBehaviour:
   maxJumps: 1
   dashSpeed: 10
   dashDuration: 0.2
+  rollSpeed: 8
+  rollDuration: 0.5
   moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   dashAction: {fileID: 3358709925510160168, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   sprintAction: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  rollAction: {fileID: 4184461330701444824, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   animator: {fileID: 360417199}
 --- !u!4 &768708908 stripped
 Transform:
@@ -770,7 +865,7 @@ Transform:
   m_GameObject: {fileID: 784283919}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 7.7672954, y: -5.4265304, z: 18.557453}
+  m_LocalPosition: {x: 7.7672954, y: -5.4265304, z: 15.83}
   m_LocalScale: {x: 16.532713, y: 0.73909, z: 15.007412}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1057,7 +1152,7 @@ Transform:
   m_GameObject: {fileID: 1230108332}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: -8.75, y: -5.4265304, z: 18.557453}
+  m_LocalPosition: {x: -8.75, y: -5.4265304, z: 15.83}
   m_LocalScale: {x: 16.532713, y: 0.73909, z: 15.007412}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1420,7 +1515,7 @@ Transform:
   m_GameObject: {fileID: 1757463405}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: -8.75, y: -5.4265304, z: 3.5674534}
+  m_LocalPosition: {x: -8.75, y: -5.4265304, z: 0.84000015}
   m_LocalScale: {x: 16.532713, y: 0.73909, z: 15.007412}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1586,7 +1681,6 @@ MonoBehaviour:
   sprintSpeed: 9
   rotationLerp: 0.15
   jumpForce: 5
-  jumpStartDelay: 0.15
   groundCheck: {fileID: 1400759030}
   groundCheckRadius: 0.25
   groundLayer:
@@ -1599,10 +1693,13 @@ MonoBehaviour:
   maxJumps: 1
   dashSpeed: 15
   dashDuration: 0.2
+  rollSpeed: 8
+  rollDuration: 0.5
   moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   dashAction: {fileID: 3358709925510160168, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   sprintAction: {fileID: 0}
+  rollAction: {fileID: 0}
   animator: {fileID: 0}
 --- !u!136 &1778662679
 CapsuleCollider:
@@ -1926,7 +2023,7 @@ Transform:
   m_GameObject: {fileID: 2102788840}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 7.7672954, y: -5.4265304, z: 3.5674534}
+  m_LocalPosition: {x: 7.7672954, y: -5.4265304, z: 0.84000015}
   m_LocalScale: {x: 16.532713, y: 0.73909, z: 15.007412}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1941,3 +2038,4 @@ SceneRoots:
   - {fileID: 571421794}
   - {fileID: 1778662676}
   - {fileID: 360417193}
+  - {fileID: 17044219}
