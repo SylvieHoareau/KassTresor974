@@ -23,31 +23,33 @@ public class QuizManager : MonoBehaviour
     public Color goodColor = Color.green;
     public Color badColor = Color.red;
 
+    [Header("Settings")]
+    public float timePerQuestion = 15f;
+
     private int currentQuestionIndex = 0;
     private int score = 0;
     private float timer = 15f;
     private bool timerRunning = true;
+    private Coroutine feedbackCoroutine;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         UpdateScoreUI();
-        StartCoroutine(TimerRoutine());
+        StartCoroutine(TimerCoroutine());
         DisplayQuestion();
     }
 
     void DisplayQuestion()
     {
-        timer = 15f;
-        timerRunning = true;
-
         Question q = questionData.questions[currentQuestionIndex];
 
         // Texte de la question
         questionText.text = q.question;
 
         // Image (peut être null)
-        if (q.questionImage != null) {
+        if (q.questionImage != null) 
+        {
             questionImage.gameObject.SetActive(true);
             questionImage.sprite = q.questionImage;
         }
@@ -65,15 +67,21 @@ public class QuizManager : MonoBehaviour
             int buttonIndex = i; // Capture pour événement
             answerButtons[i].onClick.RemoveAllListeners();
             answerButtons[i].onClick.AddListener(() => OnAnswerClicked(buttonIndex));
-
             answerButtons[i].interactable = true;
+            
         }
 
         feedbackText.text = "";
+        feedbackText.transform.localScale = Vector3.one;
+
+        // Reset timer pour cette question
+        timer = timePerQuestion;
+        timerRunning = true;
     }
 
     void OnAnswerClicked(int index)
     {
+        if (!timerRunning) return;
 
         timerRunning = false;
 
@@ -84,17 +92,17 @@ public class QuizManager : MonoBehaviour
             btn.interactable = false;
         }
 
+        if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
+
         if (index == q.correctOptionIndex)
         {
             score++;
             UpdateScoreUI();
-            StartCoroutine(PlayFeedback("Bon réponse !", goodColor, correctSFX));
-            // NextQuestion();
+            feedbackCoroutine = StartCoroutine(PlayFeedback("Bonne réponse !", goodColor, correctSFX));
         }
         else
         {
-            // TODO : Afficher un panneau de feedback
-            StartCoroutine(PlayFeedback("Ayo... la pas sa ! Réessaye après !", badColor, wrongSFX));
+            feedbackCoroutine = StartCoroutine(PlayFeedback("Ayo... la pas sa ! Réessaye après !", badColor, wrongSFX));
         }
     }
 
@@ -111,8 +119,8 @@ public class QuizManager : MonoBehaviour
         Vector3 originalScale = feedbackText.transform.localScale;
         feedbackText.transform.localScale = Vector3.zero;
 
-        float t = 0;
-        while (t < 1)
+        float t = 0f;
+        while (t < 1f)
         {
             t += Time.deltaTime * 3;
             feedbackText.transform.localScale = Vector3.Lerp(Vector3.zero, originalScale, t);
@@ -130,36 +138,39 @@ public class QuizManager : MonoBehaviour
 
         if (currentQuestionIndex >= questionData.questions.Length)
         {
-            Debug.Log("Quiz terminé !");
-            // Afficher un écran de fin
-            feedbackText.text = "Quiz terminé ! Score : " + score;
+            timerRunning = false; // stop timer
+            feedbackText.text = $"Quiz terminé ! Score : {score}";
+            timerText.text = "";
             return;
         }
 
         DisplayQuestion();
     }
 
-    IEnumerator TimerRoutine()
+    IEnumerator TimerCoroutine()
     {
-        while(true)
+        while(currentQuestionIndex < questionData.questions.Length)
         {
             if (timerRunning)
             {
                 timer -= Time.deltaTime;
                 timerText.text = "Temps : " + Mathf.Ceil(timer);
 
-                if (timer <= 0)
+                if (timer <= 0f)
                 {
                     timerRunning = false;
-                    StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX));
 
                     foreach (var btn in answerButtons)
                     {
                         btn.interactable = false;
                     }
+
+                    // Lancer le feedback une seule fois
+                    if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
+                        feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX));
                 }
 
-                yield return null;
+                yield return null; // Toujours céder le contrôle
             }
         }
     }
