@@ -1,8 +1,16 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 0d9d80bce87cb544bbb1886708ccad38
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
+=======
+guid: 4f1e85c79acf49968737939ce8b445c7
+folderAsset: yes
+timeCreated: 1436068007
+licenseType: Pro
+DefaultImporter:
+>>>>>>> origin/Dany_01
   userData: 
   assetBundleName: 
   assetBundleVariant: 

@@ -1,8 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 31227e4463248644893c01d5369515ed
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0
+=======
+guid: 125cb55b44b24c4393181402bc6200e6
+NativeFormatImporter:
+>>>>>>> origin/Dany_01
   userData: 
   assetBundleName: 
   assetBundleVariant: 
