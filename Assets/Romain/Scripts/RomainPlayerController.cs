@@ -528,6 +528,12 @@ public class RomainPlayerController : MonoBehaviour
         transform.position = pos;
     }
 
+    // --- Getter pour la voiture ---
+    public InputAction GetMoveAction()
+    {
+        return moveAction != null ? moveAction.action : null;
+    }
+
     private void OnDrawGizmosSelected()
     {
         if (groundCheck == null) return;
