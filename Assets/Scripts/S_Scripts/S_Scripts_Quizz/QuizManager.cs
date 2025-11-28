@@ -31,17 +31,47 @@ public class QuizManager : MonoBehaviour
     private float timer = 15f;
     private bool timerRunning = true;
     private Coroutine feedbackCoroutine;
+    private Coroutine timerRunCoroutine;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Start est appelée une seule fois
     void Start()
     {
+        // Les écouteurs de boutons sont attachés UNE SEULE FOIS
+        SetupAnswerButtons();
+
         UpdateScoreUI();
-        StartCoroutine(TimerCoroutine());
+        timerRunCoroutine = StartCoroutine(TimerCoroutine());
         DisplayQuestion();
+    }
+
+    // Méthode pour configurer les événements onClick des boutons
+    void SetupAnswerButtons()
+    {
+        for (int i = 0; i < answerButtons.Length; i++)
+        {
+            int buttonIndex = i; // Capture pour événement
+            // On s'assure qu'il n'y a pas d'écouteur existant avant d'ajouter
+            answerButtons[i].onClick.RemoveAllListeners();
+            answerButtons[i].onClick.AddListener(() => OnAnswerClicked(buttonIndex));
+        }
     }
 
     void DisplayQuestion()
     {
+        // Vérification de sécurité au cas où questionData serait null ou vide
+        if (questionData == null || questionData.questions == null || questionData.questions.Length == 0)
+        {
+            Debug.LogError("Question Data est manquant ou vide !");
+            return;
+        }
+
+        // On vérifie la fin du quiz au cas où cet appel serait mal placé
+        if (currentQuestionIndex >= questionData.questions.Length)
+        {
+            FinishQuiz();
+            return;
+        }
+
         Question q = questionData.questions[currentQuestionIndex];
 
         // Texte de la question
@@ -63,12 +93,7 @@ public class QuizManager : MonoBehaviour
         {
             TMP_Text btnText = answerButtons[i].GetComponentInChildren<TMP_Text>();
             btnText.text = q.replies[i];
-
-            int buttonIndex = i; // Capture pour événement
-            answerButtons[i].onClick.RemoveAllListeners();
-            answerButtons[i].onClick.AddListener(() => OnAnswerClicked(buttonIndex));
-            answerButtons[i].interactable = true;
-            
+            answerButtons[i].interactable = true; // Rendre cliquable   
         }
 
         feedbackText.text = "";
@@ -92,6 +117,7 @@ public class QuizManager : MonoBehaviour
             btn.interactable = false;
         }
 
+        // Arrete le feedback précédent
         if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
 
         if (index == q.correctOptionIndex)
@@ -138,13 +164,27 @@ public class QuizManager : MonoBehaviour
 
         if (currentQuestionIndex >= questionData.questions.Length)
         {
-            timerRunning = false; // stop timer
-            feedbackText.text = $"Quiz terminé ! Score : {score}";
-            timerText.text = "";
+            FinishQuiz();
             return;
         }
 
         DisplayQuestion();
+    }
+
+    // Méthode pour gérer la fin du quizz 
+    void FinishQuiz()
+    {
+        timerRunning = false;
+
+        // Arrêter explicitement la coroutine
+        if (timerRunCoroutine != null)
+        {
+            StopCoroutine(timerRunCoroutine);
+            timerRunCoroutine = null;
+        }
+
+        feedbackText.text = $"Quiz terminé ! Score : {score}";
+        timerText.text = "";
     }
 
     IEnumerator TimerCoroutine()
@@ -167,10 +207,15 @@ public class QuizManager : MonoBehaviour
 
                     // Lancer le feedback une seule fois
                     if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
-                        feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX));
+                    feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX));
                 }
 
                 yield return null; // Toujours céder le contrôle
+            }
+            else
+            {
+                // Si le minuteur est arrêté (une réponse a été donnée), on attend simplement
+                yield return null;
             }
         }
     }
