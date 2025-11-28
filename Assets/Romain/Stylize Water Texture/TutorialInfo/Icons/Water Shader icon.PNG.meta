@@ -147,5 +147,6 @@ AssetOrigin:
   productId: 191449
   packageName: Simple Water Shader URP
   packageVersion: 1.0.0
-  assetPath: Assets/TutorialInfo/Icons/Water Shader icon.PNG
+  assetPath: Assets/Romain/Stylize Water Texture/TutorialInfo/Icons/Water Shader
+    icon.PNG
   uploadId: 422776
