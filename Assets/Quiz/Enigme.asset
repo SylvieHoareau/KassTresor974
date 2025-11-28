@@ -22,3 +22,11 @@ MonoBehaviour:
     - 7 septembre 1730
     correctOptionIndex: 1
     questionImage: {fileID: 0}
+  - question: " \u201CMon tr\xE9sor \xE0 qui saura\u2026 _______.\u201D "
+    replies:
+    - voler
+    - lire
+    - prendre
+    - perdre
+    correctOptionIndex: 2
+    questionImage: {fileID: 0}
