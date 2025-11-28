@@ -1,0 +1,67 @@
+{
+    "version": 1,
+    "name": "RoosterControl",
+    "maps": [
+        {
+            "name": "Keeyboard",
+            "id": "5ffab068-131f-4294-bc4b-7016d6c67cc4",
+            "actions": [
+                {
+                    "name": "attackLeft",
+                    "type": "Button",
+                    "id": "4e12cc9d-8a56-4ffb-bb76-51a066f39a22",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "attackRight",
+                    "type": "Button",
+                    "id": "d308178f-bc93-43ec-99db-ec562ec15dcb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "dfce5465-ce9c-489d-a48f-dc54a3de94fe",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "attackLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "34135e9b-7a7c-4b04-8d29-fa188fa5593b",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "attackRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard",
+            "bindingGroup": "Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
