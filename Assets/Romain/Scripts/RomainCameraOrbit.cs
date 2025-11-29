@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RomainCameraOrbit : MonoBehaviour
 {
@@ -12,30 +13,54 @@ public class RomainCameraOrbit : MonoBehaviour
     public float zoomSpeed = 2f;
 
     [Header("Rotation")]
-    public float mouseSensitivity = 3f;
+    public float mouseSensitivity = 0.1f;      // souris (Delta)
+    public float gamepadSensitivity = 120f;    // stick droit
     public float minY = -40f;
     public float maxY = 70f;
-    public bool clampHorizontal = false;
-    public float minX = -80f;
-    public float maxX = 80f;
 
-    [Header("Décalage Vertical")]
+    [Header("Offset")]
     public float heightOffset = 1.5f;
 
-    [Header("Champ de Vision (FOV)")]
+    [Header("FOV")]
     public Camera cam;
     public float fieldOfView = 60f;
     public float minFOV = 30f;
     public float maxFOV = 90f;
     public float fovSpeed = 10f;
 
-    private float rotX = 0f;
-    private float rotY = 0f;
+    [Header("Input System")]
+    public InputActionReference lookAction;    // Player/Look
+    public InputActionReference moveAction;    // Player/Move (stick gauche)
+
+    [Header("Recentrage Auto")]
+    public bool autoAlignOnMove = true;
+    [Tooltip("Vitesse de recentrage quand on se déplace à la manette")]
+    public float alignSpeed = 5f;
+    [Tooltip("Minimum de déplacement pour déclencher le recentrage")]
+    public float moveThreshold = 0.2f;
+    [Tooltip("Si on bouge la caméra plus que ça, on coupe le recentrage")]
+    public float lookDeadZone = 0.1f;
+    [Tooltip("Ne recentrer que si l’input vient d’une manette")]
+    public bool onlyGamepad = true;
+
+    private float rotX;
+    private float rotY;
+
+    void OnEnable()
+    {
+        lookAction?.action.Enable();
+        moveAction?.action.Enable();
+    }
+
+    void OnDisable()
+    {
+        lookAction?.action.Disable();
+        moveAction?.action.Disable();
+    }
 
     void Start()
     {
-        if (cam == null)
-            cam = GetComponent<Camera>();
+        if (cam == null) cam = GetComponent<Camera>();
 
         Vector3 angles = transform.eulerAngles;
         rotY = angles.y;
@@ -48,35 +73,67 @@ public class RomainCameraOrbit : MonoBehaviour
     {
         if (target == null) return;
 
-        // Zoom molette
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        distance -= scroll * zoomSpeed;
+        // ----- ZOOM -----
+        float scroll = Mouse.current != null ? Mouse.current.scroll.ReadValue().y : 0f;
+        distance -= scroll * zoomSpeed * 0.1f; // 0.1 pour calmer la molette
         distance = Mathf.Clamp(distance, minDistance, maxDistance);
 
-        // Rotation clic droit
-        if (Input.GetMouseButton(1))
+        // ----- LOOK (souris + stick droit) -----
+        Vector2 look = lookAction != null ? lookAction.action.ReadValue<Vector2>() : Vector2.zero;
+
+        // On détecte si c’est de la souris (delta non nul)
+        bool usingMouse = Mouse.current != null &&
+                          Mouse.current.delta.ReadValue() != Vector2.zero &&
+                          look.sqrMagnitude > 0.0001f;
+
+        if (usingMouse)
         {
-            rotY += Input.GetAxis("Mouse X") * mouseSensitivity;
-            rotX -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-            rotX = Mathf.Clamp(rotX, minY, maxY);
-
-            if (clampHorizontal)
-                rotY = Mathf.Clamp(rotY, minX, maxX);
+            // Souris : delta pixels -> petit facteur
+            rotY += look.x * mouseSensitivity;
+            rotX -= look.y * mouseSensitivity;
+        }
+        else
+        {
+            // Manette : valeur normalisée [-1,1]
+            rotY += look.x * gamepadSensitivity * Time.deltaTime;
+            rotX -= look.y * gamepadSensitivity * Time.deltaTime;
         }
 
-        // Appliquer rotation
+        rotX = Mathf.Clamp(rotX, minY, maxY);
+
+        // ----- RECENTRAGE AUTO SUR LA DIRECTION DU PERSO -----
+        if (autoAlignOnMove && moveAction != null && target != null)
+        {
+            Vector2 move = moveAction.action.ReadValue<Vector2>();
+            float moveMag = move.magnitude;
+            float lookMag = look.magnitude;
+
+            // Est-ce qu’on bouge assez ?
+            bool isMoving = moveMag > moveThreshold;
+
+            // Est-ce que la caméra n’est pas en train d’être manipulée ?
+            bool isLooking = lookMag > lookDeadZone;
+
+            // Est-ce que l’input vient d’une manette ?
+            bool fromGamepad = moveAction.action.activeControl != null &&
+                               moveAction.action.activeControl.device is Gamepad;
+
+            if (isMoving && !isLooking && (!onlyGamepad || fromGamepad))
+            {
+                float targetYaw = target.eulerAngles.y;
+                rotY = Mathf.LerpAngle(rotY, targetYaw, alignSpeed * Time.deltaTime);
+            }
+        }
+
+        // ----- POSITION / ROTATION CAMERA -----
         Quaternion rotation = Quaternion.Euler(rotX, rotY, 0);
-
-        // Calcul position caméra
         Vector3 offset = rotation * new Vector3(0, heightOffset, -distance);
-        transform.position = target.position + offset;
 
-        // Regarder la cible
+        transform.position = target.position + offset;
         transform.LookAt(target.position + Vector3.up * heightOffset);
 
-        // FOV dynamique
-        fieldOfView -= scroll * fovSpeed;
+        // ----- FOV DYNAMIQUE -----
+        fieldOfView -= scroll * fovSpeed * 0.1f;
         fieldOfView = Mathf.Clamp(fieldOfView, minFOV, maxFOV);
         cam.fieldOfView = fieldOfView;
     }

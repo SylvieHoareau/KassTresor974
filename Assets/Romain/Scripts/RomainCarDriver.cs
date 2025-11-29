@@ -52,8 +52,6 @@ public class RomainCarDriver : MonoBehaviour
     public LayerMask obstacleLayer;
     [Tooltip("Taille demi-étendue du box de collision de la voiture")]
     public Vector3 colliderHalfExtents = new Vector3(0.8f, 0.5f, 1.5f);
-    [Tooltip("Marge pour ne pas coller le nez dans le mur")]
-    public float collisionBuffer = 0.05f;
 
     // État
     private GameObject player;
@@ -120,8 +118,18 @@ public class RomainCarDriver : MonoBehaviour
 
     private void Update()
     {
-        // Interaction avec E (New Input System)
+        // ====== INTERACTION CLAVIER + MANETTE ======
+        bool interactPressed = false;
+
+        // Clavier : touche E
         if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+            interactPressed = true;
+
+        // Manette : bouton Ouest (X sur Xbox, carré sur PlayStation)
+        if (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame)
+            interactPressed = true;
+
+        if (interactPressed)
         {
             if (!isPlayerInside && playerInRange)
             {
@@ -183,32 +191,53 @@ public class RomainCarDriver : MonoBehaviour
         // Avancer le long du sol
         Vector3 delta = forward * currentSpeed * Time.deltaTime;
 
-        // === COLLISION CHECK : empêche de traverser les murs ===
+        // === COLLISION CHECK : seulement en marche AVANT ===
         if (delta.sqrMagnitude > 0.000001f && obstacleLayer != 0)
         {
-            Vector3 direction = delta.normalized;
-            float distance = delta.magnitude + collisionBuffer;
+            // On regarde si le mouvement est globalement vers l'avant de la voiture
+            float forwardDot = 0f;
+            if (delta.sqrMagnitude > 0.000001f)
+                forwardDot = Vector3.Dot(delta.normalized, forward);
 
-            // Point de départ du BoxCast (un peu au-dessus du sol)
-            Vector3 castOrigin = transform.position + Vector3.up * colliderHalfExtents.y;
+            bool isMovingForward = forwardDot > 0.1f;
 
-            if (Physics.BoxCast(
-                    castOrigin,
-                    colliderHalfExtents,
-                    direction,
-                    out RaycastHit hit,
-                    transform.rotation,
-                    distance,
-                    obstacleLayer,
-                    QueryTriggerInteraction.Ignore))
+            if (isMovingForward)
             {
-                // On s'arrête juste avant le mur
-                float allowedDist = Mathf.Max(0f, hit.distance - collisionBuffer);
-                delta = direction * allowedDist;
+                // Position future potentielle
+                Vector3 newPosition = transform.position + delta;
 
-                // On coupe la vitesse si on est collé au mur
-                if (allowedDist <= 0.001f)
+                // Centre de l'OverlapBox (légèrement au-dessus du sol)
+                Vector3 boxCenter = newPosition + Vector3.up * colliderHalfExtents.y;
+
+                Collider[] hits = Physics.OverlapBox(
+                    boxCenter,
+                    colliderHalfExtents,
+                    transform.rotation,
+                    obstacleLayer,
+                    QueryTriggerInteraction.Ignore
+                );
+
+                bool hitRealObstacle = false;
+                if (hits != null && hits.Length > 0)
+                {
+                    foreach (var h in hits)
+                    {
+                        if (h == null) continue;
+                        // On ignore les colliders de la voiture elle-même
+                        if (!h.transform.IsChildOf(transform))
+                        {
+                            hitRealObstacle = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (hitRealObstacle)
+                {
+                    // On annule le mouvement et on stoppe la voiture uniquement en marche avant
+                    delta = Vector3.zero;
                     currentSpeed = 0f;
+                }
             }
         }
 
@@ -247,15 +276,12 @@ public class RomainCarDriver : MonoBehaviour
                 Transform wheel = frontSteerWheels[i];
                 if (wheel == null) continue;
 
-                // Rotation = rotation de base * rotation de braquage, pour éviter de "tasser" les roues
+                // Rotation = rotation de base * rotation de braquage
                 wheel.localRotation = frontSteerBaseRotations[i] * Quaternion.Euler(0f, currentSteerAngle, 0f);
             }
         }
     }
 
-    /// <summary>
-    /// Retourne la normale du terrain sous la voiture (ou Vector3.zero si rien).
-    /// </summary>
     private Vector3 GetGroundNormal()
     {
         Vector3 origin = transform.position + Vector3.up * 2f;
@@ -271,9 +297,6 @@ public class RomainCarDriver : MonoBehaviour
         return Vector3.zero;
     }
 
-    /// <summary>
-    /// Aligne la voiture au terrain : position + rotation alignée à la pente.
-    /// </summary>
     private void AlignToGround(bool instant)
     {
         Vector3 origin = transform.position + Vector3.up * 2f;

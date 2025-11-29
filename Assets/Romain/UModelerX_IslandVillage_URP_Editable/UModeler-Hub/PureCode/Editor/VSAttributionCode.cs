@@ -1,10 +1,9 @@
 using System;
-using UnityEngine;
-using UnityEditor;
 using UnityEngine.Analytics;
 
 namespace UnityEditor.VSAttribution
 {
+    [UnityEditor.InitializeOnLoad]
     public class VSAttributionCode : Tripolygon.UModeler.Hub.VSAttribution.IVSAttribution
     {
         const int k_VersionId = 4;
@@ -13,12 +12,13 @@ namespace UnityEditor.VSAttribution
 
         const string k_VendorKey = "unity.vsp-attribution";
         const string k_EventName = "vspAttribution";
-        public VSAttributionCode()
+
+        static VSAttributionCode()
         {
-            Tripolygon.UModeler.Hub.VSAttribution.Attribution = this;
+            Tripolygon.UModeler.Hub.VSAttribution.Attribution = new VSAttributionCode();
         }
 
-        private VSAttributionCode singleton = new VSAttributionCode();
+        private static VSAttributionCode singleton = new VSAttributionCode();
 
 #if UNITY_2023_2_OR_NEWER
         [AnalyticInfo(eventName: k_EventName, vendorKey: k_VendorKey, maxEventsPerHour: k_MaxEventsPerHour, maxNumberOfElements: k_MaxNumberOfElements, version: k_VersionId)]
