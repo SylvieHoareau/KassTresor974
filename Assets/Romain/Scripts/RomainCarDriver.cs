@@ -47,6 +47,14 @@ public class RomainCarDriver : MonoBehaviour
     [Tooltip("Vitesse minimale avant de pouvoir vraiment tourner")]
     public float minSteerSpeed = 0.5f;
 
+    [Header("Collisions")]
+    [Tooltip("Layers des murs/obstacles (ex: Default, Environment)")]
+    public LayerMask obstacleLayer;
+    [Tooltip("Taille demi-étendue du box de collision de la voiture")]
+    public Vector3 colliderHalfExtents = new Vector3(0.8f, 0.5f, 1.5f);
+    [Tooltip("Marge pour ne pas coller le nez dans le mur")]
+    public float collisionBuffer = 0.05f;
+
     // État
     private GameObject player;
     private bool playerInRange = false;
@@ -174,6 +182,36 @@ public class RomainCarDriver : MonoBehaviour
 
         // Avancer le long du sol
         Vector3 delta = forward * currentSpeed * Time.deltaTime;
+
+        // === COLLISION CHECK : empêche de traverser les murs ===
+        if (delta.sqrMagnitude > 0.000001f && obstacleLayer != 0)
+        {
+            Vector3 direction = delta.normalized;
+            float distance = delta.magnitude + collisionBuffer;
+
+            // Point de départ du BoxCast (un peu au-dessus du sol)
+            Vector3 castOrigin = transform.position + Vector3.up * colliderHalfExtents.y;
+
+            if (Physics.BoxCast(
+                    castOrigin,
+                    colliderHalfExtents,
+                    direction,
+                    out RaycastHit hit,
+                    transform.rotation,
+                    distance,
+                    obstacleLayer,
+                    QueryTriggerInteraction.Ignore))
+            {
+                // On s'arrête juste avant le mur
+                float allowedDist = Mathf.Max(0f, hit.distance - collisionBuffer);
+                delta = direction * allowedDist;
+
+                // On coupe la vitesse si on est collé au mur
+                if (allowedDist <= 0.001f)
+                    currentSpeed = 0f;
+            }
+        }
+
         transform.position += delta;
 
         // Roues
