@@ -23,12 +23,12 @@ public class RomainCarDriver : MonoBehaviour
     public float turnSpeed = 70f;
 
     [Header("Roues qui tournent (axe X)")]
-    [Tooltip("Toutes les roues qui doivent tourner en avançant/reculant")]
+    [Tooltip("Toutes les roues qui doivent tourner en avançant/reculant (souvent les roues arrière)")]
     public Transform[] rollingWheels;
     public float wheelRadius = 0.35f;
 
     [Header("Roues avant qui braquent (axe Y)")]
-    [Tooltip("Uniquement les PIVOTS des roues avant (pas les meshes + parent en même temps)")]
+    [Tooltip("Les roues avant qui braquent (et vont aussi rouler)")]
     public Transform[] frontSteerWheels;
     public float maxSteerAngle = 30f;
     public float steerLerpSpeed = 10f;
@@ -72,6 +72,9 @@ public class RomainCarDriver : MonoBehaviour
     // Rotation de base des pivots de roues avant (pour éviter les glitchs)
     private Quaternion[] frontSteerBaseRotations;
 
+    // Roulement cumulé des roues avant (en degrés)
+    private float frontRollingAngle = 0f;
+
     private void Start()
     {
         // On mémorise les rotations de base des pivots de roues avant
@@ -85,13 +88,11 @@ public class RomainCarDriver : MonoBehaviour
             }
         }
 
-        // On colle la voiture au terrain au départ
         AlignToGround(true);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Cherche RomainPlayerController dans les parents du collider
         var controller = other.GetComponentInParent<RomainPlayerController>();
         if (controller == null)
             return;
@@ -103,7 +104,6 @@ public class RomainCarDriver : MonoBehaviour
         playerController = controller;
         player = controller.gameObject;
 
-        // Récupère Move via ton getter dans RomainPlayerController
         moveAction = playerController.GetMoveAction();
     }
 
@@ -121,24 +121,18 @@ public class RomainCarDriver : MonoBehaviour
         // ====== INTERACTION CLAVIER + MANETTE ======
         bool interactPressed = false;
 
-        // Clavier : touche E
         if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
             interactPressed = true;
 
-        // Manette : bouton Ouest (X sur Xbox, carré sur PlayStation)
         if (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame)
             interactPressed = true;
 
         if (interactPressed)
         {
             if (!isPlayerInside && playerInRange)
-            {
                 EnterCar();
-            }
             else if (isPlayerInside)
-            {
                 ExitCar();
-            }
         }
 
         if (!isPlayerInside || moveAction == null)
@@ -147,26 +141,21 @@ public class RomainCarDriver : MonoBehaviour
             return;
         }
 
-        // ===== MOUVEMENT MANUEL SUR LE TERRAIN =====
         Vector2 input = moveAction.ReadValue<Vector2>();
         float moveInput = input.y;
         float turnInput = input.x;
 
-        // Accélération / frein
         float targetSpeed = moveInput * maxSpeed;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
 
-        // On récupère la normale du sol sous la voiture
         Vector3 groundNormal = GetGroundNormal();
 
-        // ===== ROTATION : seulement si on roule déjà un minimum =====
         float speedAbs = Mathf.Abs(currentSpeed);
         bool hasTurnInput = Mathf.Abs(turnInput) > 0.01f;
         bool canSteer = speedAbs > minSteerSpeed && hasTurnInput;
 
         if (canSteer)
         {
-            // sens de braquage selon direction (marche avant / arrière)
             float directionSign = Mathf.Sign(currentSpeed == 0 ? 1f : currentSpeed);
             float turnAmount = turnInput * turnSpeed * Time.deltaTime * directionSign;
 
@@ -176,7 +165,6 @@ public class RomainCarDriver : MonoBehaviour
                 transform.Rotate(0f, turnAmount, 0f, Space.World);
         }
 
-        // Forward projeté sur le plan du sol pour se déplacer sur la pente
         Vector3 forward = transform.forward;
         if (groundNormal != Vector3.zero)
         {
@@ -188,13 +176,11 @@ public class RomainCarDriver : MonoBehaviour
             forward = forward.sqrMagnitude < 0.0001f ? Vector3.forward : forward.normalized;
         }
 
-        // Avancer le long du sol
         Vector3 delta = forward * currentSpeed * Time.deltaTime;
 
-        // === COLLISION CHECK : seulement en marche AVANT ===
+        // collisions avant seulement
         if (delta.sqrMagnitude > 0.000001f && obstacleLayer != 0)
         {
-            // On regarde si le mouvement est globalement vers l'avant de la voiture
             float forwardDot = 0f;
             if (delta.sqrMagnitude > 0.000001f)
                 forwardDot = Vector3.Dot(delta.normalized, forward);
@@ -203,10 +189,7 @@ public class RomainCarDriver : MonoBehaviour
 
             if (isMovingForward)
             {
-                // Position future potentielle
                 Vector3 newPosition = transform.position + delta;
-
-                // Centre de l'OverlapBox (légèrement au-dessus du sol)
                 Vector3 boxCenter = newPosition + Vector3.up * colliderHalfExtents.y;
 
                 Collider[] hits = Physics.OverlapBox(
@@ -223,7 +206,6 @@ public class RomainCarDriver : MonoBehaviour
                     foreach (var h in hits)
                     {
                         if (h == null) continue;
-                        // On ignore les colliders de la voiture elle-même
                         if (!h.transform.IsChildOf(transform))
                         {
                             hitRealObstacle = true;
@@ -234,7 +216,6 @@ public class RomainCarDriver : MonoBehaviour
 
                 if (hitRealObstacle)
                 {
-                    // On annule le mouvement et on stoppe la voiture uniquement en marche avant
                     delta = Vector3.zero;
                     currentSpeed = 0f;
                 }
@@ -243,29 +224,35 @@ public class RomainCarDriver : MonoBehaviour
 
         transform.position += delta;
 
-        // Roues
         UpdateWheels(currentSpeed, turnInput);
-
-        // On recolle au terrain (position & rotation fine)
         AlignToGround(false);
     }
 
     private void UpdateWheels(float speed, float turnInput)
     {
-        // Rotation X des roues (roulement)
-        if (rollingWheels != null && rollingWheels.Length > 0 && Mathf.Abs(speed) > 0.01f)
+        // ===== Roulement (avant + arrière) =====
+        if (Mathf.Abs(speed) > 0.01f)
         {
             float distance = speed * Time.deltaTime;
             float angleDelta = (distance / wheelRadius) * Mathf.Rad2Deg;
 
-            foreach (Transform wheel in rollingWheels)
+            // Roues "rolling" (souvent l'arrière)
+            if (rollingWheels != null && rollingWheels.Length > 0)
             {
-                if (wheel == null) continue;
-                wheel.Rotate(Vector3.right * angleDelta, Space.Self);
+                foreach (Transform wheel in rollingWheels)
+                {
+                    if (wheel == null) continue;
+                    wheel.Rotate(Vector3.right * angleDelta, Space.Self);
+                }
             }
+
+            // On cumule un angle global pour les roues avant
+            frontRollingAngle += angleDelta;
+            if (frontRollingAngle > 360f || frontRollingAngle < -360f)
+                frontRollingAngle = Mathf.Repeat(frontRollingAngle, 360f);
         }
 
-        // Braquage Y des roues avant via les pivots
+        // ===== Braquage Y des roues avant + application du roulement X =====
         float targetSteerAngle = maxSteerAngle * turnInput;
         currentSteerAngle = Mathf.Lerp(currentSteerAngle, targetSteerAngle, steerLerpSpeed * Time.deltaTime);
 
@@ -276,8 +263,11 @@ public class RomainCarDriver : MonoBehaviour
                 Transform wheel = frontSteerWheels[i];
                 if (wheel == null) continue;
 
-                // Rotation = rotation de base * rotation de braquage
-                wheel.localRotation = frontSteerBaseRotations[i] * Quaternion.Euler(0f, currentSteerAngle, 0f);
+                // Rotation de base * roulement (X) * braquage (Y)
+                Quaternion rollRot = Quaternion.Euler(frontRollingAngle, 0f, 0f);
+                Quaternion steerRot = Quaternion.Euler(0f, currentSteerAngle, 0f);
+
+                wheel.localRotation = frontSteerBaseRotations[i] * rollRot * steerRot;
             }
         }
     }
@@ -288,7 +278,6 @@ public class RomainCarDriver : MonoBehaviour
 
         if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, groundRayLength, groundLayer, QueryTriggerInteraction.Ignore))
         {
-            // Si jamais le raycast touche un collider de la voiture → ignore
             if (hit.collider.transform.IsChildOf(transform))
                 return Vector3.zero;
 
@@ -303,17 +292,14 @@ public class RomainCarDriver : MonoBehaviour
 
         if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, groundRayLength, groundLayer, QueryTriggerInteraction.Ignore))
         {
-            // Ignore si on tape la voiture elle-même
             if (hit.collider.transform.IsChildOf(transform))
                 return;
 
-            // Position plaquée au sol + offset
             Vector3 targetPos = hit.point + hit.normal * groundOffset;
             transform.position = instant
                 ? targetPos
                 : Vector3.Lerp(transform.position, targetPos, Time.deltaTime * slopeAlignSpeed);
 
-            // Rotation alignée à la pente
             Vector3 forward = Vector3.ProjectOnPlane(transform.forward, hit.normal).normalized;
             if (forward.sqrMagnitude < 0.0001f)
                 forward = Vector3.ProjectOnPlane(transform.right, hit.normal).normalized;
@@ -335,10 +321,8 @@ public class RomainCarDriver : MonoBehaviour
 
         isPlayerInside = true;
 
-        // On coupe les mouvements du player proprement
         playerController.SetCanMove(false);
 
-        // On cache le joueur (sprites / mesh)
         playerSprites = player.GetComponentsInChildren<SpriteRenderer>(true);
         playerRenderers = player.GetComponentsInChildren<Renderer>(true);
 
@@ -354,7 +338,6 @@ public class RomainCarDriver : MonoBehaviour
                 r.enabled = false;
         }
 
-        // Caméra → voiture
         if (cameraOrbit != null)
         {
             previousCameraTarget = cameraOrbit.target;
@@ -372,13 +355,9 @@ public class RomainCarDriver : MonoBehaviour
         isPlayerInside = false;
         currentSpeed = 0f;
 
-        // Replace le joueur
         if (player != null && exitPoint != null)
-        {
             player.transform.position = exitPoint.position;
-        }
 
-        // Affiche de nouveau le joueur
         if (playerSprites != null)
         {
             foreach (var sr in playerSprites)
@@ -391,11 +370,9 @@ public class RomainCarDriver : MonoBehaviour
                 r.enabled = true;
         }
 
-        // Rends le contrôle au joueur
         if (playerController != null)
             playerController.SetCanMove(true);
 
-        // Caméra → retour sur ce qu’elle suivait avant (ou le joueur)
         if (cameraOrbit != null)
         {
             if (previousCameraTarget != null)
