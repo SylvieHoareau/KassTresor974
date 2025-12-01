@@ -7,11 +7,12 @@ public class CockSpawner : MonoBehaviour
     public Transform leftSpawnPoint;
     public Transform rightSpawnPoint;
 
-    public float baseSpawnInterval = 1.5f;  // temps de spawn au début
-    public float minSpawnInterval = 0.25f;  // limite de vitesse max
+    public float baseSpawnInterval = 1.5f;
+    public float minSpawnInterval = 0.25f;
 
     [Header("Difficulty Settings")]
-    public float difficultyRamp = 0.01f;  // vitesse de montée en difficulté
+    public float difficultyRamp = 0.01f;
+
 
     private float timer;
 
@@ -19,7 +20,6 @@ public class CockSpawner : MonoBehaviour
     {
         float score = CockScore.score;
 
-        // calcul dynamique du temps entre spawns
         float currentSpawnInterval = Mathf.Max(
             baseSpawnInterval - score * difficultyRamp,
             minSpawnInterval
@@ -41,19 +41,20 @@ public class CockSpawner : MonoBehaviour
 
         GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
 
-        // Ajuste la vitesse de l’ennemi selon le score
+        // Ajustement de la vitesse
         CockEnemyMove enemyScript = enemy.GetComponent<CockEnemyMove>();
-
         float baseSpeed = enemyScript.speed;
-        enemyScript.speed = baseSpeed + score * 0.05f; // vitesse dynamique
+        enemyScript.speed = baseSpeed + score * 0.05f;
 
-        // Inversion du scale si l’ennemi vient de la droite
+        // Flip automatique si spawn à droite
         if (!spawnLeft)
         {
             Vector3 scale = enemy.transform.localScale;
             scale.x *= -1;
             enemy.transform.localScale = scale;
         }
+
+       
     }
 }
 
