@@ -15605,6 +15605,14 @@ PrefabInstance:
       propertyPath: playerController
       value: 
       objectReference: {fileID: 47560325}
+    - target: {fileID: 2650796869560992509, guid: 767c8235b3070f0489b31d1f765a73a7, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 65
+      objectReference: {fileID: 0}
+    - target: {fileID: 2650796869560992509, guid: 767c8235b3070f0489b31d1f765a73a7, type: 3}
+      propertyPath: obstacleLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
