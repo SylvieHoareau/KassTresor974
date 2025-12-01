@@ -29,10 +29,11 @@ public class DamageCockSystem : MonoBehaviour
         {
             health.UpdateDamage(-damageTooClose);
 
-            // ---- AJOUT UI ----
-            progressUI.RemoveEnemy(closeEnemy.transform);
+            CameraShake.Instance.Shake(0.15f, 0.25f);
+            ImpactFlash.Instance.FlashRed();
 
-            Destroy(closeEnemy.gameObject);
+
+             EnemyPool.Instance.ReturnEnemy(closeEnemy.gameObject);
             Debug.Log("❌ Ennemi trop proche → dégâts !");
         }
     }
@@ -47,6 +48,8 @@ public class DamageCockSystem : MonoBehaviour
         if (hit.collider == null)
         {
             health.UpdateDamage(-damageAttackTooEarly);
+            ImpactFlash.Instance.FlashRed();
+            CameraShake.Instance.Shake(0.07f, 0.12f);
             Debug.Log("❌ Attaque trop tôt → dégâts !");
             return;
         }
@@ -60,6 +63,8 @@ public class DamageCockSystem : MonoBehaviour
         if (enemyOnRight != attackRight)
         {
             health.UpdateDamage(-damageWrongDirection);
+            ImpactFlash.Instance.FlashRed();
+            CameraShake.Instance.Shake(0.12f, 0.2f);
             Debug.Log("❌ Mauvaise direction → dégâts !");
             return;
         }
@@ -67,6 +72,9 @@ public class DamageCockSystem : MonoBehaviour
         Debug.Log("✔ Ennemi touché : " + hit.collider.name);
         CockScore.AddScore();
 
-        Destroy(hit.collider.gameObject);
+        CameraShake.Instance.Shake(0.08f, 0.15f);
+        ImpactFlash.Instance.FlashWhite();
+
+       EnemyPool.Instance.ReturnEnemy(hit.collider.gameObject);
     }
 }
