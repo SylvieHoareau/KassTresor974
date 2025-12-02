@@ -74,6 +74,7 @@ public class DamageCockSystem : MonoBehaviour
 
         CameraShake.Instance.Shake(0.08f, 0.15f);
         ImpactFlash.Instance.FlashWhite();
+        HitSlowMotion.Instance.DoSlowMotion();
 
        EnemyPool.Instance.ReturnEnemy(hit.collider.gameObject);
     }
