@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CipherSymbolUI : MonoBehaviour
 {
     // Références UI
-    [SerializeField] private Text cipherText; // Affiche le symbole F1, U1, P1
-    [SerializeField] private Text guessText; // Affiche la devinette du joueur
+    [SerializeField] private TextMeshProUGUI cipherText; // Affiche le symbole F1, U1, P1
+    [SerializeField] private TextMeshProUGUI guessText; // Affiche la devinette du joueur
     [SerializeField] private Button symbolButton; // Bouton pour interagir avec le symbole
 
     // Référence à l'objet de données du symbole chiffré
