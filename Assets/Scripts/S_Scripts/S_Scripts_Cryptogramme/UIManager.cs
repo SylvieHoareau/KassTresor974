@@ -133,10 +133,15 @@ public class UIManager : MonoBehaviour
     /// C'est l'action finale qui soumet la devinette.
     /// </summary>
     /// <param name="guessChar">La lettre choisie par le joueur (ex: 'A').</param>
-    public void SubmitLetterGuess(char guessChar)
+    public void SubmitLetterGuess(string guessStr)
     {
         if (string.IsNullOrEmpty(_currentSymbolToGuess)) return;
 
+        // EXTRAIRE LE CARACTERE
+        // On prend le premier caractère qui est de type char
+        char guessChar = guessStr[0];
+
+        // ENVOI AU MANAGER
         // Soumettre au CryptogramManager qui gère la logique globale de substitution.
         cryptogramManager.PlayerAssignLetter(_currentSymbolToGuess, guessChar);
         
