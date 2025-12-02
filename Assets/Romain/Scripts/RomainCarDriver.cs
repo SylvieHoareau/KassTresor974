@@ -71,6 +71,8 @@ public class RomainCarDriver : MonoBehaviour
 
     // Rotation de base des pivots de roues avant (pour éviter les glitchs)
     private Quaternion[] frontSteerBaseRotations;
+    // Angle de roulage (X) pour chaque roue avant
+    private float[] frontSteerRollAngles;
 
     private void Start()
     {
@@ -78,10 +80,15 @@ public class RomainCarDriver : MonoBehaviour
         if (frontSteerWheels != null && frontSteerWheels.Length > 0)
         {
             frontSteerBaseRotations = new Quaternion[frontSteerWheels.Length];
+            frontSteerRollAngles = new float[frontSteerWheels.Length];
+
             for (int i = 0; i < frontSteerWheels.Length; i++)
             {
                 if (frontSteerWheels[i] != null)
+                {
                     frontSteerBaseRotations[i] = frontSteerWheels[i].localRotation;
+                    frontSteerRollAngles[i] = 0f;
+                }
             }
         }
 
@@ -227,10 +234,13 @@ public class RomainCarDriver : MonoBehaviour
 
     private void UpdateWheels(float speed, float turnInput)
     {
+        float angleDelta = 0f;
+
+        // Roulement des roues
         if (Mathf.Abs(speed) > 0.01f)
         {
             float distance = speed * Time.deltaTime;
-            float angleDelta = (distance / wheelRadius) * Mathf.Rad2Deg;
+            angleDelta = (distance / wheelRadius) * Mathf.Rad2Deg;
 
             // Roues "rolling" (souvent l'arrière)
             if (rollingWheels != null && rollingWheels.Length > 0)
@@ -242,13 +252,13 @@ public class RomainCarDriver : MonoBehaviour
                 }
             }
 
-            // Roues avant : elles roulent aussi (en plus de braquer)
-            if (frontSteerWheels != null && frontSteerWheels.Length > 0)
+            // Roues avant : on stocke juste l'angle de roulage
+            if (frontSteerWheels != null && frontSteerWheels.Length > 0 && frontSteerRollAngles != null)
             {
-                foreach (Transform wheel in frontSteerWheels)
+                for (int i = 0; i < frontSteerWheels.Length; i++)
                 {
-                    if (wheel == null) continue;
-                    wheel.Rotate(Vector3.right * angleDelta, Space.Self);
+                    if (frontSteerWheels[i] == null) continue;
+                    frontSteerRollAngles[i] += angleDelta;
                 }
             }
         }
@@ -264,7 +274,14 @@ public class RomainCarDriver : MonoBehaviour
                 Transform wheel = frontSteerWheels[i];
                 if (wheel == null) continue;
 
-                wheel.localRotation = frontSteerBaseRotations[i] * Quaternion.Euler(0f, currentSteerAngle, 0f);
+                float roll = (frontSteerRollAngles != null && i < frontSteerRollAngles.Length)
+                    ? frontSteerRollAngles[i]
+                    : 0f;
+
+                // On combine : rotation de base * roulage X * braquage Y
+                wheel.localRotation =
+                    frontSteerBaseRotations[i] *
+                    Quaternion.Euler(roll, currentSteerAngle, 0f);
             }
         }
     }
