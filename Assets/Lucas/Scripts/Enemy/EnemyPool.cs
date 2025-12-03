@@ -9,6 +9,7 @@ public class EnemyPool : MonoBehaviour
     public GameObject enemyPrefab;
     public int initialPoolSize = 30;
 
+
     private Queue<GameObject> pool = new Queue<GameObject>();
 
     void Awake()

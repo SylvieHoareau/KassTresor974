@@ -3,6 +3,13 @@ using UnityEngine;
 public class CockSpawner : MonoBehaviour
 {
     [Header("Spawn Settings")]
+    public GameObject enemyPrefabNormal;
+    public GameObject enemyPrefabTank;
+
+    [Range(0f, 1f)]
+    public float tankSpawnChance = 0.15f; 
+
+    [Header("Spawn Settings")]
     public Transform leftSpawnPoint;
     public Transform rightSpawnPoint;
 
@@ -34,6 +41,8 @@ public class CockSpawner : MonoBehaviour
 
     void SpawnEnemy(float score)
     {
+        
+
         bool spawnLeft = Random.value < 0.5f;
         Transform spawnPoint = spawnLeft ? leftSpawnPoint : rightSpawnPoint;
 
@@ -45,7 +54,15 @@ public class CockSpawner : MonoBehaviour
         // Ajustement vitesse
         CockEnemyMove enemyScript = enemy.GetComponent<CockEnemyMove>();
         float baseSpeed = enemyScript.speed;
-        enemyScript.speed = baseSpeed + score * 0.05f;
+        if (enemyScript.speed <= 9f)
+        {
+            enemyScript.speed = baseSpeed + score * 0.05f;
+        }
+        else
+        {
+            enemyScript.speed = 9.0f;
+        } 
+        
 
         // Flip si spawn à droite
         if (!spawnLeft)

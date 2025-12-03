@@ -12,6 +12,6 @@ public class CockScore : MonoBehaviour
     }
     void Update()
     {
-        scoreText.text = "Score: " + score;
+        scoreText.text = "Score: " + score + "00";
     }
 }

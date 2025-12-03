@@ -5,12 +5,12 @@ public class DamageCockSystem : MonoBehaviour
     [Header("Références")]
     public HealthCock health;
     public CockAttack attack;
-    public EnemyProgressUI progressUI;
 
     [Header("Paramètres des Dégâts")]
     public int damageTooClose = 20;
     public int damageWrongDirection = 15;
     public int damageAttackTooEarly = 10;
+    public int comboHeal = 3;
 
     [Header("Paramètres Détection Ennemi")]
     public float dangerRange = 0.8f;
@@ -76,6 +76,13 @@ public class DamageCockSystem : MonoBehaviour
         ImpactFlash.Instance.FlashWhite();
         HitSlowMotion.Instance.DoSlowMotion();
 
-       EnemyPool.Instance.ReturnEnemy(hit.collider.gameObject);
+        EnemyPool.Instance.ReturnEnemy(hit.collider.gameObject);
+        
+        if (health.currentHealth < 100)
+        {
+            health.UpdateDamage(comboHeal);
+        }
+
+       
     }
 }
