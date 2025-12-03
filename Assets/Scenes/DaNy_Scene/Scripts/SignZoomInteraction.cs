@@ -1,14 +1,19 @@
 using UnityEngine;
-using TMPro;
 using System.Collections;
 
 public class SignZoomInteraction : MonoBehaviour
 {
-    public Transform zoomPoint;          // Empty placé devant le panneau
-    public float zoomDuration = 0.3f;    // Vitesse du zoom
-    public float zoomFOV = 30f;          // Champ de vision pendant le zoom
+    [Header("Zoom")]
+    public Transform zoomPoint;          
+    public float zoomDuration = 0.3f;
+    public float zoomFOV = 30f;
 
-    public GameObject promptUI;          // "Appuyez sur E pour lire"
+    [Header("UI")]
+    public GameObject promptUI;
+
+    [Header("Scripts à désactiver")]
+    public MonoBehaviour playerController;     // déplacement
+    public MonoBehaviour playerCameraLook;     // rotation caméra !!!
 
     private bool playerInRange = false;
     private bool isZoomed = false;
@@ -18,13 +23,13 @@ public class SignZoomInteraction : MonoBehaviour
     private Quaternion originalCamRot;
     private float originalFOV;
 
-    // Optionnel : ton script de contrôle joueur à désactiver pendant la lecture
-    public MonoBehaviour playerController;
-
     private void Start()
     {
         cam = Camera.main;
         if (promptUI != null) promptUI.SetActive(false);
+
+        if (zoomPoint == null)
+            Debug.LogWarning("ZoomPoint non assigné !");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -43,19 +48,17 @@ public class SignZoomInteraction : MonoBehaviour
         {
             playerInRange = false;
             if (promptUI != null) promptUI.SetActive(false);
-            if (isZoomed)
-                StartCoroutine(ZoomOut());
+            if (isZoomed) StartCoroutine(ZoomOut());
         }
     }
 
     private void Update()
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.E))
+        if (!playerInRange) return;
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            if (!isZoomed)
-                StartCoroutine(ZoomIn());
-            else
-                StartCoroutine(ZoomOut());
+            if (!isZoomed) StartCoroutine(ZoomIn());
+            else StartCoroutine(ZoomOut());
         }
     }
 
@@ -64,14 +67,14 @@ public class SignZoomInteraction : MonoBehaviour
         isZoomed = true;
         if (promptUI != null) promptUI.SetActive(false);
 
-        // Sauvegarde état caméra
+        // sauvegarde
         originalCamPos = cam.transform.position;
         originalCamRot = cam.transform.rotation;
         originalFOV = cam.fieldOfView;
 
-        // Optionnel : désactiver contrôle joueur
-        if (playerController != null)
-            playerController.enabled = false;
+        // désactiver scripts
+        if (playerController != null) playerController.enabled = false;
+        if (playerCameraLook != null) playerCameraLook.enabled = false;
 
         float t = 0f;
         while (t < 1f)
@@ -102,9 +105,9 @@ public class SignZoomInteraction : MonoBehaviour
             yield return null;
         }
 
-        // Réactiver le contrôle joueur
-        if (playerController != null)
-            playerController.enabled = true;
+        // réactivation
+        if (playerController != null) playerController.enabled = true;
+        if (playerCameraLook != null) playerCameraLook.enabled = true;
 
         if (playerInRange && promptUI != null)
             promptUI.SetActive(true);

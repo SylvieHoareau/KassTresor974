@@ -3,13 +3,16 @@ using UnityEngine;
 public class ThirdPersonCamera : MonoBehaviour
 {
     [Header("Cibles")]
-    public Transform target; // Le joueur
-    public Transform cameraTransform; // La caméra elle-même
+    public Transform target;              // Le joueur
+    public Transform cameraTransform;     // La caméra elle-même
 
     [Header("Paramètres")]
     public float distance = 4f;
     public float height = 1.7f;
     public float sensitivity = 150f;
+
+    [Header("Contrôle")]
+    public bool isLocked = false;         // ← AJOUT
 
     private float yaw;   // rotation horizontale
     private float pitch; // rotation verticale
@@ -22,6 +25,9 @@ public class ThirdPersonCamera : MonoBehaviour
 
     void LateUpdate()
     {
+        // si la caméra est verrouillée (zoom panneau, cinématique, etc.)
+        if (isLocked) return;
+
         if (target == null) return;
 
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
