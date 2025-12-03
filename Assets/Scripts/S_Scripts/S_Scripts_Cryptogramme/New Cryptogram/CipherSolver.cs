@@ -20,6 +20,7 @@ public class CipherSolver : MonoBehaviour
     private string SubstitutionKey; // La clé de substitution générée
     private Dictionary<char, char> playerSubstitutions = new Dictionary<char, char>();
     private char currentlySelectedCipherLetter = '\0'; // La lettre chiffrée que 
+    public GameObject victoryPanel;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -116,8 +117,17 @@ public class CipherSolver : MonoBehaviour
                // Si la lettre chiffrée a été substituée par le joueur
                 if (playerSubstitutions.ContainsKey(cipherChar) && playerSubstitutions[cipherChar] != '\0')
                 {
+                    char playerChar = playerSubstitutions[cipherChar];
+
+                    // Trouver la vraie lettre correspondante
+                    int index = SubstitutionKey.IndexOf(cipherChar);
+                    char realLetter = SecretPhrase.Replace(" ", "")[index];
+
+                    // Choisir la couleur
+                    string color = (playerChar == realLetter) ? "#33FF33" : "#FF5555";
+
                     // Afficher la substitution choisie par le joueur
-                    displayText.Append($"<color=#33FF33>{playerSubstitutions[cipherChar]}</color>"); 
+                    displayText.Append($"<color={color}>{playerChar}</color>");
                 }
                 else
                 {
@@ -143,24 +153,20 @@ public class CipherSolver : MonoBehaviour
     {
         // Reconstruite la phrase décryptée basée sur les substitutions du joueur
         // StringBuilder solved = new StringBuilder();
-        string encryptedPhrase = EncryptPhrase(SecretPhrase);
+        string encrypted = EncryptPhrase(SecretPhrase);
 
         StringBuilder solved = new StringBuilder();
 
         // On vérifie si toutes les lettres ont été correctement substituées
-        foreach (char cipherChar in encryptedPhrase)
+        foreach (char cipherChar in encrypted)
         {
             if (char.IsLetter(cipherChar))
             {
-                if (playerSubstitutions.ContainsKey(cipherChar) && playerSubstitutions[cipherChar] != '\0')
-                {
-                    solved.Append(playerSubstitutions[cipherChar]);
-                }
-                else
-                {
-                    // Lettre non encore substituée
-                    return; // Quitter la fonction, le jeu n'est pas encore gagné
-                }
+                // Si une lettre n'est pas encore résolue -> pas de victoire
+                if (playerSubstitutions[cipherChar] == '\0')
+                    return;
+
+                solved.Append(playerSubstitutions[cipherChar]);
             }
             else
             {
@@ -168,29 +174,22 @@ public class CipherSolver : MonoBehaviour
             }
         }
 
-        // Si toutes les lettres ont été substituées, on vérifie si le résultat est correct
-
-        for (int i = 0; i < encryptedPhrase.Length; i++)
-        {
-            char cipherChar = encryptedPhrase[i];
-            if (char.IsLetter(cipherChar))
-            {
-                // On utilise la substitution du joueur
-                solved.Append(playerSubstitutions[cipherChar]);
-            }
-            else
-            {
-                // On garde les espaces/ponctuations
-                solved.Append(cipherChar);
-            }
-        }
-
         // Comparaison finale (on enlève les espaces pour une comparaison robuste, 
         // car la mise en forme de la phrase secrète peut varier légèrement)
         if (solved.ToString().Replace(" ", "") == SecretPhrase.Replace(" ", ""))
         {
-            Debug.Log(winMessage);
+            Debug.Log("PHRASE VALIDEE !");
             // AJOUTER ICI une logique de fin de jeu (écran de victoire, désactiver l'interaction, etc.)
+            OnWin();
+        }
+    }
+
+    private void OnWin()
+    {
+        // Empêche plusieurs validations successives
+        if (victoryPanel != null && !victoryPanel.activeSelf)
+        {
+            victoryPanel.SetActive(true);
         }
     }
 
