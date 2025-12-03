@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SuivAMwen_GameManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class SuivAMwen_GameManager : MonoBehaviour
 
     [Header("Références UI")]
     public List<S_InstrumentButton> boutonsInstruments; // Liste de nos 4 boutons
-    public Text messageText; // Pour afficher "Ecoutez..." ou "A vous !"
+    public TextMeshProUGUI messageText; // Pour afficher "Ecoutez..." ou "A vous !"
 
     // Variables internes
     private List<int> sequenceDeJeu = new List<int>(); // La séquence à mémoriser
