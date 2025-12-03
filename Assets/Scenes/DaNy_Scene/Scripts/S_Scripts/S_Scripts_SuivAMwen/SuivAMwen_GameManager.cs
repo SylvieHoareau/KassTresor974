@@ -21,6 +21,7 @@ public class SuivAMwen_GameManager : MonoBehaviour
     void Start()
     {
         // On commence une nouvelle partie
+        DemarreNouvellePartie();
     }
 
     void DemarreNouvellePartie()
@@ -30,7 +31,7 @@ public class SuivAMwen_GameManager : MonoBehaviour
         StartCoroutine(LancerProchainTour());
     }
 
-    // Ajoute une étéape et joue la séquence
+    // Ajoute une étape et joue la séquence
     IEnumerator LancerProchainTour()
     {
         tourDuJoueur = false;
@@ -58,34 +59,29 @@ public class SuivAMwen_GameManager : MonoBehaviour
     // Cette fonction est appelée par les boutons quand le joueur clique
     public void TraiterInputJoueur(int idButton)
     {
-        if (tourDuJoueur) return; // Si ce n'est pas le tour du joueur, on ignore
+        // Le joueur ne peut cliquer QUE pendant son tour
+        if (!tourDuJoueur) return; 
 
         // Vérification
-        if (idButton == sequenceDeJeu[indexJoueur])
+        if (idButton != sequenceDeJeu[indexJoueur])
         {
-            // C'est correct !
-            indexJoueur++;
-
-            // Si on a fini toute la séquences actuelle
-            if (indexJoueur >= sequenceDeJeu.Count)
-            {
-                messageText.text = "Gayar ! (Bravo)";
-                StartCoroutine(LancerProchainTour()); // On lance la suite
-            }
-            else
-            {
-                // Erreur
-                GameOver();
-            }
+            // Mauvaise note
+            tourDuJoueur = false;
+            messageText.text = "Aie aie aie... Perdu !";
+            S_SuivAMwen_AudioManager.Instance.JouerDefaite();
+            return;
         }
-    }
 
-    // Update is called once per frame
-    void GameOver()
-    {
-        tourDuJoueur = false;
-        messageText.text = "Aie aie aie... Perdu !";
-        // Ajouter un bouton pour recommencer
+        // C'est correct !
+        indexJoueur++;
 
+        // Si on a fini toute la séquences actuelle
+        if (indexJoueur >= sequenceDeJeu.Count)
+        {
+            tourDuJoueur = false;
+            messageText.text = "Gayar ! (Bravo)";
+            S_SuivAMwen_AudioManager.Instance.JouerVictoire();
+            StartCoroutine(LancerProchainTour()); // On lance la suite
+        }
     }
 }
