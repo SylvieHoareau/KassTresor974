@@ -13,19 +13,20 @@ public class S_InstrumentButton : MonoBehaviour
     public Image imageBouton;
     public Color couleurNormale;
     public Color couleurActive; // La couleur quand çà s'allume
-    public AudioSource sonInstrument; // Le son du Kayamb, Roulèr
+    // public AudioSource sonInstrument; // Le son du Kayamb, Roulèr
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        imageBouton.color = couleurNormale;
+        if(imageBouton != null)
+            imageBouton.color = couleurNormale;
     }
 
     // Appelé quand le joueur clique (via le composant Button de Unity)
     public void OnClickJoueur()
     {
         StartCoroutine(AnimationFlash());
-        sonInstrument.Play(); // Joue le son
+        S_SuivAMwen_AudioManager.Instance.JouerInstrument(idDirection);
         gameManager.TraiterInputJoueur(idDirection); // Prévient le GameManager
     }
 
@@ -33,14 +34,14 @@ public class S_InstrumentButton : MonoBehaviour
     public void ActiverBoutonAutomatiquement()
     {
         StartCoroutine(AnimationFlash());
-        sonInstrument.Play();
+        S_SuivAMwen_AudioManager.Instance.JouerInstrument(idDirection);
     }
 
     // Petite animation de couleur
     IEnumerator AnimationFlash()
     {
-        imageBouton.color = couleurActive;
+        if(imageBouton != null) imageBouton.color = couleurActive;        
         yield return new WaitForSeconds(0.3f);
-        imageBouton.color = couleurNormale;
+        if(imageBouton != null) imageBouton.color = couleurNormale;
     }
 }
