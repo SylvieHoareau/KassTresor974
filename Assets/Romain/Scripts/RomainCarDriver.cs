@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro; // <- IMPORTANT pour TextMeshPro
 
 public class RomainCarDriver : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class RomainCarDriver : MonoBehaviour
 
     [Tooltip("Point où le joueur réapparaît en sortant de la voiture")]
     public Transform exitPoint;
+
+    [Header("UI d'interaction")]
+    [Tooltip("Texte TMP à afficher quand le joueur peut interagir (ex: 'Interagir')")]
+    [SerializeField] private GameObject interactUI; // <- UI à activer dans le trigger
 
     [Header("Références")]
     [Tooltip("Script de caméra orbitale")]
@@ -92,6 +97,10 @@ public class RomainCarDriver : MonoBehaviour
             }
         }
 
+        // On s'assure que le texte d'interaction est caché au début
+        if (interactUI != null)
+            interactUI.SetActive(false);
+
         AlignToGround(true);
     }
 
@@ -109,6 +118,10 @@ public class RomainCarDriver : MonoBehaviour
         player = controller.gameObject;
 
         moveAction = playerController.GetMoveAction();
+
+        // Afficher le texte "Interagir" si le joueur n'est pas déjà dans la voiture
+        if (!isPlayerInside && interactUI != null)
+            interactUI.SetActive(true);
     }
 
     private void OnTriggerExit(Collider other)
@@ -118,6 +131,10 @@ public class RomainCarDriver : MonoBehaviour
             return;
 
         playerInRange = false;
+
+        // Masquer le texte quand le joueur quitte la zone
+        if (interactUI != null)
+            interactUI.SetActive(false);
     }
 
     private void Update()
@@ -334,6 +351,10 @@ public class RomainCarDriver : MonoBehaviour
         }
 
         isPlayerInside = true;
+
+        // On cache le texte d'interaction quand on monte dans la voiture
+        if (interactUI != null)
+            interactUI.SetActive(false);
 
         playerController.SetCanMove(false);
 
