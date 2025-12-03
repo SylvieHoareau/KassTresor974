@@ -10,9 +10,10 @@ public class DamageCockSystem : MonoBehaviour
     public int damageTooClose = 20;
     public int damageWrongDirection = 15;
     public int damageAttackTooEarly = 10;
+    public int comboHeal = 3;
 
     [Header("Paramètres Détection Ennemi")]
-    public float dangerRange = 0.8f;  // distance à laquelle l’ennemi blesse le joueur
+    public float dangerRange = 0.8f;
     public LayerMask enemyLayer;
 
     void Update()
@@ -20,9 +21,6 @@ public class DamageCockSystem : MonoBehaviour
         CheckIfEnemyTooClose();
     }
 
-    // ------------------------------
-    // DÉGÂTS SI ENNEMI TROP PROCHE
-    // ------------------------------
     void CheckIfEnemyTooClose()
     {
         Collider2D closeEnemy = Physics2D.OverlapCircle(transform.position, dangerRange, enemyLayer);
@@ -30,14 +28,16 @@ public class DamageCockSystem : MonoBehaviour
         if (closeEnemy != null)
         {
             health.UpdateDamage(-damageTooClose);
-            Destroy(closeEnemy.gameObject);
+
+            CameraShake.Instance.Shake(0.15f, 0.25f);
+            ImpactFlash.Instance.FlashRed();
+
+
+             EnemyPool.Instance.ReturnEnemy(closeEnemy.gameObject);
             Debug.Log("❌ Ennemi trop proche → dégâts !");
         }
     }
 
-    // ------------------------------------
-    // FONCTIONS APPELÉES PAR CockAttack.cs
-    // ------------------------------------
     public void PlayerAttack(int direction)
     {
         Vector2 origin = transform.position;
@@ -45,15 +45,15 @@ public class DamageCockSystem : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(origin, dir, attack.attackRange, enemyLayer);
 
-        // AUCUN ennemi dans la direction → attaque trop tôt
         if (hit.collider == null)
         {
             health.UpdateDamage(-damageAttackTooEarly);
+            ImpactFlash.Instance.FlashRed();
+            CameraShake.Instance.Shake(0.07f, 0.12f);
             Debug.Log("❌ Attaque trop tôt → dégâts !");
             return;
         }
 
-        // Ennemi détecté mais vérifier s'il est au bon côté
         float enemyX = hit.collider.transform.position.x;
         float playerX = transform.position.x;
 
@@ -63,29 +63,26 @@ public class DamageCockSystem : MonoBehaviour
         if (enemyOnRight != attackRight)
         {
             health.UpdateDamage(-damageWrongDirection);
+            ImpactFlash.Instance.FlashRed();
+            CameraShake.Instance.Shake(0.12f, 0.2f);
             Debug.Log("❌ Mauvaise direction → dégâts !");
             return;
         }
 
-        // Sinon → attaque correcte, tuer l’ennemi
         Debug.Log("✔ Ennemi touché : " + hit.collider.name);
         CockScore.AddScore();
-        Destroy(hit.collider.gameObject);
-    }
 
-    // Gizmo pour voir la zone dangereuse
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, dangerRange);
-    }
+        CameraShake.Instance.Shake(0.08f, 0.15f);
+        ImpactFlash.Instance.FlashWhite();
+        HitSlowMotion.Instance.DoSlowMotion();
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Vector3 rightDir = transform.position + Vector3.right * attack.attackRange;
-        Vector3 leftDir = transform.position + Vector3.left * attack.attackRange;
-        Gizmos.DrawLine(transform.position, rightDir);
-        Gizmos.DrawLine(transform.position, leftDir);
+        EnemyPool.Instance.ReturnEnemy(hit.collider.gameObject);
+        
+        if (health.currentHealth < 100)
+        {
+            health.UpdateDamage(comboHeal);
+        }
+
+       
     }
 }

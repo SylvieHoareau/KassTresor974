@@ -29,6 +29,7 @@ public class HealthCock : MonoBehaviour
         if (currentHealth <= 0)
         {
             isAlive = false;
+             CameraShake.Instance.StopShake();
             Time.timeScale = 0f;
             Destroy(gameObject);
         }

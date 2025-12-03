@@ -3,15 +3,21 @@ using UnityEngine;
 public class CockSpawner : MonoBehaviour
 {
     [Header("Spawn Settings")]
-    public GameObject enemyPrefab;
+    public GameObject enemyPrefabNormal;
+    public GameObject enemyPrefabTank;
+
+    [Range(0f, 1f)]
+    public float tankSpawnChance = 0.15f; 
+
+    [Header("Spawn Settings")]
     public Transform leftSpawnPoint;
     public Transform rightSpawnPoint;
 
-    public float baseSpawnInterval = 1.5f;  // temps de spawn au début
-    public float minSpawnInterval = 0.25f;  // limite de vitesse max
+    public float baseSpawnInterval = 1.5f;
+    public float minSpawnInterval = 0.25f;
 
     [Header("Difficulty Settings")]
-    public float difficultyRamp = 0.01f;  // vitesse de montée en difficulté
+    public float difficultyRamp = 0.01f;
 
     private float timer;
 
@@ -19,7 +25,6 @@ public class CockSpawner : MonoBehaviour
     {
         float score = CockScore.score;
 
-        // calcul dynamique du temps entre spawns
         float currentSpawnInterval = Mathf.Max(
             baseSpawnInterval - score * difficultyRamp,
             minSpawnInterval
@@ -36,25 +41,41 @@ public class CockSpawner : MonoBehaviour
 
     void SpawnEnemy(float score)
     {
+        
+
         bool spawnLeft = Random.value < 0.5f;
         Transform spawnPoint = spawnLeft ? leftSpawnPoint : rightSpawnPoint;
 
-        GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+        // 🔥 Object pooling ici !
+        GameObject enemy = EnemyPool.Instance.GetEnemy();
+        enemy.transform.position = spawnPoint.position;
+        enemy.transform.rotation = Quaternion.identity;
 
-        // Ajuste la vitesse de l’ennemi selon le score
+        // Ajustement vitesse
         CockEnemyMove enemyScript = enemy.GetComponent<CockEnemyMove>();
-
         float baseSpeed = enemyScript.speed;
-        enemyScript.speed = baseSpeed + score * 0.05f; // vitesse dynamique
+        if (enemyScript.speed <= 9f)
+        {
+            enemyScript.speed = baseSpeed + score * 0.05f;
+        }
+        else
+        {
+            enemyScript.speed = 9.0f;
+        } 
+        
 
-        // Inversion du scale si l’ennemi vient de la droite
+        // Flip si spawn à droite
         if (!spawnLeft)
         {
             Vector3 scale = enemy.transform.localScale;
-            scale.x *= -1;
+            scale.x = Mathf.Abs(scale.x) * -1f;
+            enemy.transform.localScale = scale;
+        }
+        else
+        {
+            Vector3 scale = enemy.transform.localScale;
+            scale.x = Mathf.Abs(scale.x);
             enemy.transform.localScale = scale;
         }
     }
 }
-
-
