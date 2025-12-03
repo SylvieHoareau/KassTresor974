@@ -20,7 +20,7 @@ public class CipherSymbolUI : MonoBehaviour
         _data = data;
         _uiManager = uiManager;
 
-        // Initialiser l'affichage UI
+        // Initialiser l'affichage UI Affichage du symbole chiffré
         cipherText.text = _data.CipherSymbol;
 
         // Ajouter le listener au bouton

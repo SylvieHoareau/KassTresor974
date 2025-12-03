@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3611512aa8f844b4ca4891bb56bf88b3, type: 3}
-  m_Name: NewCipherKey
+  m_Name: LaBuseKey
   m_EditorClassIdentifier: 
   KeyPairs:
   - CipherSymbol: F1
@@ -67,7 +67,3 @@ MonoBehaviour:
     SolutionLetter: 45
   - CipherSymbol: /1
     SolutionLetter: 39
-  - CipherSymbol: T.M.
-    SolutionLetter: 87
-  - CipherSymbol: X.T.
-    SolutionLetter: 90
