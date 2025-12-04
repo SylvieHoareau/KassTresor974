@@ -4,12 +4,12 @@ using System.Collections;
 public class PanneauLecture : MonoBehaviour
 {
     [Header("UI")]
-    public GameObject uiPanneau;          // Canvas plein écran
-    public GameObject promptUI;           // "Appuyez sur E pour lire"
+    public GameObject uiPanneau;              // Canvas plein écran
+    public PromptUIAnimator promptUI;         // "Appuyez sur E pour lire" (avec anim)
 
     [Header("Contrôle joueur")]
     public MonoBehaviour playerController;    // déplacement joueur
-    public MonoBehaviour playerCameraLook;    // rotation caméra (script souris)
+    public MonoBehaviour playerCameraLook;    // rotation caméra (script souris / 3e pers)
 
     [Header("Animation panneau")]
     public float animDuration = 0.25f;        // durée fade/zoom
@@ -41,8 +41,9 @@ public class PanneauLecture : MonoBehaviour
             uiPanneau.SetActive(false);
         }
 
+        // prompt caché (avec son anim)
         if (promptUI != null)
-            promptUI.SetActive(false);
+            promptUI.Hide();
     }
 
     private void Update()
@@ -68,8 +69,9 @@ public class PanneauLecture : MonoBehaviour
 
         isOpen = true;
 
+        // cacher le prompt avec anim
         if (promptUI != null)
-            promptUI.SetActive(false);
+            promptUI.Hide();
 
         // bloquer mouvement + rotation caméra
         if (playerController != null)
@@ -97,13 +99,13 @@ public class PanneauLecture : MonoBehaviour
         if (playerCameraLook != null)
             playerCameraLook.enabled = true;
 
-        // remettre prompt si joueur présent
+        // remettre prompt si joueur présent (avec anim)
         if (playerInRange && promptUI != null)
-            promptUI.SetActive(true);
+            promptUI.Show();
         else if (promptUI != null)
-            promptUI.SetActive(false);
+            promptUI.Hide();
 
-        // rebloquer souris FPS
+        // rebloquer souris FPS / 3e pers
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -168,7 +170,7 @@ public class PanneauLecture : MonoBehaviour
             playerInRange = true;
 
             if (!isOpen && !isAnimating && promptUI != null)
-                promptUI.SetActive(true);
+                promptUI.Show();
         }
     }
 
@@ -179,7 +181,7 @@ public class PanneauLecture : MonoBehaviour
             playerInRange = false;
 
             if (promptUI != null)
-                promptUI.SetActive(false);
+                promptUI.Hide();
 
             if (isOpen)
                 FermerPanneau();

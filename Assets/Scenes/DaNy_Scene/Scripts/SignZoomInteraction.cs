@@ -4,16 +4,16 @@ using System.Collections;
 public class SignZoomInteraction : MonoBehaviour
 {
     [Header("Zoom")]
-    public Transform zoomPoint;          
+    public Transform zoomPoint;
     public float zoomDuration = 0.3f;
     public float zoomFOV = 30f;
 
     [Header("UI")]
-    public GameObject promptUI;
+    public PromptUIAnimator promptUI;     // <- ANIMATION du texte d'interaction
 
     [Header("Scripts à désactiver")]
-    public MonoBehaviour playerController;     // déplacement
-    public MonoBehaviour playerCameraLook;     // rotation caméra !!!
+    public MonoBehaviour playerController;  // déplacement joueur
+    public MonoBehaviour playerCameraLook;  // rotation caméra (3ème personne)
 
     private bool playerInRange = false;
     private bool isZoomed = false;
@@ -26,7 +26,10 @@ public class SignZoomInteraction : MonoBehaviour
     private void Start()
     {
         cam = Camera.main;
-        if (promptUI != null) promptUI.SetActive(false);
+
+        // prompt masqué avec anim
+        if (promptUI != null)
+            promptUI.Hide();
 
         if (zoomPoint == null)
             Debug.LogWarning("ZoomPoint non assigné !");
@@ -37,8 +40,9 @@ public class SignZoomInteraction : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = true;
+
             if (!isZoomed && promptUI != null)
-                promptUI.SetActive(true);
+                promptUI.Show();
         }
     }
 
@@ -47,32 +51,42 @@ public class SignZoomInteraction : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
-            if (promptUI != null) promptUI.SetActive(false);
-            if (isZoomed) StartCoroutine(ZoomOut());
+
+            if (promptUI != null)
+                promptUI.Hide();
+
+            if (isZoomed)
+                StartCoroutine(ZoomOut());
         }
     }
 
     private void Update()
     {
         if (!playerInRange) return;
+
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (!isZoomed) StartCoroutine(ZoomIn());
-            else StartCoroutine(ZoomOut());
+            if (!isZoomed)
+                StartCoroutine(ZoomIn());
+            else
+                StartCoroutine(ZoomOut());
         }
     }
 
     private IEnumerator ZoomIn()
     {
         isZoomed = true;
-        if (promptUI != null) promptUI.SetActive(false);
 
-        // sauvegarde
+        // cacher le prompt
+        if (promptUI != null)
+            promptUI.Hide();
+
+        // sauvegarde caméra
         originalCamPos = cam.transform.position;
         originalCamRot = cam.transform.rotation;
         originalFOV = cam.fieldOfView;
 
-        // désactiver scripts
+        // désactiver contrôles joueur
         if (playerController != null) playerController.enabled = false;
         if (playerCameraLook != null) playerCameraLook.enabled = false;
 
@@ -105,11 +119,14 @@ public class SignZoomInteraction : MonoBehaviour
             yield return null;
         }
 
-        // réactivation
+        // réactivation mouvement joueur
         if (playerController != null) playerController.enabled = true;
         if (playerCameraLook != null) playerCameraLook.enabled = true;
 
+        // remettre prompt si le joueur est encore dans la zone
         if (playerInRange && promptUI != null)
-            promptUI.SetActive(true);
+            promptUI.Show();
+        else if (promptUI != null)
+            promptUI.Hide();
     }
 }
