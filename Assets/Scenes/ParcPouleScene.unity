@@ -16122,7 +16122,7 @@ MonoBehaviour:
   delayedResetLayers:
     serializedVersion: 2
     m_Bits: 513
-  delayBeforeReset: 3
+  delayBeforeReset: 1
   warningUI: {fileID: 130512184}
 --- !u!4 &2009542644 stripped
 Transform:
