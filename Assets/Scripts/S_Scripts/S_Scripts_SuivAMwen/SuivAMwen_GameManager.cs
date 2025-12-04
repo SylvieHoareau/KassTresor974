@@ -12,6 +12,7 @@ public class SuivAMwen_GameManager : MonoBehaviour
     [Header("Références UI")]
     public List<S_InstrumentButton> boutonsInstruments; // Liste de nos 4 boutons
     public TextMeshProUGUI messageText; // Pour afficher "Ecoutez..." ou "A vous !"
+    public GameObject boutonRejouer; // Bouton pour rejouer après une défaite
 
     // Variables internes
     private List<int> sequenceDeJeu = new List<int>(); // La séquence à mémoriser
@@ -35,6 +36,9 @@ public class SuivAMwen_GameManager : MonoBehaviour
     // Ajoute une étape et joue la séquence
     IEnumerator LancerProchainTour()
     {
+        // Logique d'accélération
+        vitesseSequence = Mathf.Max(0.2f, vitesseSequence - 0.05f); // Accélère légèrement la séquence
+
         tourDuJoueur = false;
         indexJoueur = 0;
         messageText.text = "Ecoute bien la musique...";
@@ -48,8 +52,16 @@ public class SuivAMwen_GameManager : MonoBehaviour
         // Joue la séquence pour le joueur
         foreach (int indexInstrument in sequenceDeJeu)
         {
+            // Coupe l'éventuel son en cours avant de jouer le suivant
+            S_SuivAMwen_AudioManager.Instance.CouperInstruments();
+
+            // Joue le son de l'instrument
+            S_SuivAMwen_AudioManager.Instance.JouerInstrument(indexInstrument);
+
             // Active visuellement et sonorement le bouton correspondant
             boutonsInstruments[indexInstrument].ActiverBoutonAutomatiquement();
+            
+            // Met le jeu en pause pour la durée définie par vitesseSequence
             yield return new WaitForSeconds(vitesseSequence);
         }
 
@@ -67,9 +79,7 @@ public class SuivAMwen_GameManager : MonoBehaviour
         if (idButton != sequenceDeJeu[indexJoueur])
         {
             // Mauvaise note
-            tourDuJoueur = false;
-            messageText.text = "Aie aie aie... Perdu !";
-            S_SuivAMwen_AudioManager.Instance.JouerDefaite();
+            GameOver();
             return;
         }
 
@@ -83,6 +93,39 @@ public class SuivAMwen_GameManager : MonoBehaviour
             messageText.text = "Gayar ! (Bravo)";
             S_SuivAMwen_AudioManager.Instance.JouerVictoire();
             StartCoroutine(LancerProchainTour()); // On lance la suite
+        }
+    }
+
+    // Fonction appelée par le bouton "Rejouer"
+    public void RejouerPartie()
+    {
+
+        // Cacher le bouton avant de commencer
+        if (boutonRejouer != null)
+        {
+            boutonRejouer.SetActive(false);
+        }
+
+        // Réinitialiser la vitesse au niveau de départ (1.0f)
+        vitesseSequence = 1.0f;
+
+        // Relancer la partie
+        DemarreNouvellePartie();
+    }
+
+    // Gérer l'état de défaite
+    void GameOver()
+    {
+        tourDuJoueur = false;
+        messageText.text = "Aie aie aie... Perdu !";
+
+        // Jouer le son de défaite
+        S_SuivAMwen_AudioManager.Instance.JouerDefaite();
+
+        // Afficher la bouton Rejouer
+        if (boutonRejouer != null)
+        {
+            boutonRejouer.SetActive(true);
         }
     }
 }
