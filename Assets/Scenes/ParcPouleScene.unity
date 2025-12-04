@@ -15952,11 +15952,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -800
+      value: -3396.501
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -804.30005
+      value: -84.74817
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalPosition.x
@@ -15968,7 +15968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -147.10248
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalRotation.w
@@ -15988,11 +15988,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -2996.501
+      value: 2.7495117
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -317.4019
+      value: -3.6259766
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -16539,10 +16539,10 @@ MonoBehaviour:
   answers:
   - "Pas zordi, mi sa rod le tr\xE9zor La Buse"
   - "Ben reskab mi sa voir un kafrine, ou konn\xE9 pas ou"
-  correctAnswerIndex: 1
+  correctAnswerIndex: 0
   victoryText: "Mi konn\xE9 pas kossa la passe dans out t\xEAte mais mi pense pas
     un couyon comme ou va gaign trouv son tr\xE9zor hein !"
-  defeatText: "Mi voit pas kel kafrine y veut woir un crout\xE9 comme ou lala, mais
+  defeatText: "Mi woit pas kel tantine y veut woir un crout\xE9 comme ou lala, mais
     bon, si ou dit !"
   onWin:
     m_PersistentCalls:
