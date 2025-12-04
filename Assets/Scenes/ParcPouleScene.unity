@@ -15135,7 +15135,7 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 12
   zoomSpeed: 0.5
-  mouseSensitivity: 0.2
+  mouseSensitivity: 0.05
   gamepadSensitivity: 300
   minY: -40
   maxY: 70
@@ -16253,6 +16253,7 @@ GameObject:
   - component: {fileID: 2010518510}
   - component: {fileID: 2010518509}
   - component: {fileID: 2010518508}
+  - component: {fileID: 2010518512}
   m_Layer: 8
   m_Name: TonDalon
   m_TagString: Untagged
@@ -16275,7 +16276,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -16354,6 +16355,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2010518512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010518507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79f61de642f6684291025b4e142115d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuizNPC
+  speakerProfile: {fileID: 11400000, guid: 2219297f7fd04fb4382399920fd7df6d, type: 2}
+  greeting: "Ot\xE9, mi t\xE9 calcul ou t\xE9 fini kass kol\xE9 dans la caz la !"
+  question: "Ou l\xE9 pr\xEAt pou aller coupe canne la ?! endirait ou sava danser
+    ek ton linge"
+  answers:
+  - "Pas zordi, mi sa rod le tr\xE9zor La Buse"
+  - "Ben reskab mi sa voir un kafrine, ou konn\xE9 pas ou"
+  correctAnswerIndex: 1
+  victoryText: "Mi konn\xE9 pas kossa la passe dans out t\xEAte mais mi pense pas
+    un couyon comme ou va gaign trouv son tr\xE9zor hein !"
+  defeatText: "Mi voit pas kel kafrine y veut woir un crout\xE9 comme ou lala, mais
+    bon, si ou dit !"
+  onWin:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2022958759
 GameObject:
   m_ObjectHideFlags: 0
