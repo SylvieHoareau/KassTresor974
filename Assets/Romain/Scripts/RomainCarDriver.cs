@@ -75,9 +75,6 @@ public class RomainCarDriver : MonoBehaviour
     private Quaternion[] frontSteerBaseRotations;
     private float[] frontSteerRollAngles;
 
-    // Pour gérer IsPressed proprement
-    private bool interactHeldLastFrame = false;
-
     private void Start()
     {
         if (frontSteerWheels != null && frontSteerWheels.Length > 0)
@@ -242,21 +239,13 @@ public class RomainCarDriver : MonoBehaviour
         if (!playerInRange && !isPlayerInside)
             return;
 
-        bool interactHeld =
-            (Keyboard.current != null && Keyboard.current.eKey.IsPressed()) ||
-            (Gamepad.current != null && Gamepad.current.buttonWest.IsPressed());
+        bool interactPressed = false;
 
-        // Si la touche était déjà maintenue à la frame précédente, on ignore pour éviter le spam
-        if (interactHeld && interactHeldLastFrame)
-        {
-            interactHeldLastFrame = interactHeld;
-            return;
-        }
+        if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+            interactPressed = true;
 
-        // Transition "pas appuyée" -> "appuyée" = press unique
-        bool interactPressed = interactHeld && !interactHeldLastFrame;
-
-        interactHeldLastFrame = interactHeld;
+        if (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame)
+            interactPressed = true;
 
         if (!interactPressed)
             return;
@@ -267,13 +256,9 @@ public class RomainCarDriver : MonoBehaviour
         lastInteractTime = Time.time;
 
         if (!isPlayerInside && playerInRange)
-        {
             EnterCar();
-        }
         else if (isPlayerInside)
-        {
             ExitCar();
-        }
     }
 
     private void UpdateWheels(float speed, float turnInput)
