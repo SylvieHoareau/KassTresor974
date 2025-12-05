@@ -1,0 +1,11 @@
+{
+    "asset": "8dac9bb157351904cb1edb3fe48fe3d0",
+    "fileName": "019aed58-b29a-7204-a6c3-f6cafd344ba0_Preview.png",
+    "prompt": "matériau de lumière nocturne pour un jeu",
+    "negativePrompt": "",
+    "model": "44ec3749-963a-44b1-aa54-dc19f6ed8ab2",
+    "modelName": "Unity Texture2D",
+    "customSeed": 2029503193,
+    "w3CTraceId": "6008cdf78e92cb9e330696a7fe068677",
+    "refinementMode": "Generation"
+}
