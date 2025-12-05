@@ -1,0 +1,13 @@
+{
+    "asset": "3c6581e092310b44c8ad7e92deadfb46",
+    "fileName": "019aed58-0b1d-7d4c-8f2e-081a6c9f8cc5.wav",
+    "prompt": "Make ambiant sound (birds etc) ",
+    "negativePrompt": "",
+    "model": "63463307-7362-4155-a628-25deab99fd57",
+    "modelName": "Beatoven Sound Effect",
+    "customSeed": -1,
+    "w3CTraceId": "6b02e95ef1c0ec5607c5817e005d9b4a",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}
