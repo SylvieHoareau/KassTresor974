@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro; // <- IMPORTANT pour TextMeshPro
 
 public class RomainCarDriver : MonoBehaviour
 {
@@ -13,7 +12,7 @@ public class RomainCarDriver : MonoBehaviour
 
     [Header("UI d'interaction")]
     [Tooltip("Texte TMP à afficher quand le joueur peut interagir (ex: 'Interagir')")]
-    [SerializeField] private GameObject interactUI; // <- UI à activer dans le trigger
+    [SerializeField] private GameObject interactUI;
 
     [Header("Références")]
     [Tooltip("Script de caméra orbitale")]
@@ -28,35 +27,34 @@ public class RomainCarDriver : MonoBehaviour
     public float turnSpeed = 70f;
 
     [Header("Roues qui tournent (axe X)")]
-    [Tooltip("Toutes les roues qui doivent tourner en avançant/reculant")]
     public Transform[] rollingWheels;
     public float wheelRadius = 0.35f;
 
     [Header("Roues avant qui braquent (axe Y)")]
-    [Tooltip("Les roues avant qui braquent (elles vont aussi rouler maintenant)")]
     public Transform[] frontSteerWheels;
     public float maxSteerAngle = 30f;
     public float steerLerpSpeed = 10f;
 
     [Header("Terrain")]
-    [Tooltip("Layer du sol (ex: Ground)")]
     public LayerMask groundLayer;
-    [Tooltip("Distance max du raycast vers le bas")]
     public float groundRayLength = 5f;
-    [Tooltip("Offset de la voiture au-dessus du sol")]
     public float groundOffset = 0.1f;
-    [Tooltip("Vitesse d'alignement à la pente")]
     public float slopeAlignSpeed = 10f;
 
     [Header("Direction / Réalisme")]
-    [Tooltip("Vitesse minimale avant de pouvoir vraiment tourner")]
     public float minSteerSpeed = 0.5f;
 
     [Header("Collisions")]
-    [Tooltip("Layers des murs/obstacles (ex: Default, Environment)")]
     public LayerMask obstacleLayer;
-    [Tooltip("Taille demi-étendue du box de collision de la voiture")]
     public Vector3 colliderHalfExtents = new Vector3(0.8f, 0.5f, 1.5f);
+
+    [Tooltip("Si activé, la marche arrière peut traverser les obstacles (comme avant). " +
+             "Si désactivé, les collisions sont prises en compte aussi en marche arrière.")]
+    public bool allowReverseThroughObstacles = true;
+
+    [Header("Interaction - Sécurité")]
+    [SerializeField] private float interactCooldown = 0.25f;
+    private float lastInteractTime = -999f;
 
     // État
     private GameObject player;
@@ -71,17 +69,17 @@ public class RomainCarDriver : MonoBehaviour
     private float currentSpeed = 0f;
     private float currentSteerAngle = 0f;
 
-    // Input pour le mouvement (via le player)
+    // Input mouvement voiture
     private InputAction moveAction;
 
-    // Rotation de base des pivots de roues avant (pour éviter les glitchs)
     private Quaternion[] frontSteerBaseRotations;
-    // Angle de roulage (X) pour chaque roue avant
     private float[] frontSteerRollAngles;
+
+    // Pour gérer IsPressed proprement
+    private bool interactHeldLastFrame = false;
 
     private void Start()
     {
-        // On mémorise les rotations de base des pivots de roues avant
         if (frontSteerWheels != null && frontSteerWheels.Length > 0)
         {
             frontSteerBaseRotations = new Quaternion[frontSteerWheels.Length];
@@ -97,7 +95,6 @@ public class RomainCarDriver : MonoBehaviour
             }
         }
 
-        // On s'assure que le texte d'interaction est caché au début
         if (interactUI != null)
             interactUI.SetActive(false);
 
@@ -119,7 +116,6 @@ public class RomainCarDriver : MonoBehaviour
 
         moveAction = playerController.GetMoveAction();
 
-        // Afficher le texte "Interagir" si le joueur n'est pas déjà dans la voiture
         if (!isPlayerInside && interactUI != null)
             interactUI.SetActive(true);
     }
@@ -132,29 +128,13 @@ public class RomainCarDriver : MonoBehaviour
 
         playerInRange = false;
 
-        // Masquer le texte quand le joueur quitte la zone
         if (interactUI != null)
             interactUI.SetActive(false);
     }
 
     private void Update()
     {
-        // ====== INTERACTION CLAVIER + MANETTE ======
-        bool interactPressed = false;
-
-        if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
-            interactPressed = true;
-
-        if (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame)
-            interactPressed = true;
-
-        if (interactPressed)
-        {
-            if (!isPlayerInside && playerInRange)
-                EnterCar();
-            else if (isPlayerInside)
-                ExitCar();
-        }
+        HandleInteractionInput();
 
         if (!isPlayerInside || moveAction == null)
         {
@@ -162,6 +142,7 @@ public class RomainCarDriver : MonoBehaviour
             return;
         }
 
+        // =================== MOUVEMENT VOITURE ====================
         Vector2 input = moveAction.ReadValue<Vector2>();
         float moveInput = input.y;
         float turnInput = input.x;
@@ -188,9 +169,7 @@ public class RomainCarDriver : MonoBehaviour
 
         Vector3 forward = transform.forward;
         if (groundNormal != Vector3.zero)
-        {
             forward = Vector3.ProjectOnPlane(forward, groundNormal).normalized;
-        }
         else
         {
             forward.y = 0f;
@@ -199,16 +178,25 @@ public class RomainCarDriver : MonoBehaviour
 
         Vector3 delta = forward * currentSpeed * Time.deltaTime;
 
-        // collisions avant seulement
+        // ====== COLLISIONS AVEC OBSTACLES (avant / arrière suivant l’option) ======
         if (delta.sqrMagnitude > 0.000001f && obstacleLayer != 0)
         {
-            float forwardDot = 0f;
-            if (delta.sqrMagnitude > 0.000001f)
-                forwardDot = Vector3.Dot(delta.normalized, forward);
+            bool shouldCheckCollision;
 
-            bool isMovingForward = forwardDot > 0.1f;
+            if (allowReverseThroughObstacles)
+            {
+                // Ancien comportement : on ne check que quand on va vers l'avant
+                float forwardDot = Vector3.Dot(delta.normalized, forward);
+                bool isMovingForward = forwardDot > 0.1f;
+                shouldCheckCollision = isMovingForward;
+            }
+            else
+            {
+                // Nouveau comportement : on check tout le temps (avant ET arrière)
+                shouldCheckCollision = true;
+            }
 
-            if (isMovingForward)
+            if (shouldCheckCollision)
             {
                 Vector3 newPosition = transform.position + delta;
                 Vector3 boxCenter = newPosition + Vector3.up * colliderHalfExtents.y;
@@ -249,17 +237,54 @@ public class RomainCarDriver : MonoBehaviour
         AlignToGround(false);
     }
 
+    private void HandleInteractionInput()
+    {
+        if (!playerInRange && !isPlayerInside)
+            return;
+
+        bool interactHeld =
+            (Keyboard.current != null && Keyboard.current.eKey.IsPressed()) ||
+            (Gamepad.current != null && Gamepad.current.buttonWest.IsPressed());
+
+        // Si la touche était déjà maintenue à la frame précédente, on ignore pour éviter le spam
+        if (interactHeld && interactHeldLastFrame)
+        {
+            interactHeldLastFrame = interactHeld;
+            return;
+        }
+
+        // Transition "pas appuyée" -> "appuyée" = press unique
+        bool interactPressed = interactHeld && !interactHeldLastFrame;
+
+        interactHeldLastFrame = interactHeld;
+
+        if (!interactPressed)
+            return;
+
+        if (Time.time < lastInteractTime + interactCooldown)
+            return;
+
+        lastInteractTime = Time.time;
+
+        if (!isPlayerInside && playerInRange)
+        {
+            EnterCar();
+        }
+        else if (isPlayerInside)
+        {
+            ExitCar();
+        }
+    }
+
     private void UpdateWheels(float speed, float turnInput)
     {
         float angleDelta = 0f;
 
-        // Roulement des roues
         if (Mathf.Abs(speed) > 0.01f)
         {
             float distance = speed * Time.deltaTime;
             angleDelta = (distance / wheelRadius) * Mathf.Rad2Deg;
 
-            // Roues "rolling" (souvent l'arrière)
             if (rollingWheels != null && rollingWheels.Length > 0)
             {
                 foreach (Transform wheel in rollingWheels)
@@ -269,8 +294,7 @@ public class RomainCarDriver : MonoBehaviour
                 }
             }
 
-            // Roues avant : on stocke juste l'angle de roulage
-            if (frontSteerWheels != null && frontSteerWheels.Length > 0 && frontSteerRollAngles != null)
+            if (frontSteerWheels != null && frontSteerWheels.Length > 0)
             {
                 for (int i = 0; i < frontSteerWheels.Length; i++)
                 {
@@ -280,22 +304,18 @@ public class RomainCarDriver : MonoBehaviour
             }
         }
 
-        // Braquage Y des roues avant via les pivots
         float targetSteerAngle = maxSteerAngle * turnInput;
         currentSteerAngle = Mathf.Lerp(currentSteerAngle, targetSteerAngle, steerLerpSpeed * Time.deltaTime);
 
-        if (frontSteerWheels != null && frontSteerWheels.Length > 0 && frontSteerBaseRotations != null)
+        if (frontSteerWheels != null && frontSteerWheels.Length > 0)
         {
             for (int i = 0; i < frontSteerWheels.Length; i++)
             {
                 Transform wheel = frontSteerWheels[i];
                 if (wheel == null) continue;
 
-                float roll = (frontSteerRollAngles != null && i < frontSteerRollAngles.Length)
-                    ? frontSteerRollAngles[i]
-                    : 0f;
+                float roll = frontSteerRollAngles[i];
 
-                // On combine : rotation de base * roulage X * braquage Y
                 wheel.localRotation =
                     frontSteerBaseRotations[i] *
                     Quaternion.Euler(roll, currentSteerAngle, 0f);
@@ -309,10 +329,8 @@ public class RomainCarDriver : MonoBehaviour
 
         if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, groundRayLength, groundLayer, QueryTriggerInteraction.Ignore))
         {
-            if (hit.collider.transform.IsChildOf(transform))
-                return Vector3.zero;
-
-            return hit.normal;
+            if (!hit.collider.transform.IsChildOf(transform))
+                return hit.normal;
         }
         return Vector3.zero;
     }
@@ -351,8 +369,8 @@ public class RomainCarDriver : MonoBehaviour
         }
 
         isPlayerInside = true;
+        playerInRange = false;
 
-        // On cache le texte d'interaction quand on monte dans la voiture
         if (interactUI != null)
             interactUI.SetActive(false);
 
@@ -362,16 +380,10 @@ public class RomainCarDriver : MonoBehaviour
         playerRenderers = player.GetComponentsInChildren<Renderer>(true);
 
         if (playerSprites != null)
-        {
-            foreach (var sr in playerSprites)
-                sr.enabled = false;
-        }
+            foreach (var sr in playerSprites) sr.enabled = false;
 
         if (playerRenderers != null)
-        {
-            foreach (var r in playerRenderers)
-                r.enabled = false;
-        }
+            foreach (var r in playerRenderers) r.enabled = false;
 
         if (cameraOrbit != null)
         {
@@ -394,16 +406,10 @@ public class RomainCarDriver : MonoBehaviour
             player.transform.position = exitPoint.position;
 
         if (playerSprites != null)
-        {
-            foreach (var sr in playerSprites)
-                sr.enabled = true;
-        }
+            foreach (var sr in playerSprites) sr.enabled = true;
 
         if (playerRenderers != null)
-        {
-            foreach (var r in playerRenderers)
-                r.enabled = true;
-        }
+            foreach (var r in playerRenderers) r.enabled = true;
 
         if (playerController != null)
             playerController.SetCanMove(true);
