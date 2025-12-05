@@ -15160,7 +15160,7 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 12
   zoomSpeed: 0.5
-  mouseSensitivity: 0.05
+  mouseSensitivity: 0.08
   gamepadSensitivity: 300
   minY: -40
   maxY: 70
@@ -16532,7 +16532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c79f61de642f6684291025b4e142115d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QuizNPC
-  speakerProfile: {fileID: 11400000, guid: 2219297f7fd04fb4382399920fd7df6d, type: 2}
+  speakerProfile: {fileID: 11400000, guid: 332859d343813444aa598ae3aee3b706, type: 2}
   greeting: "Ot\xE9, mi t\xE9 calcul ou t\xE9 fini kass kol\xE9 dans la caz la !"
   question: "Ou l\xE9 pr\xEAt pou aller coupe canne la ?! endirait ou sava danser
     ek ton linge"
@@ -19051,6 +19051,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1921334917}
     - target: {fileID: 4236556947274826801, guid: 3a79cabb1e45fcc40bb96dfea472e442, type: 3}
+      propertyPath: acceleration
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4236556947274826801, guid: 3a79cabb1e45fcc40bb96dfea472e442, type: 3}
       propertyPath: maxSteerAngle
       value: 45
       objectReference: {fileID: 0}
@@ -19065,6 +19069,10 @@ PrefabInstance:
     - target: {fileID: 4236556947274826801, guid: 3a79cabb1e45fcc40bb96dfea472e442, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 641
+      objectReference: {fileID: 0}
+    - target: {fileID: 4236556947274826801, guid: 3a79cabb1e45fcc40bb96dfea472e442, type: 3}
+      propertyPath: allowReverseThroughObstacles
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6251692302043292573, guid: 3a79cabb1e45fcc40bb96dfea472e442, type: 3}
       propertyPath: m_Name

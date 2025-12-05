@@ -48,6 +48,10 @@ public class RomainCarDriver : MonoBehaviour
     public LayerMask obstacleLayer;
     public Vector3 colliderHalfExtents = new Vector3(0.8f, 0.5f, 1.5f);
 
+    [Tooltip("Si activé, la marche arrière peut traverser les obstacles (comme avant). " +
+             "Si désactivé, les collisions sont prises en compte aussi en marche arrière.")]
+    public bool allowReverseThroughObstacles = true;
+
     [Header("Interaction - Sécurité")]
     [SerializeField] private float interactCooldown = 0.25f;
     private float lastInteractTime = -999f;
@@ -171,12 +175,25 @@ public class RomainCarDriver : MonoBehaviour
 
         Vector3 delta = forward * currentSpeed * Time.deltaTime;
 
+        // ====== COLLISIONS AVEC OBSTACLES (avant / arrière suivant l’option) ======
         if (delta.sqrMagnitude > 0.000001f && obstacleLayer != 0)
         {
-            float forwardDot = Vector3.Dot(delta.normalized, forward);
-            bool isMovingForward = forwardDot > 0.1f;
+            bool shouldCheckCollision;
 
-            if (isMovingForward)
+            if (allowReverseThroughObstacles)
+            {
+                // Ancien comportement : on ne check que quand on va vers l'avant
+                float forwardDot = Vector3.Dot(delta.normalized, forward);
+                bool isMovingForward = forwardDot > 0.1f;
+                shouldCheckCollision = isMovingForward;
+            }
+            else
+            {
+                // Nouveau comportement : on check tout le temps (avant ET arrière)
+                shouldCheckCollision = true;
+            }
+
+            if (shouldCheckCollision)
             {
                 Vector3 newPosition = transform.position + delta;
                 Vector3 boxCenter = newPosition + Vector3.up * colliderHalfExtents.y;
