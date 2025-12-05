@@ -34,11 +34,11 @@ public class S_SuivAMwen_AudioManager : MonoBehaviour
    // Fonction pour jouer un instrument selon son ID
    public void JouerInstrument(int id)
    {
-    if (id >= 0 && id <clipsInstruments.Length)
-    {
-        // PlayOneShot permet de superposer les sons sans couper le précédent
-        sourceSFX.PlayOneShot(clipsInstruments[id]);
-    }
+        if (id >= 0 && id <clipsInstruments.Length)
+        {
+            // PlayOneShot permet de superposer les sons sans couper le précédent
+            sourceSFX.PlayOneShot(clipsInstruments[id]);
+        }
    }
 
    public void JouerVictoire()
@@ -56,5 +56,12 @@ public class S_SuivAMwen_AudioManager : MonoBehaviour
             sourceSFX.PlayOneShot(soundDefeat);
         }
    }
+
+   // Coupe tous les effets sonores courts
+   public void CouperInstruments()
+    {
+        // Stoppe tous les sons joués par cette source
+        sourceSFX.Stop();
+    }
    
 }
