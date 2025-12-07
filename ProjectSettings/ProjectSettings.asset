@@ -829,6 +829,7 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
+<<<<<<< HEAD
     Android: UNITY_POST_PROCESSING_STACK_V2
     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
     GameCoreScarlett: UNITY_POST_PROCESSING_STACK_V2
@@ -846,6 +847,9 @@ PlayerSettings:
     WebGL: UNITY_POST_PROCESSING_STACK_V2
     XboxOne: UNITY_POST_PROCESSING_STACK_V2
     tvOS: UNITY_POST_PROCESSING_STACK_V2
+=======
+    Standalone: STARTER_ASSETS_PACKAGES_CHECKED;APP_UI_EDITOR_ONLY
+>>>>>>> origin/Dany_01
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -965,11 +969,19 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
+<<<<<<< HEAD
   cloudProjectId: c01bc90e-8348-4b49-b0ea-19177a651fba
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: KassTresor974
   organizationId: sheva_974
+=======
+  cloudProjectId: 7eeb27a4-9056-4cea-aa0d-4e7efc80883f
+  framebufferDepthMemorylessMode: 0
+  qualitySettingsNames: []
+  projectName: Chef d'oeuvre
+  organizationId: unity_0f98b7a81537a8f1e3dd
+>>>>>>> origin/Dany_01
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
