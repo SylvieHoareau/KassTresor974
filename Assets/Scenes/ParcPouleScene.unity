@@ -15406,6 +15406,7 @@ MonoBehaviour:
   gamepadSensitivity: 300
   minY: -40
   maxY: 70
+  mouseRotateMode: 1
   heightOffset: 1.5
   cam: {fileID: 1921334921}
   fieldOfView: 60
@@ -16197,11 +16198,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -3396.501
+      value: -2844.622
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -84.74817
+      value: -812.6329
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalPosition.x
@@ -16237,7 +16238,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -3.6259766
+      value: -397.6836
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -16250,6 +16251,22 @@ PrefabInstance:
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811960191689014836, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 245
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811960191689014836, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 95
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811960191689014836, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 325
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811960191689014836, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -16640,7 +16657,7 @@ GameObject:
   - component: {fileID: 2010518508}
   - component: {fileID: 2010518512}
   m_Layer: 8
-  m_Name: TonDalon
+  m_Name: TontonCoupeurCanne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16665,7 +16682,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 2.78
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

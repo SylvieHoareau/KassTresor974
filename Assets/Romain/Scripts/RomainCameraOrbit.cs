@@ -1,6 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum MouseRotateMode
+{
+    Always,         // La souris fait tourner la caméra dès qu'elle bouge
+    RightMouseOnly  // La souris fait tourner la caméra uniquement quand clic droit est maintenu
+}
+
 public class RomainCameraOrbit : MonoBehaviour
 {
     [Header("Cible")]
@@ -17,6 +23,9 @@ public class RomainCameraOrbit : MonoBehaviour
     public float gamepadSensitivity = 120f;    // stick droit
     public float minY = -40f;
     public float maxY = 70f;
+
+    [Header("Souris")]
+    public MouseRotateMode mouseRotateMode = MouseRotateMode.Always;
 
     [Header("Offset")]
     public float heightOffset = 1.5f;
@@ -80,21 +89,30 @@ public class RomainCameraOrbit : MonoBehaviour
 
         // ----- LOOK (souris + stick droit) -----
         Vector2 look = lookAction != null ? lookAction.action.ReadValue<Vector2>() : Vector2.zero;
+        float lookSqrMag = look.sqrMagnitude;
 
-        // On détecte si c’est de la souris (delta non nul)
-        bool usingMouse = Mouse.current != null &&
-                          Mouse.current.delta.ReadValue() != Vector2.zero &&
-                          look.sqrMagnitude > 0.0001f;
+        var lookCtrl = lookAction != null ? lookAction.action.activeControl : null;
+        bool fromGamepadLook = lookCtrl != null && lookCtrl.device is Gamepad;
+        bool fromMouseLook   = lookCtrl != null && lookCtrl.device is Mouse;
 
-        if (usingMouse)
+        // SOURIS
+        if (fromMouseLook && lookSqrMag > 0.0001f)
         {
-            // Souris : delta pixels -> petit facteur
-            rotY += look.x * mouseSensitivity;
-            rotX -= look.y * mouseSensitivity;
+            bool allowMouse =
+                mouseRotateMode == MouseRotateMode.Always ||
+                (mouseRotateMode == MouseRotateMode.RightMouseOnly &&
+                 Mouse.current != null &&
+                 Mouse.current.rightButton.isPressed);
+
+            if (allowMouse)
+            {
+                rotY += look.x * mouseSensitivity;
+                rotX -= look.y * mouseSensitivity;
+            }
         }
-        else
+        // GAMEPAD
+        else if (fromGamepadLook && lookSqrMag > 0.0001f)
         {
-            // Manette : valeur normalisée [-1,1]
             rotY += look.x * gamepadSensitivity * Time.deltaTime;
             rotX -= look.y * gamepadSensitivity * Time.deltaTime;
         }
@@ -108,17 +126,13 @@ public class RomainCameraOrbit : MonoBehaviour
             float moveMag = move.magnitude;
             float lookMag = look.magnitude;
 
-            // Est-ce qu’on bouge assez ?
             bool isMoving = moveMag > moveThreshold;
-
-            // Est-ce que la caméra n’est pas en train d’être manipulée ?
             bool isLooking = lookMag > lookDeadZone;
 
-            // Est-ce que l’input vient d’une manette ?
-            bool fromGamepad = moveAction.action.activeControl != null &&
-                               moveAction.action.activeControl.device is Gamepad;
+            bool fromGamepadMove = moveAction.action.activeControl != null &&
+                                   moveAction.action.activeControl.device is Gamepad;
 
-            if (isMoving && !isLooking && (!onlyGamepad || fromGamepad))
+            if (isMoving && !isLooking && (!onlyGamepad || fromGamepadMove))
             {
                 float targetYaw = target.eulerAngles.y;
                 rotY = Mathf.LerpAngle(rotY, targetYaw, alignSpeed * Time.deltaTime);

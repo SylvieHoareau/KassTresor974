@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7de3fdcb5c5ddf64ca1f51b16e8e331b, type: 3}
-  m_Name: DalonProfile
+  m_Name: TontonProfile
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSpeaker
-  characterName: Dalon
+  characterName: Tonton
   nameColor: {r: 1, g: 0, b: 0, a: 1}
   portrait: {fileID: 21300000, guid: 0cd04f885743a5c49b5a937efc00ae81, type: 3}

@@ -35,7 +35,7 @@ public class QuizNPC : MonoBehaviour
     {
         DialogueManager.Instance.ShowMessage(speakerProfile, greeting);
         // ", false" pour ne pas fermer
-        DialogueManager.Instance.AddChoice("Je suis prêt", AskQuestion, false);
+        DialogueManager.Instance.AddChoice("Continuer", AskQuestion, false);
     }
 
     void AskQuestion()
