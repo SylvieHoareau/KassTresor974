@@ -2,80 +2,67 @@ using UnityEngine;
 
 public class CockSpawner : MonoBehaviour
 {
-    [Header("Spawn Settings")]
+    [Header("Prefabs")]
     public GameObject enemyPrefabNormal;
     public GameObject enemyPrefabTank;
 
-    [Range(0f, 1f)]
-    public float tankSpawnChance = 0.15f; 
-
-    [Header("Spawn Settings")]
+    [Header("Spawn Points")]
     public Transform leftSpawnPoint;
     public Transform rightSpawnPoint;
 
+    [Header("Spawn Timing")]
     public float baseSpawnInterval = 1.5f;
     public float minSpawnInterval = 0.25f;
 
-    [Header("Difficulty Settings")]
-    public float difficultyRamp = 0.01f;
+    [Header("Difficulty Over Time")]
+    public float difficultyMin = 0f;       // difficulté à t=0
+    public float difficultyMax = 1f;       // difficulté max
+    public float difficultyRampSpeed = 0.02f;  // vitesse d’augmentation de la difficulté
 
     private float timer;
+    private float elapsedTime;
 
     void Update()
     {
-        float score = CockScore.score;
+        elapsedTime += Time.deltaTime;
 
-        float currentSpawnInterval = Mathf.Max(
-            baseSpawnInterval - score * difficultyRamp,
-            minSpawnInterval
+        // 🔥 Calcul de la difficulté (0 → 1)
+        float difficulty = Mathf.Clamp01(
+            difficultyMin + elapsedTime * difficultyRampSpeed
         );
+
+        difficulty = Mathf.Clamp(difficulty, difficultyMin, difficultyMax);
+
+        // Le spawn se raccourcit en fonction de la difficulté
+        float currentSpawnInterval = Mathf.Lerp(baseSpawnInterval, minSpawnInterval, difficulty);
 
         timer += Time.deltaTime;
 
         if (timer >= currentSpawnInterval)
         {
-            SpawnEnemy(score);
+            SpawnEnemy(difficulty);
             timer = 0f;
         }
     }
 
-    void SpawnEnemy(float score)
+    void SpawnEnemy(float difficulty)
     {
-        
-
         bool spawnLeft = Random.value < 0.5f;
         Transform spawnPoint = spawnLeft ? leftSpawnPoint : rightSpawnPoint;
 
-        // 🔥 Object pooling ici !
         GameObject enemy = EnemyPool.Instance.GetEnemy();
         enemy.transform.position = spawnPoint.position;
         enemy.transform.rotation = Quaternion.identity;
 
-        // Ajustement vitesse
-        CockEnemyMove enemyScript = enemy.GetComponent<CockEnemyMove>();
-        float baseSpeed = enemyScript.speed;
-        if (enemyScript.speed <= 9f)
-        {
-            enemyScript.speed = baseSpeed + score * 0.05f;
-        }
-        else
-        {
-            enemyScript.speed = 9.0f;
-        } 
-        
+        // 🔥 Augmentation de la vitesse des ennemis selon la difficulté
+        CockEnemyMove move = enemy.GetComponent<CockEnemyMove>();
+        float baseSpeed = move.speed;
+
+        move.speed = Mathf.Lerp(baseSpeed, 9f, difficulty);
 
         // Flip si spawn à droite
-        if (!spawnLeft)
-        {
-            Vector3 scale = enemy.transform.localScale;
-            scale.x = Mathf.Abs(scale.x) * -1f;
-            enemy.transform.localScale = scale;
-        }
-        else
-        {
-            Vector3 scale = enemy.transform.localScale;
-            scale.x = Mathf.Abs(scale.x);
-            enemy.transform.localScale = scale;
-        }
+        Vector3 scale = enemy.transform.localScale;
+        scale.x = spawnLeft ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+        enemy.transform.localScale = scale;
     }
 }
