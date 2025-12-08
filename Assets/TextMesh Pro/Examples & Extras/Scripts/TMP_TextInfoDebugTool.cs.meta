@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c3f864dce72f6d94c98b7db4b72cf939
+guid: 21256c5b62f346f18640dad779911e20
 timeCreated: 1430348781
 licenseType: Store
 MonoImporter:
@@ -10,10 +10,3 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 191449
-  packageName: Simple Water Shader URP
-  packageVersion: 1.0.0
-  assetPath: Assets/Romain/Stylize Water Texture/TutorialInfo/Scripts/Editor/ReadmeEditor.cs
-  uploadId: 422776
