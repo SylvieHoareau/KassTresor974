@@ -9,12 +9,48 @@ public class SceneLoader : MonoBehaviour
         SceneManager.LoadScene("Quizz");
     }
 
+    public void LoadMainScene()
+    {
+        // Charger la scène de Romain
+        SceneManager.LoadScene("RomainScene");
+    }
+
     // Afficher les options du panel
     public void LoadOptionsScene()
     {
         // Charger la scène Options
         SceneManager.LoadScene("Options");
     }
+
+    public void LoadParcPouleScene()
+    {
+        // Charger la scène du Parc Poule
+        SceneManager.LoadScene("ParcPouleScene");
+    }
+
+    public void LoadBatayCoq()
+    {
+        // Charger la scène du jeu Batay Cok
+        SceneManager.LoadScene("BatayCok");
+    }
+
+    public void LoadTri()
+    {
+        // Charger la scène du mini-jeu Tri
+        SceneManager.LoadScene("Tri");
+    }
+
+    public void LoadCredits()
+    {
+        // Charger la scène de Crédits
+        SceneManager.LoadScene("Credits");
+    }
+
+    // public void LoadEnigme()
+    // {
+    //     // Charger la scène du mini-jeu Enigme Final
+    //     SceneManager.LoadScene("Enigme Final");
+    // }
 
     public void Quit()
     {
