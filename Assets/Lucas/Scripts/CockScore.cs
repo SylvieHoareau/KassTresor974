@@ -6,12 +6,12 @@ public class CockScore : MonoBehaviour
     public static int score = 0;
     public TextMeshProUGUI scoreText;
 
-    public static void AddScore(int amount = 1)
+    public static void AddScore(int amount = 100)
     {
-        score += amount;
+        score += amount * CockComboSystem.Instance.GetMultiplier();
     }
     void Update()
     {
-        scoreText.text = "Score: " + score + "00";
+        scoreText.text = "Score: " + score;
     }
 }

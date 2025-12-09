@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5858764394933090606}
   - component: {fileID: 4263284691682775651}
   - component: {fileID: 9074319658781969212}
-  m_Layer: 3
+  m_Layer: 24
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,6 +90,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &4263284691682775651
 MonoBehaviour:

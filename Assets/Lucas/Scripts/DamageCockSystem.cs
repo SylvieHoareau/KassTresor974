@@ -28,6 +28,7 @@ public class DamageCockSystem : MonoBehaviour
         if (closeEnemy != null)
         {
             health.UpdateDamage(-damageTooClose);
+            CockComboSystem.Instance.ResetCombo();
 
             CameraShake.Instance.Shake(0.15f, 0.25f);
             ImpactFlash.Instance.FlashRed();
@@ -43,11 +44,14 @@ public class DamageCockSystem : MonoBehaviour
         Vector2 origin = transform.position;
         Vector2 dir = new Vector2(direction, 0);
 
+       
+
         RaycastHit2D hit = Physics2D.Raycast(origin, dir, attack.attackRange, enemyLayer);
 
         if (hit.collider == null)
         {
             health.UpdateDamage(-damageAttackTooEarly);
+            CockComboSystem.Instance.ResetCombo();
             ImpactFlash.Instance.FlashRed();
             CameraShake.Instance.Shake(0.07f, 0.12f);
             Debug.Log("❌ Attaque trop tôt → dégâts !");
@@ -63,6 +67,7 @@ public class DamageCockSystem : MonoBehaviour
         if (enemyOnRight != attackRight)
         {
             health.UpdateDamage(-damageWrongDirection);
+            CockComboSystem.Instance.ResetCombo();
             ImpactFlash.Instance.FlashRed();
             CameraShake.Instance.Shake(0.12f, 0.2f);
             Debug.Log("❌ Mauvaise direction → dégâts !");
@@ -70,6 +75,7 @@ public class DamageCockSystem : MonoBehaviour
         }
 
         Debug.Log("✔ Ennemi touché : " + hit.collider.name);
+        CockComboSystem.Instance.AddCombo();
         CockScore.AddScore();
 
         CameraShake.Instance.Shake(0.08f, 0.15f);
@@ -83,6 +89,9 @@ public class DamageCockSystem : MonoBehaviour
             health.UpdateDamage(comboHeal);
         }
 
+    
+
        
     }
+     
 }
