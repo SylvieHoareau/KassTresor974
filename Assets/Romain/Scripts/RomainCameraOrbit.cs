@@ -52,6 +52,16 @@ public class RomainCameraOrbit : MonoBehaviour
     [Tooltip("Ne recentrer que si l’input vient d’une manette")]
     public bool onlyGamepad = true;
 
+    [Header("Collision caméra")]
+    [Tooltip("Empêcher la caméra de passer à travers le sol / murs")]
+    public bool enableCollision = true;
+    [Tooltip("Layers considérés comme obstacles (terrain, murs, etc.)")]
+    public LayerMask collisionLayers = ~0;  // par défaut : tout
+    [Tooltip("Rayon du SphereCast pour éviter de rentrer dans les objets")]
+    public float collisionRadius = 0.3f;
+    [Tooltip("Distance de sécurité par rapport à la surface touchée")]
+    public float collisionBuffer = 0.2f;
+
     private float rotX;
     private float rotY;
 
@@ -141,10 +151,40 @@ public class RomainCameraOrbit : MonoBehaviour
 
         // ----- POSITION / ROTATION CAMERA -----
         Quaternion rotation = Quaternion.Euler(rotX, rotY, 0);
-        Vector3 offset = rotation * new Vector3(0, heightOffset, -distance);
 
-        transform.position = target.position + offset;
-        transform.LookAt(target.position + Vector3.up * heightOffset);
+        // Position "théorique" de la caméra (comme avant)
+        Vector3 rawOffset = rotation * new Vector3(0, heightOffset, -distance);
+        Vector3 desiredPosition = target.position + rawOffset;
+
+        // Point que la caméra regarde (le haut du perso)
+        Vector3 focusPoint = target.position + Vector3.up * heightOffset;
+
+        // COLLISION : empêcher la caméra de passer sous la map / dans les murs
+        if (enableCollision)
+        {
+            Vector3 dir = (desiredPosition - focusPoint).normalized;
+            float maxDist = Vector3.Distance(focusPoint, desiredPosition);
+
+            if (maxDist > 0.001f)
+            {
+                if (Physics.SphereCast(
+                        focusPoint,
+                        collisionRadius,
+                        dir,
+                        out RaycastHit hit,
+                        maxDist,
+                        collisionLayers,
+                        QueryTriggerInteraction.Ignore))
+                {
+                    float safeDist = hit.distance - collisionBuffer;
+                    if (safeDist < 0.1f) safeDist = 0.1f;
+                    desiredPosition = focusPoint + dir * safeDist;
+                }
+            }
+        }
+
+        transform.position = desiredPosition;
+        transform.LookAt(focusPoint);
 
         // ----- FOV DYNAMIQUE -----
         fieldOfView -= scroll * fovSpeed * 0.1f;
