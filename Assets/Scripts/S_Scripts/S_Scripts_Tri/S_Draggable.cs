@@ -70,8 +70,9 @@ public class S_Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void ResetPos()
     {
+        // On s'assure de revenir au parent d'origine et à la position de départ
         transform.parent = originalParent;
-        rectTransform.anchoredPosition = startPosition;
+        rectTransform.anchoredPosition = originalAnchoredPos;
         current_slot = null;
     }
 
