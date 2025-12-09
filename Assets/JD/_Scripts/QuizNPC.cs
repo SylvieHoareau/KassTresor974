@@ -9,19 +9,29 @@ public class QuizNPC : MonoBehaviour
     [Header("Le Dialogue")]
     [TextArea] public string greeting = "Holà voyageur !";
     [TextArea] public string question = "Combien font 2 + 2 ?";
-    
+
     [Header("Les Réponses")]
-    public string[] answers; 
-    public int correctAnswerIndex = 0; 
+    public string[] answers;
+    public int correctAnswerIndex = 0;
 
     [Header("Réactions")]
     [TextArea] public string victoryText = "Bravo !";
     [TextArea] public string defeatText = "Faux !";
 
-    [Header("Evénement de Victoire")]
-    public UnityEvent onWin; 
+    [Header("Evénements")]
+    public UnityEvent onWin;                     // Quand le joueur valide la bonne réponse
+    public UnityEvent onVictoryUIDisappear;      // Quand le texte disparaît (pour ton timer)
+
+    [Header("UI de victoire (optionnel)")]
+    public GameObject victoryUI;
 
     private bool hasWon = false;
+
+    private void Start()
+    {
+        if (victoryUI != null)
+            victoryUI.SetActive(false);
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -34,8 +44,7 @@ public class QuizNPC : MonoBehaviour
     void StartQuiz()
     {
         DialogueManager.Instance.ShowMessage(speakerProfile, greeting);
-        // ", false" pour ne pas fermer
-        DialogueManager.Instance.AddChoice("Je suis prêt", AskQuestion, false);
+        DialogueManager.Instance.AddChoice(">", AskQuestion, false);
     }
 
     void AskQuestion()
@@ -44,44 +53,50 @@ public class QuizNPC : MonoBehaviour
 
         for (int i = 0; i < answers.Length; i++)
         {
-            int index = i; 
+            int index = i;
             DialogueManager.Instance.AddChoice(answers[i], () => CheckAnswer(index), false);
         }
     }
 
-    // --- C'EST ICI QUE ÇA CHANGE ---
     void CheckAnswer(int index)
     {
         if (index == correctAnswerIndex)
         {
-            // --- VICTOIRE ---
             hasWon = true;
+
             DialogueManager.Instance.ShowMessage(speakerProfile, victoryText);
-            
-            // AVANT : onWin.Invoke() était ici, donc c'était immédiat.
-            
-            // MAINTENANT : On crée un bouton "Continuer"
-            // Et c'est QUAND on clique dessus que la scène change (onWin)
-            DialogueManager.Instance.AddChoice("Continuer", () => 
+
+            // Affiche l'UI
+            if (victoryUI != null)
+                victoryUI.SetActive(true);
+
+            // Quand le joueur continue → changement de scène ou autre
+            DialogueManager.Instance.AddChoice(">", () =>
             {
-                onWin.Invoke(); // <-- L'action se lance maintenant
+                onWin.Invoke();
                 DialogueManager.Instance.CloseDialogue();
             });
         }
         else
         {
-            // --- DÉFAITE ---
             DialogueManager.Instance.ShowMessage(speakerProfile, defeatText);
-            DialogueManager.Instance.AddChoice("Réessayer", AskQuestion, false);
+            DialogueManager.Instance.AddChoice(">", AskQuestion, false);
             DialogueManager.Instance.AddChoice("Partir", () => DialogueManager.Instance.CloseDialogue());
         }
+    }
+
+    // --- Fonction que TON TIMER appellera pour cacher l'UI ---
+    public void HideVictoryUI()
+    {
+        if (victoryUI != null)
+            victoryUI.SetActive(false);
+
+        onVictoryUIDisappear.Invoke();
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
-        {
             DialogueManager.Instance.CloseDialogue();
-        }
     }
 }
