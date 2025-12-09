@@ -16457,14 +16457,14 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 12
   zoomSpeed: 0.5
-  mouseSensitivity: 0.08
+  mouseSensitivity: 0.02
   gamepadSensitivity: 300
   minY: -40
   maxY: 70
   mouseRotateMode: 0
   heightOffset: 1.5
   cam: {fileID: 1921334921}
-  fieldOfView: 75
+  fieldOfView: 70
   minFOV: 30
   maxFOV: 90
   fovSpeed: 10
