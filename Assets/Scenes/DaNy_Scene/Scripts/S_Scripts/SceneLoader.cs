@@ -12,7 +12,7 @@ public class SceneLoader : MonoBehaviour
     public void LoadMainScene()
     {
         // Charger la scène de Romain
-        SceneManager.LoadScene("RomainScene");
+        SceneManager.LoadScene("Scene_Balade");
     }
 
     // Afficher les options du panel
@@ -44,6 +44,12 @@ public class SceneLoader : MonoBehaviour
     {
         // Charger la scène de Crédits
         SceneManager.LoadScene("Credits");
+    }
+
+    public void ParcheminMap()
+    {
+        // Charger la scène de Crédits
+        SceneManager.LoadScene("LevelMap");
     }
 
     // public void LoadEnigme()

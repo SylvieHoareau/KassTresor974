@@ -35,7 +35,7 @@ public class QuizNPC : MonoBehaviour
     {
         DialogueManager.Instance.ShowMessage(speakerProfile, greeting);
         // ", false" pour ne pas fermer
-        DialogueManager.Instance.AddChoice(">", AskQuestion, false);
+        DialogueManager.Instance.AddChoice("Je suis prêt", AskQuestion, false);
     }
 
     void AskQuestion()
@@ -62,7 +62,7 @@ public class QuizNPC : MonoBehaviour
             
             // MAINTENANT : On crée un bouton "Continuer"
             // Et c'est QUAND on clique dessus que la scène change (onWin)
-            DialogueManager.Instance.AddChoice(">", () => 
+            DialogueManager.Instance.AddChoice("Continuer", () => 
             {
                 onWin.Invoke(); // <-- L'action se lance maintenant
                 DialogueManager.Instance.CloseDialogue();
@@ -72,7 +72,7 @@ public class QuizNPC : MonoBehaviour
         {
             // --- DÉFAITE ---
             DialogueManager.Instance.ShowMessage(speakerProfile, defeatText);
-            DialogueManager.Instance.AddChoice(">", AskQuestion, false);
+            DialogueManager.Instance.AddChoice("Réessayer", AskQuestion, false);
             DialogueManager.Instance.AddChoice("Partir", () => DialogueManager.Instance.CloseDialogue());
         }
     }
