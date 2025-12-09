@@ -116,10 +116,10 @@ public class SceneLoader : MonoBehaviour
     }
     
     public void LoadMainMenu() => StartTransitionToScene("MainMenu");
-    public void LoadMainScene() => StartTransitionToScene("RomainScene");
+    public void LoadMainScene() => StartTransitionToScene("Scene_Balade");
     public void LoadParcPouleScene() => StartTransitionToScene("ParcPouleScene");
     public void LoadBatayCoq() => StartTransitionToScene("BatayCok");
-    public void LoadMap() => StartTransitionToScene("MapScene");
+    public void LoadMap() => StartTransitionToScene("LevelMap");
     public void LoadTri() => StartTransitionToScene("Tri");
     public void LoadQuizzScene() => StartTransitionToScene("Quizz");
     public void LoadOptionsScene() => StartTransitionToScene("Options");
