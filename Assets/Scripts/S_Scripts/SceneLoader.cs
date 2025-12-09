@@ -24,6 +24,9 @@ public class SceneLoader : MonoBehaviour
         {
             AudioManager.Instance.PlaySFX(buttonClickSFX);
         }
+
+        // Démarrer la Coroutine responsable du délai
+        StartCoroutine(LoadSceneAfterDelay(sceneName));
     } 
 
     /// <summary>
@@ -112,9 +115,11 @@ public class SceneLoader : MonoBehaviour
         #endif
     }
     
+    public void LoadMainMenu() => StartTransitionToScene("MainMenu");
     public void LoadMainScene() => StartTransitionToScene("RomainScene");
     public void LoadParcPouleScene() => StartTransitionToScene("ParcPouleScene");
     public void LoadBatayCoq() => StartTransitionToScene("BatayCok");
+    public void LoadMap() => StartTransitionToScene("MapScene");
     public void LoadTri() => StartTransitionToScene("Tri");
     public void LoadQuizzScene() => StartTransitionToScene("Quizz");
     public void LoadOptionsScene() => StartTransitionToScene("Options");
