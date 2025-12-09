@@ -14,6 +14,16 @@ public class S_DragQCMManager : MonoBehaviour
 
     public void CheckAnswers()
     {
+        // S'assurer que tous les slots soient remplis
+        if (!AllSlotsFilled())
+        {
+            Debug.Log("CheckAnswers: Tous les slots ne sont pas remplis.");
+            // Optionnel: Afficher un message à l'utilisateur pour remplir tous les slots
+            wrongFeedbackPanel.SetActive(true);
+            PlaySound(wrongClip);
+            return;
+        }
+
         bool all_correct = true;
         for (int i = 0; i < slots.Length; i++)
         {
@@ -83,11 +93,13 @@ public class S_DragQCMManager : MonoBehaviour
     // Called by the UI "Rejouer" button (or from code) to restart the current scene
     public void Replay()
     {
+        // Désactive le panneau de feedback
         if (wrongFeedbackPanel != null)
         {
             wrongFeedbackPanel.SetActive(false);
         }
 
+        // Recharge la scène actuelle pour redémarrer le niveau
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -112,5 +124,18 @@ public class S_DragQCMManager : MonoBehaviour
             Debug.Log("NextScene: last scene reached, loading scene 0.");
             SceneManager.LoadScene(0);
         }
+    }
+
+    // Fonction utilitaire pour vérifier si tous les slots sont remplis
+    private bool AllSlotsFilled()
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.isActiveAndEnabled && slot.cardInSlot == null)
+            {
+                return false; // Au moins un slot actif est vide
+            }
+        }
+        return true; // Tous les slots actifs sont remplis
     }
 }
