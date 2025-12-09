@@ -19,9 +19,10 @@ public class CockComboSystem : MonoBehaviour
     // Appelée quand le joueur tue un ennemi
     public void AddCombo()
     {
+          int oldMultiplier = multiplier;
+
         comboCount++;
 
-        // Calcul du multiplicateur
         if (comboCount < comboStep)
         {
             multiplier = 1;
@@ -29,6 +30,12 @@ public class CockComboSystem : MonoBehaviour
         else
         {
             multiplier = (comboCount / comboStep) + 1;
+        }
+
+        // 🔥 Afficher FX uniquement si le multiplicateur augmente
+        if (multiplier > oldMultiplier)
+        {
+            ComboVisualFX.Instance.ShowMultiplier(multiplier);
         }
     }
 
