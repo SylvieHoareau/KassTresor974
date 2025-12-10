@@ -16457,7 +16457,7 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 12
   zoomSpeed: 0.5
-  mouseSensitivity: 0.02
+  mouseSensitivity: 0.2
   gamepadSensitivity: 300
   minY: -40
   maxY: 70
