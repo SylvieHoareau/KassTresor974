@@ -1852,10 +1852,10 @@ MonoBehaviour:
   sourceSFX: {fileID: 1916779937}
   sourceMusic: {fileID: 1620349726}
   clipsInstruments:
-  - {fileID: 8300000, guid: 8772da25cc97b6346bbc95e6d53387f0, type: 3}
-  - {fileID: 8300000, guid: 566c385883eed974a8e298f7cc14e00d, type: 3}
-  - {fileID: 8300000, guid: b9d8ad606225a504084d93f66fec4966, type: 3}
-  - {fileID: 8300000, guid: ede69e91b74757345befde7fb2721d43, type: 3}
+  - {fileID: 8300000, guid: db9c608b95eda334db221460a2b7382f, type: 3}
+  - {fileID: 8300000, guid: 9cce9e63cb750514c8c90cd5aedebbf7, type: 3}
+  - {fileID: 8300000, guid: 3fa708f6f7aca904ba978cb89d7c2945, type: 3}
+  - {fileID: 8300000, guid: 6edda0b17341134448b62484dff29cd2, type: 3}
   soundVictory: {fileID: 8300000, guid: 94ec84fba7753964793730f7c7aa8eec, type: 3}
   soundDefeat: {fileID: 8300000, guid: 1ddad9836b441964686ca2605165ca98, type: 3}
 --- !u!1 &2080006965
