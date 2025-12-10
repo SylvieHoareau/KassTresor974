@@ -6176,7 +6176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a433eb29daa91fb49b2e47b5fee165a3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7d0ba242fa959874a89ab3b29995b260, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16457,14 +16457,14 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 12
   zoomSpeed: 0.5
-  mouseSensitivity: 0.08
+  mouseSensitivity: 0.02
   gamepadSensitivity: 300
   minY: -40
   maxY: 70
-  mouseRotateMode: 1
+  mouseRotateMode: 0
   heightOffset: 1.5
   cam: {fileID: 1921334921}
-  fieldOfView: 75
+  fieldOfView: 70
   minFOV: 30
   maxFOV: 90
   fovSpeed: 10
@@ -17480,7 +17480,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -397.6836
+      value: -337
       objectReference: {fileID: 0}
     - target: {fileID: 4261394853033517552, guid: 9b8a79f01d6ed2c44b384d347ba64428, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
