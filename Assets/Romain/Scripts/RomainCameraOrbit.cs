@@ -51,6 +51,8 @@ public class RomainCameraOrbit : MonoBehaviour
     public float lookDeadZone = 0.1f;
     [Tooltip("Ne recentrer que si l’input vient d’une manette")]
     public bool onlyGamepad = true;
+    [Tooltip("Angle X vers lequel la caméra se rabat en auto-align (manette)")]
+    public float autoAlignXAngle = 5f;
 
     [Header("Collision caméra")]
     [Tooltip("Empêcher la caméra de passer à travers le sol / murs")]
@@ -145,7 +147,13 @@ public class RomainCameraOrbit : MonoBehaviour
             if (isMoving && !isLooking && (!onlyGamepad || fromGamepadMove))
             {
                 float targetYaw = target.eulerAngles.y;
+
+                // rotation Y classique vers la direction du perso
                 rotY = Mathf.LerpAngle(rotY, targetYaw, alignSpeed * Time.deltaTime);
+
+                // angle X qui se rabat vers autoAlignXAngle (5° par défaut)
+                rotX = Mathf.Lerp(rotX, autoAlignXAngle, alignSpeed * Time.deltaTime);
+                rotX = Mathf.Clamp(rotX, minY, maxY);
             }
         }
 
