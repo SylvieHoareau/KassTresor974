@@ -42,6 +42,8 @@ public class CockComboSystem : MonoBehaviour
     // Appelée si le joueur rate ou prend un dégât
     public void ResetCombo()
     {
+        int finalCombo = comboCount;
+        CockStatsManager.SaveBestCombo(finalCombo);
         comboCount = 0;
         multiplier = 1;
     }
@@ -55,6 +57,7 @@ public class CockComboSystem : MonoBehaviour
     void FixedUpdate()
     {
         comboText.text = "Combo X" + multiplier;
+       
     }
 }
 

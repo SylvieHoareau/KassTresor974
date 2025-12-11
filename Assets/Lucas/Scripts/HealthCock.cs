@@ -8,6 +8,8 @@ public class HealthCock : MonoBehaviour
     public int minHealth = 0;
     public Slider healthBar;
     public bool isAlive = true;
+    public GameObject endPanel;
+    
     void Start()
     {
         currentHealth = maxHealth;
@@ -31,6 +33,9 @@ public class HealthCock : MonoBehaviour
             isAlive = false;
              CameraShake.Instance.StopShake();
             Time.timeScale = 0f;
+            endPanel.SetActive(true);
+            CockGameManager. Instance.EndGame();
+
             Destroy(gameObject);
         }
 

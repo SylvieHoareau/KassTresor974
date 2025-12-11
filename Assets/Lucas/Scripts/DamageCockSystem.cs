@@ -77,6 +77,7 @@ public class DamageCockSystem : MonoBehaviour
         Debug.Log("✔ Ennemi touché : " + hit.collider.name);
         CockComboSystem.Instance.AddCombo();
         CockScore.AddScore();
+        EnemyKillCounter.AddKill();
 
         CameraShake.Instance.Shake(0.08f, 0.15f);
         ImpactFlash.Instance.FlashWhite();
