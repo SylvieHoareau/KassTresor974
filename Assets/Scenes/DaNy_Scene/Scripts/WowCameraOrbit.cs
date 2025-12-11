@@ -17,6 +17,10 @@ public class WowCameraOrbit : MonoBehaviour
     public float minPitch = -20f;
     public float maxPitch = 60f;
 
+    [Header("Alignement")]
+    [Tooltip("Correction si la caméra n'est pas pile derrière le perso")]
+    public float yawOffset = 0f;   // corrige le décalage gauche/droite
+
     private float yaw;   // rotation horizontale (autour de Y)
     private float pitch; // rotation verticale (haut/bas)
 
@@ -28,10 +32,13 @@ public class WowCameraOrbit : MonoBehaviour
             return;
         }
 
-        // Init yaw/pitch à partir de la position actuelle de la caméra
-        Vector3 dir = (transform.position - target.position).normalized;
-        yaw   = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
-        pitch = Mathf.Asin(dir.y) * Mathf.Rad2Deg;
+        // On démarre derrière le perso
+        yaw   = target.eulerAngles.y + yawOffset; // <- offset de correction
+        pitch = 15f;
+
+        distance = Mathf.Clamp(distance, minDistance, maxDistance);
+
+        UpdateCameraPosition();
     }
 
     void LateUpdate()
@@ -52,7 +59,6 @@ public class WowCameraOrbit : MonoBehaviour
 
             pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
         }
-        // IMPORTANT : pas de "else" → si on ne clique pas, on ne touche pas à yaw/pitch
 
         // --- Zoom molette ---
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -62,7 +68,11 @@ public class WowCameraOrbit : MonoBehaviour
             distance = Mathf.Clamp(distance, minDistance, maxDistance);
         }
 
-        // --- Calcul final de la position / rotation caméra ---
+        UpdateCameraPosition();
+    }
+
+    private void UpdateCameraPosition()
+    {
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
         Vector3 targetPos   = target.position + Vector3.up * heightOffset;
         Vector3 desiredPos  = targetPos - rotation * Vector3.forward * distance;
