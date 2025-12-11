@@ -15,6 +15,7 @@ public class QuizManager : MonoBehaviour
     public TMP_Text feedbackText;
     public TMP_Text scoreText;
     public TMP_Text timerText;
+    public GameObject goodFeedbackPanel;
 
     [Header("Feedback")]
     public AudioSource audioSource;
@@ -33,9 +34,16 @@ public class QuizManager : MonoBehaviour
     private Coroutine feedbackCoroutine;
     private Coroutine timerRunCoroutine;
 
+    public static event System.Action<int> OnQuizFinished;
+
     // Start est appelée une seule fois
     void Start()
     {
+        // Au début du jeu, on s'assure que le panneau est MASQUE au début du jeu
+        if (goodFeedbackPanel != null)
+        {
+            goodFeedbackPanel.SetActive(false);
+        }
         // Les écouteurs de boutons sont attachés UNE SEULE FOIS
         SetupAnswerButtons();
 
@@ -174,6 +182,7 @@ public class QuizManager : MonoBehaviour
     // Méthode pour gérer la fin du quizz 
     void FinishQuiz()
     {
+        // Arrêter la logique du quiz
         timerRunning = false;
 
         // Arrêter explicitement la coroutine
@@ -183,8 +192,26 @@ public class QuizManager : MonoBehaviour
             timerRunCoroutine = null;
         }
 
+        // Afficher le panneau de récompense 
+        if (goodFeedbackPanel != null)
+        {
+            goodFeedbackPanel.SetActive(true);
+        }
+
+        // Mise à jour de l'UI
         feedbackText.text = $"Quiz terminé ! Score : {score}";
         timerText.text = "";
+
+        // Désactiver les éléments du jeu (questions, boutons, etc.)
+        questionText.gameObject.SetActive(false);
+        questionImage.gameObject.SetActive(false);
+        foreach (var btn in answerButtons)
+        {
+            btn.gameObject.SetActive(false);
+        }
+
+        // Déclenche l'évenement pour les abonnées, en passant le score
+        OnQuizFinished?.Invoke(score);
     }
 
     IEnumerator TimerCoroutine()
