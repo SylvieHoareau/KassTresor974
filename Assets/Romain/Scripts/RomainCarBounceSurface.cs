@@ -3,58 +3,62 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class RomainCarBlockSurface : MonoBehaviour
 {
-    [Header("Layer des objets à bloquer")]
-    [Tooltip("Tous les objets sur ce(s) layer(s) seront bloqués par ce mur (ex: 'Car')")]
-    [SerializeField] private LayerMask carLayers;
+    [Header("Layers des objets à bloquer (ex: Car)")]
+    [SerializeField] private LayerMask blockableLayers;
 
-    private Collider wallCollider;
+    [Header("Distance mini hors de la surface")]
+    [SerializeField] private float skinOffset = 0.05f;
+
+    private Collider col;
 
     private void Awake()
     {
-        wallCollider = GetComponent<Collider>();
+        col = GetComponent<Collider>();
 
-        if (wallCollider == null)
+        // IMPORTANT : pour OnCollisionStay, le collider NE DOIT PAS être en Trigger.
+        if (col.isTrigger)
         {
-            Debug.LogError("[RomainCarBlockSurface] Aucun Collider trouvé sur le mur.");
-        }
-        else if (wallCollider.isTrigger)
-        {
-            Debug.LogWarning("[RomainCarBlockSurface] Le collider est en Trigger. "
-                            + "Pour bloquer les objets, il doit être en mode collision (isTrigger = false).");
+            Debug.LogWarning("[RomainCarBlockSurface] Le collider est en Trigger, les collisions ne seront pas reçues. Désactive 'Is Trigger' sur " + name);
         }
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        GameObject otherObj = collision.gameObject;
-
-        // On ne traite que les objets sur le layer Car
-        if (!IsInLayerMask(otherObj.layer, carLayers))
+        Rigidbody rb = collision.rigidbody;
+        if (rb == null)
             return;
 
-        Collider otherCol = collision.collider;
-        if (otherCol == null || wallCollider == null)
+        // Filtre par layer
+        if ((blockableLayers.value & (1 << rb.gameObject.layer)) == 0)
             return;
 
-        // On calcule la translation minimale pour sortir l'objet du mur
-        Vector3 direction;
-        float distance;
+        // On cherche un script bloquable sur la voiture
+        RomainCarBlockable blockable = rb.GetComponent<RomainCarBlockable>();
+        if (blockable == null)
+            return;
 
-        bool overlapping = Physics.ComputePenetration(
-            otherCol, otherCol.transform.position, otherCol.transform.rotation,
-            wallCollider, wallCollider.transform.position, wallCollider.transform.rotation,
-            out direction, out distance);
+        int contactCount = collision.contactCount;
+        if (contactCount == 0)
+            return;
 
-        if (overlapping && distance > 0f)
+        // Moyenne des points et normales de contact (plus stable)
+        Vector3 avgPoint = Vector3.zero;
+        Vector3 avgNormal = Vector3.zero;
+
+        for (int i = 0; i < contactCount; i++)
         {
-            // On déplace l'objet en dehors du mur
-            // direction = direction à appliquer à l'objet pour ne plus être en contact
-            otherObj.transform.position += direction * distance;
+            ContactPoint cp = collision.GetContact(i);
+            avgPoint += cp.point;
+            avgNormal += cp.normal;
         }
-    }
 
-    private bool IsInLayerMask(int layer, LayerMask mask)
-    {
-        return (mask.value & (1 << layer)) != 0;
+        avgPoint /= contactCount;
+        avgNormal.Normalize();
+
+        if (avgNormal.sqrMagnitude < 0.0001f)
+            return;
+
+        // avgNormal pointe du mur vers la voiture => direction de poussée vers l'extérieur
+        blockable.BlockFromSurface(avgPoint, avgNormal, skinOffset);
     }
 }
