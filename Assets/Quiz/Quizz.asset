@@ -22,11 +22,29 @@ MonoBehaviour:
     - 7 septembre 1730
     correctOptionIndex: 1
     questionImage: {fileID: 0}
-  - question: " \u201CMon tr\xE9sor \xE0 qui saura\u2026 _______.\u201D "
+  - question: "Quel navire c\xE9l\xE8bre La Buse a-t-il pill\xE9 ? "
     replies:
-    - voler
-    - lire
-    - prendre
-    - perdre
+    - Le Queen Anne'sRevenge
+    - La Vierge du Cap
+    - Le Black Pearl
+    - Le Royal Fortune
+    correctOptionIndex: 1
+    questionImage: {fileID: 0}
+  - question: "Quelle phrase l\xE9g\xE8re La Buse aurait-il lanc\xE9 avant d'\xEAtre
+      ex\xE9cut\xE9 ? "
+    replies:
+    - "Attrape c'est mon tr\xE9sor !"
+    - Vive les pirates !
+    - "J'ai cach\xE9 mon tr\xE9sor \xE0 Sainte-Marie !"
+    - "Le vrai tr\xE9sor, c'est l'amiti\xE9 !"
+    correctOptionIndex: 0
+    questionImage: {fileID: 0}
+  - question: "Dans quel endroit de l\u2019oc\xE9an Indien La Buse a-t-il pass\xE9
+      une partie de sa vie de pirate ?"
+    replies:
+    - Les Seychelles
+    - Maurice
+    - Madagascar
+    - Les Maldives
     correctOptionIndex: 2
     questionImage: {fileID: 0}
