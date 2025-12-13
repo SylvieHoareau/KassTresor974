@@ -4064,7 +4064,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 319456441}
   m_LocalRotation: {x: -0.00000026866755, y: 0.86930144, z: -0.00000005755797, w: 0.49428248}
-  m_LocalPosition: {x: 0, y: 0, z: -5.82}
+  m_LocalPosition: {x: 0, y: 0, z: -6.16}
   m_LocalScale: {x: 0.024935022, y: 0.028683037, z: 0.028683027}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4072,7 +4072,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 90.029, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.2, y: 0.955}
+  m_AnchoredPosition: {x: 1.77, y: 0.955}
   m_SizeDelta: {x: 234.56938, y: 43.30851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &330398612
@@ -4087,7 +4087,7 @@ GameObject:
   - component: {fileID: 330398614}
   - component: {fileID: 330398613}
   m_Layer: 2
-  m_Name: FloatingCreditsTrigger (4)
+  m_Name: FloatingCreditsTriggerLucas
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -4105,8 +4105,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fdc1e45417cb44d89a023eadb6ccd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloatingCreditTrigger
+  manager: {fileID: 1540547369}
   creditText: {fileID: 785302113}
-  fadeDuration: 1.5
+  triggerOnce: 1
 --- !u!65 &330398614
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4137,7 +4138,7 @@ Transform:
   m_GameObject: {fileID: 330398612}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.26415744, z: -0, w: 0.96447957}
-  m_LocalPosition: {x: 159.47072, y: 22.282581, z: -188.01309}
+  m_LocalPosition: {x: 148.2, y: 22.282581, z: -182.8}
   m_LocalScale: {x: 7.13, y: 7.13, z: 7.13}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -4286,7 +4287,7 @@ GameObject:
   - component: {fileID: 360936369}
   - component: {fileID: 360936368}
   m_Layer: 2
-  m_Name: FloatingCreditsTrigger
+  m_Name: FloatingCreditsTriggerUJRP
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -4304,8 +4305,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fdc1e45417cb44d89a023eadb6ccd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloatingCreditTrigger
+  manager: {fileID: 1540547369}
   creditText: {fileID: 319456442}
-  fadeDuration: 1.5
+  triggerOnce: 1
 --- !u!65 &360936369
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4325,8 +4327,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.544063, y: 1.5726986, z: 1}
-  m_Center: {x: -0.6255394, y: 0.28634888, z: 0.0000004603582}
+  m_Size: {x: 4.544063, y: 2.0852156, z: 1}
+  m_Center: {x: -0.6255395, y: 0.0300911, z: 0.00000046566345}
 --- !u!4 &360936370
 Transform:
   m_ObjectHideFlags: 0
@@ -4336,7 +4338,7 @@ Transform:
   m_GameObject: {fileID: 360936367}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.26415744, z: -0, w: 0.96447957}
-  m_LocalPosition: {x: 71.13072, y: 22.282581, z: -91.1431}
+  m_LocalPosition: {x: 60.3, y: 21.83, z: -74.4}
   m_LocalScale: {x: 7.13, y: 7.13, z: 7.13}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -5497,7 +5499,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 435969618}
   m_LocalRotation: {x: -0.00000026866755, y: 0.86930144, z: -0.00000005755797, w: 0.49428248}
-  m_LocalPosition: {x: 0, y: 0, z: -6.65}
+  m_LocalPosition: {x: 0, y: 0, z: -6.987}
   m_LocalScale: {x: 0.024935022, y: 0.028683037, z: 0.028683027}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5505,7 +5507,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 90.029, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.37, y: 1.31}
+  m_AnchoredPosition: {x: 0.171, y: 1.31}
   m_SizeDelta: {x: 234.56938, y: 43.30851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &441605408 stripped
@@ -5525,7 +5527,7 @@ GameObject:
   - component: {fileID: 444657987}
   - component: {fileID: 444657986}
   m_Layer: 2
-  m_Name: FloatingCreditsTrigger (3)
+  m_Name: FloatingCreditsTriggerRomain
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -5543,8 +5545,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fdc1e45417cb44d89a023eadb6ccd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloatingCreditTrigger
+  manager: {fileID: 1540547369}
   creditText: {fileID: 1494017186}
-  fadeDuration: 1.5
+  triggerOnce: 1
 --- !u!65 &444657987
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5564,8 +5567,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 5.83247, y: 4.055095, z: 1}
-  m_Center: {x: -3.1255715, y: -0.9548467, z: 0.0000034744758}
+  m_Size: {x: 8.158363, y: 4.055095, z: 1}
+  m_Center: {x: -1.9626343, y: -0.9548467, z: 0.000004133733}
 --- !u!4 &444657988
 Transform:
   m_ObjectHideFlags: 0
@@ -5575,7 +5578,7 @@ Transform:
   m_GameObject: {fileID: 444657985}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.26415744, z: -0, w: 0.96447957}
-  m_LocalPosition: {x: 127.07072, y: 22.282581, z: -170.51309}
+  m_LocalPosition: {x: 113.7, y: 22.282581, z: -162.4}
   m_LocalScale: {x: 7.13, y: 7.13, z: 7.13}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -5914,8 +5917,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4281298906
+  m_fontColor: {r: 0.854902, g: 0.43529415, b: 0.18431373, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8670,7 +8673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.92156863}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8679,7 +8682,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 7d0ba242fa959874a89ab3b29995b260, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -10763,16 +10766,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 785302112}
-  m_LocalRotation: {x: -0.00000026866755, y: 0.86930144, z: -0.00000005755797, w: 0.49428248}
-  m_LocalPosition: {x: 0, y: 0, z: -5.38}
+  m_LocalRotation: {x: -0.00000025805485, y: 0.79213125, z: -0.00000009435496, w: 0.6103508}
+  m_LocalPosition: {x: 0, y: 0, z: -5.671862}
   m_LocalScale: {x: 0.024935022, y: 0.028683037, z: 0.028683027}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 330398615}
-  m_LocalEulerAnglesHint: {x: 0, y: 90.029, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 104.77, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.12, y: 1.31}
+  m_AnchoredPosition: {x: 1.9500479, y: 1.31}
   m_SizeDelta: {x: 134.2, y: 43.30851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &785664720
@@ -14089,7 +14092,7 @@ GameObject:
   - component: {fileID: 1106860497}
   - component: {fileID: 1106860496}
   m_Layer: 2
-  m_Name: FloatingCreditsTrigger (2)
+  m_Name: FloatingCreditsTriggerJD
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -14107,8 +14110,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fdc1e45417cb44d89a023eadb6ccd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloatingCreditTrigger
+  manager: {fileID: 1540547369}
   creditText: {fileID: 435969619}
-  fadeDuration: 1.5
+  triggerOnce: 1
 --- !u!65 &1106860497
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14128,8 +14132,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 8.551078, y: 4.055095, z: 1}
-  m_Center: {x: -4.484882, y: -0.9548467, z: 0.000002987199}
+  m_Size: {x: 12.896621, y: 4.055095, z: 1.5678054}
+  m_Center: {x: -2.312177, y: -0.9548467, z: -0.7493421}
 --- !u!4 &1106860498
 Transform:
   m_ObjectHideFlags: 0
@@ -14139,7 +14143,7 @@ Transform:
   m_GameObject: {fileID: 1106860495}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.26415744, z: -0, w: 0.96447957}
-  m_LocalPosition: {x: 111.69072, y: 22.282581, z: -143.53308}
+  m_LocalPosition: {x: 97.3, y: 22.282581, z: -134.63}
   m_LocalScale: {x: 7.13, y: 7.13, z: 7.13}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -15828,7 +15832,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1261043397}
   m_LocalRotation: {x: -0.00000026866755, y: 0.86930144, z: -0.00000005755797, w: 0.49428248}
-  m_LocalPosition: {x: 0, y: 0, z: -6.076}
+  m_LocalPosition: {x: 0, y: 0, z: -6.099}
   m_LocalScale: {x: 0.024935022, y: 0.028683037, z: 0.028683027}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15836,7 +15840,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 90.029, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.705, y: 1.31}
+  m_AnchoredPosition: {x: 0.69, y: 1.31}
   m_SizeDelta: {x: 182.44, y: 43.30851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1262124514
@@ -16000,7 +16004,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &1305933840
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17163,16 +17167,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1494017185}
-  m_LocalRotation: {x: -0.00000026866755, y: 0.86930144, z: -0.00000005755797, w: 0.49428248}
-  m_LocalPosition: {x: 0, y: 0, z: -6.18}
+  m_LocalRotation: {x: -0.00000025766417, y: 0.78961074, z: -0.00000009541711, w: 0.6136081}
+  m_LocalPosition: {x: 0, y: 0, z: -6.490321}
   m_LocalScale: {x: 0.024935022, y: 0.028683037, z: 0.028683027}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 444657988}
-  m_LocalEulerAnglesHint: {x: 0, y: 90.029, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 104.298, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.61, y: 1.31}
+  m_AnchoredPosition: {x: 2.4209619, y: 1.31}
   m_SizeDelta: {x: 234.56938, y: 43.30851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1498398711
@@ -17532,6 +17536,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1540547368}
+  - component: {fileID: 1540547369}
   m_Layer: 0
   m_Name: FloatingCredits
   m_TagString: Untagged
@@ -17560,6 +17565,29 @@ Transform:
   - {fileID: 1796996135}
   m_Father: {fileID: 144177001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1540547369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540547367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66860df1a87295f4bb8b0f99e506eda6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RomainCreditsFader
+  credits:
+  - {fileID: 319456442}
+  - {fileID: 1261043398}
+  - {fileID: 435969619}
+  - {fileID: 1494017186}
+  - {fileID: 785302113}
+  - {fileID: 1732546922}
+  fadeInDuration: 1.5
+  fadeOutDuration: 1
+  crossFade: 1
+  disableOnStart: 1
 --- !u!1 &1541274281
 GameObject:
   m_ObjectHideFlags: 0
@@ -19922,16 +19950,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1732546921}
-  m_LocalRotation: {x: -0.00000026866755, y: 0.86930144, z: -0.00000005755797, w: 0.49428248}
-  m_LocalPosition: {x: 0, y: 0, z: -3.65}
+  m_LocalRotation: {x: -0.00000024758688, y: 0.72862524, z: -0.000000119146364, w: 0.68491256}
+  m_LocalPosition: {x: 0, y: 0, z: -3.772}
   m_LocalScale: {x: 0.024935022, y: 0.028683037, z: 0.028683027}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1796996135}
-  m_LocalEulerAnglesHint: {x: 0, y: 90.029, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 93.543, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4.1, y: 1.31}
+  m_AnchoredPosition: {x: 3.249, y: 1.31}
   m_SizeDelta: {x: 214.1, y: 43.30851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1761035975
@@ -20134,7 +20162,7 @@ GameObject:
   - component: {fileID: 1796996134}
   - component: {fileID: 1796996133}
   m_Layer: 2
-  m_Name: FloatingCreditsTrigger (5)
+  m_Name: FloatingCreditsTriggerDaniel
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -20152,8 +20180,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fdc1e45417cb44d89a023eadb6ccd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloatingCreditTrigger
+  manager: {fileID: 1540547369}
   creditText: {fileID: 1732546922}
-  fadeDuration: 1.5
+  triggerOnce: 1
 --- !u!65 &1796996134
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20173,8 +20202,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6.4532127, y: 4.055095, z: 1}
-  m_Center: {x: -5.3353276, y: -0.9548467, z: 0.0000045723204}
+  m_Size: {x: 9.698826, y: 4.055095, z: 1}
+  m_Center: {x: -3.7125409, y: -0.9548467, z: 0.000005192864}
 --- !u!4 &1796996135
 Transform:
   m_ObjectHideFlags: 0
@@ -20184,7 +20213,7 @@ Transform:
   m_GameObject: {fileID: 1796996132}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.26415744, z: -0, w: 0.96447957}
-  m_LocalPosition: {x: 192.07071, y: 22.282581, z: -198.61308}
+  m_LocalPosition: {x: 182.7, y: 22.282581, z: -198.9}
   m_LocalScale: {x: 7.13, y: 7.13, z: 7.13}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -21070,7 +21099,7 @@ MonoBehaviour:
   gamepadSensitivity: 300
   minY: -40
   maxY: 70
-  mouseRotateMode: 0
+  mouseRotateMode: 1
   heightOffset: 1.5
   cam: {fileID: 1921334921}
   fieldOfView: 70
@@ -21890,7 +21919,7 @@ GameObject:
   - component: {fileID: 1964878952}
   - component: {fileID: 1964878951}
   m_Layer: 2
-  m_Name: FloatingCreditsTrigger (1)
+  m_Name: FloatingCreditsTriggerSylvie
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -21908,8 +21937,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9fdc1e45417cb44d89a023eadb6ccd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloatingCreditTrigger
+  manager: {fileID: 1540547369}
   creditText: {fileID: 1261043398}
-  fadeDuration: 1.5
+  triggerOnce: 1
 --- !u!65 &1964878952
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21929,8 +21959,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 7.614596, y: 4.211041, z: 0.986792}
-  m_Center: {x: -2.1608105, y: -1.0328213, z: 0.006605104}
+  m_Size: {x: 8.530002, y: 4.211041, z: 0.986792}
+  m_Center: {x: -1.7031146, y: -1.0328213, z: 0.0066054836}
 --- !u!4 &1964878953
 Transform:
   m_ObjectHideFlags: 0
@@ -21940,7 +21970,7 @@ Transform:
   m_GameObject: {fileID: 1964878950}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.26415744, z: -0, w: 0.96447957}
-  m_LocalPosition: {x: 91.250725, y: 22.282581, z: -125.51309}
+  m_LocalPosition: {x: 80, y: 22.282581, z: -112.4}
   m_LocalScale: {x: 7.13, y: 7.13, z: 7.13}
   m_ConstrainProportionsScale: 1
   m_Children:
