@@ -75,14 +75,6 @@
                 "type": "System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "editor.stripProBuilderScriptsOnBuild",
                 "value": "{\"m_Value\":true}"
-<<<<<<< HEAD
-=======
-            },
-            {
-                "type": "UnityEngine.Material, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                "key": "mesh.userMaterial",
-                "value": "{\"m_Value\":{\"instanceID\":0}}"
->>>>>>> origin/Dany_01
             },
             {
                 "type": "UnityEngine.Rendering.ShadowCastingMode, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
