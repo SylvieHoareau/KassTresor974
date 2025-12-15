@@ -970,11 +970,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: c01bc90e-8348-4b49-b0ea-19177a651fba
+  cloudProjectId: 7eeb27a4-9056-4cea-aa0d-4e7efc80883f
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: KassTresor974
-  organizationId: sheva_974
+  projectName: Chef d'oeuvre
+  organizationId: unity_0f98b7a81537a8f1e3dd
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
