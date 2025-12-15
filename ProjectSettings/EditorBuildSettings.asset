@@ -5,6 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+<<<<<<< HEAD
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
@@ -53,7 +54,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelMap.unity
     guid: 93e0e8a70d1f4b84689ce484b562f50e
+=======
+  - enabled: 1
+    path: Assets/Scenes/DaNy_Scene/Cemetery.unity
+    guid: 2ecca456f1cbc3c418ad0a23c4378f8c
+>>>>>>> origin/Dany_01
   m_configObjects:
+    com.unity.adaptivePerformance.basic.provider_settings: {fileID: 11400000, guid: 33cfe5cc1fd16574a8d3bc50afaa3d84, type: 2}
+    com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: e9637a21fe6dd834397de48c2a3328a3, type: 2}
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: c5571dd769014774484ee6ff43d6af1f, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
