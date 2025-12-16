@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI; // Pour Image, Button
 using TMPro; // Pour TMP_Text (TextMeshPro)
-using System.Collections; // Pour IEnumerator et coroutines
-
+using System.Collections;
 public class QuizManager : MonoBehaviour
 {
     [Header("Data")]
@@ -35,6 +34,9 @@ public class QuizManager : MonoBehaviour
     private Coroutine timerRunCoroutine;
 
     public static event System.Action<int> OnQuizFinished;
+
+    [Header("Victory Effect")]
+    [SerializeField] private VictoryEffect victoryEffect;
 
     // Start est appelée une seule fois
     void Start()
@@ -212,6 +214,15 @@ public class QuizManager : MonoBehaviour
 
         // Déclenche l'évenement pour les abonnées, en passant le score
         OnQuizFinished?.Invoke(score);
+
+        if (victoryEffect != null)
+        {
+            victoryEffect.PlayVictory();
+        }
+        else
+        {
+            Debug.LogWarning("VictoryEffect non assigné !");
+        }
     }
 
     IEnumerator TimerCoroutine()
