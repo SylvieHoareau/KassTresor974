@@ -1,8 +1,15 @@
 fileFormatVersion: 2
 guid: 58f42f0dd55194e368dc80d3de4e8cf4
+AssetOrigin:
+  serializedVersion: 1
+  productId: 179778
+  packageName: The Island Village(UModelerX)
+  packageVersion: 1.1
+  assetPath: Assets/UModelerX_IslandVillage_URP_Editable/UModeler-Hub/Runtime/Tripolygon.UModeler.Hub.dll
+  uploadId: 804546
 PluginImporter:
   externalObjects: {}
-  serializedVersion: 2
+  serializedVersion: 3
   iconMap: {}
   executionOrder: {}
   defineConstraints: []
@@ -11,30 +18,40 @@ PluginImporter:
   isExplicitlyReferenced: 0
   validateReferences: 1
   platformData:
-  - first:
-      Any: 
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      Editor: Editor
-    second:
+    Any:
       enabled: 0
       settings:
+        Exclude Editor: 0
+        Exclude Linux64: 0
+        Exclude OSXUniversal: 0
+        Exclude Win: 0
+        Exclude Win64: 0
+    Editor:
+      enabled: 1
+      settings:
+        CPU: AnyCPU
         DefaultValueInitialized: true
-  - first:
-      Windows Store Apps: WindowsStoreApps
-    second:
+        OS: AnyOS
+    Linux64:
+      enabled: 1
+      settings:
+        CPU: AnyCPU
+    OSXUniversal:
+      enabled: 1
+      settings:
+        CPU: AnyCPU
+    Win:
+      enabled: 1
+      settings:
+        CPU: AnyCPU
+    Win64:
+      enabled: 1
+      settings:
+        CPU: AnyCPU
+    WindowsStoreApps:
       enabled: 0
       settings:
         CPU: AnyCPU
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 179778
-  packageName: The Island Village(UModelerX)
-  packageVersion: 1.1
-  assetPath: Assets/UModelerX_IslandVillage_URP_Editable/UModeler-Hub/Runtime/Tripolygon.UModeler.Hub.dll
-  uploadId: 804546
