@@ -14871,7 +14871,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &755548633
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17272,7 +17272,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 755548632}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -33236,6 +33236,14 @@ PrefabInstance:
       propertyPath: spawnPoint
       value: 
       objectReference: {fileID: 66218678}
+    - target: {fileID: 3239438728721088137, guid: b7b00083334342e4d880a9302e7ff249, type: 3}
+      propertyPath: delayedResetLayers.m_Bits
+      value: 1537
+      objectReference: {fileID: 0}
+    - target: {fileID: 3239438728721088137, guid: b7b00083334342e4d880a9302e7ff249, type: 3}
+      propertyPath: instantResetLayers.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 4236556947274826801, guid: b7b00083334342e4d880a9302e7ff249, type: 3}
       propertyPath: maxSpeed
       value: 20
