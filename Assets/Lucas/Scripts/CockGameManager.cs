@@ -30,6 +30,7 @@ public class CockGameManager : MonoBehaviour
 
     public void ChangeScene(string sceneName)
     {
+         Debug.Log("Button clicked → loading: " + sceneName);
         SceneManager.LoadScene(sceneName);
     }
 
