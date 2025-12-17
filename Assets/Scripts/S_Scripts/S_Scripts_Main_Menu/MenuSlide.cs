@@ -28,7 +28,8 @@ public class MenuSlide : MonoBehaviour
         openButton.DOScale(isOpen ? 0.8f : 1f, 0.2f);
         openButton.DORotate(
             isOpen ? new Vector3(0, 0, 180) : Vector3.zero,
-            0.25f
-        );
+            0.25f,
+            RotateMode.FastBeyond360
+        ).SetEase(Ease.OutBack);
     }
 }
