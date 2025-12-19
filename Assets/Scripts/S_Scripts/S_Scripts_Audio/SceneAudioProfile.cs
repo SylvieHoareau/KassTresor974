@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewScriptableObjectScript", menuName = "Scriptable Objects/NewScriptableObjectScript")]
+[CreateAssetMenu(fileName = "MusicToPlay", menuName = "Audio/MusicToPlay")]
 public class SceneAudioProfile : ScriptableObject
 {
     public MusicType musicToPlay;

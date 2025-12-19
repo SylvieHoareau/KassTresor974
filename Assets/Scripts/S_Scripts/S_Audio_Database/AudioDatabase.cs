@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.IO.Enumeration;
 
 public enum MusicType
 {
@@ -21,31 +20,14 @@ public enum SFXType
     Lose
 }
 
-[CreateAssetMenu(
-    FileSystemName = "AudioDatabase",
-    menuName = "Audio/Audio Database"
-)]
 
 public class AudioDatabase : MonoBehaviour
 {
 
     [Header("Music Library")]
-    public List<MusicEntry> musics;
+    public List<Music> musics; // Scriptable Objects
 
     [Header("SFX Library")]
-    public List<SFXEntry> sfxs;
+    public List<SFX> sfxs; // Scriptable Objects
 }
 
-[System.Serializable]
-public class MusicEntry
-{
-    public MusicType type;
-    public AudioClip clip;
-}
-
-[System.Serializable]
-public class SFXEntry
-{
-    public SFXType type;
-    public AudioClip clip;
-}

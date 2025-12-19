@@ -29,22 +29,22 @@ public class AudioDatabaseSO : ScriptableObject
 {
 
     [Header("Music Library")]
-    public List<MusicEntry> musics;
+    public List<Music> musics;
 
     [Header("SFX Library")]
-    public List<SFXEntry> sfxs;
+    public List<SFX> sfxs;
 }
 
-[System.Serializable]
-public class MusicEntry
-{
-    public MusicType type;
-    public AudioClip clip;
-}
+// [System.Serializable]
+// public class Music
+// {
+//     public MusicType type;
+//     public AudioClip clip;
+// }
 
-[System.Serializable]
-public class SFXEntry
-{
-    public SFXType type;
-    public AudioClip clip;
-}
+// [System.Serializable]
+// public class SFX
+// {
+//     public SFXType type;
+//     public AudioClip clip;
+// }
