@@ -17,6 +17,11 @@ public class AudioManager : MonoBehaviour
     [Tooltip("Source pour les effets sonores (SFX)")]
     [SerializeField] private AudioSource sfxAudioSource;
 
+    [SerializeField] private AudioDatabaseSO audioDatabase;
+
+    private Dictionary<MusicType, AudioClip> musicDict;
+    private Dictionary<SFXType, AudioClip> sfxDict;
+
     // --- Configuration (Volumes) ---
 
     // Clés pour la sauvegarde des volumes dans les PlayerPrefs
@@ -53,6 +58,7 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject); // Persiste entre les scènes
             InitializeAudioSources();
+            InitializeDatabase();
         }
         else
         {
@@ -63,6 +69,32 @@ public class AudioManager : MonoBehaviour
         // Chargement des volumes sauvegardés ou réglage par défaut
         musicAudioSource.volume = PlayerPrefs.GetFloat(MusicVolumeKey, 0.5f); // Par défaut à 0.5
         sfxAudioSource.volume = PlayerPrefs.GetFloat(SFXVolumeKey, 0.5f); // Par défaut à 0.5
+
+
+    }
+
+    private void InitializeDatabase()
+    {
+         if (audioDatabase == null)
+        {
+            Debug.LogError("AudioDatabaseSO non assigné dans l'AudioManager !");
+            return;
+        }
+        
+        musicDict = new Dictionary<MusicType, AudioClip>();
+        sfxDict = new Dictionary<SFXType, AudioClip>();
+
+        foreach (var music in audioDatabase.musics)
+        {
+            if (!musicDict.ContainsKey(music.type))
+                musicDict.Add(music.type, music.clip);
+        }
+
+        foreach (var sfx in audioDatabase.sfxs)
+        {
+            if (!sfxDict.ContainsKey(sfx.type))
+                sfxDict.Add(sfx.type, sfx.clip);
+        }
     }
 
     private void InitializeAudioSources()
@@ -94,9 +126,12 @@ public class AudioManager : MonoBehaviour
     /// Démarre ou change la lecture d'une musique de fond (BGM)
     /// </summary>
     /// <param name="clip">Clip audio à jouer en boucle</param>
-    public void PlayMusic(AudioClip clip)
+    public void PlayMusic(MusicType type)
     {
-        if (clip == null) return;
+
+        if (!musicDict.ContainsKey(type)) return;
+
+        AudioClip clip = musicDict[type];
 
         if (musicAudioSource.clip == clip && musicAudioSource.isPlaying)
             return; // La musique est déjà en cours de lecture
@@ -110,10 +145,10 @@ public class AudioManager : MonoBehaviour
     /// Utilise PlayOneShot pour permettre la superposition des sons
     /// </summary>
     /// <param name="clip">Clip audio à jouer</param>
-    public void PlaySFX(AudioClip clip)
+    public void PlaySFX(SFXType type)
     {
-        if (clip == null) return;
-        sfxAudioSource.PlayOneShot(clip, SFXVolume);
+        if (!sfxDict.ContainsKey(type)) return;
+        sfxAudioSource.PlayOneShot(sfxDict[type], SFXVolume);
     }
 
     // Méthode pour jouer un SFX à une position 3D spécifique

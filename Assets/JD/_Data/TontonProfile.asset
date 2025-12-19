@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSpeaker
   characterName: Tonton
   nameColor: {r: 0.8078432, g: 0.7803922, b: 0, a: 1}
-  portrait: {fileID: 21300000, guid: 0cd04f885743a5c49b5a937efc00ae81, type: 3}
+  portrait: {fileID: 21300000, guid: 9b5ba6ae02818904fb33f4d87fb26496, type: 3}

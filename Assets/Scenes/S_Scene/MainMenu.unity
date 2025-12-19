@@ -503,9 +503,9 @@ RectTransform:
   - {fileID: 975565719}
   - {fileID: 1888786667}
   - {fileID: 1933479269}
+  - {fileID: 1844279007}
   - {fileID: 1252958986}
   - {fileID: 1634817170}
-  - {fileID: 1844279007}
   - {fileID: 6267820}
   - {fileID: 1739908482}
   m_Father: {fileID: 0}
@@ -11208,7 +11208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuSlide
   menuPanel: {fileID: 1634817170}
-  openButton: {fileID: 0}
+  openButton: {fileID: 1844279007}
   duration: 0.6
 --- !u!1 &1637603131
 GameObject:
