@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public class DamageCockSystem : MonoBehaviour
 {
     [Header("Références")]
@@ -15,6 +16,8 @@ public class DamageCockSystem : MonoBehaviour
     [Header("Paramètres Détection Ennemi")]
     public float dangerRange = 0.8f;
     public LayerMask enemyLayer;
+
+    [SerializeField] private ParticleSystem _particleSystem;
 
     void Update()
     {
@@ -77,10 +80,14 @@ public class DamageCockSystem : MonoBehaviour
         Debug.Log("✔ Ennemi touché : " + hit.collider.name);
         CockComboSystem.Instance.AddCombo();
         CockScore.AddScore();
+        EnemyKillCounter.AddKill();
+
+        ParticleSystem particle = Instantiate(_particleSystem, transform.position, Quaternion.identity);
 
         CameraShake.Instance.Shake(0.08f, 0.15f);
         ImpactFlash.Instance.FlashWhite();
         HitSlowMotion.Instance.DoSlowMotion();
+        //StartCoroutine(DestroyParticleSystemAfterDelay(particleSystem, 0.5f));
 
         EnemyPool.Instance.ReturnEnemy(hit.collider.gameObject);
         
@@ -88,10 +95,14 @@ public class DamageCockSystem : MonoBehaviour
         {
             health.UpdateDamage(comboHeal);
         }
-
-    
-
        
     }
+
+        // private IEnumerator DestroyParticleSystemAfterDelay(ParticleSystem particleSystem, float delay)
+        // {
+        //     yield return new WaitForSeconds(delay);
+
+        //     Destroy(particleSystem.gameObject);
+        // }
      
 }

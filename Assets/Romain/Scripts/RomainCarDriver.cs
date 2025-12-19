@@ -56,6 +56,16 @@ public class RomainCarDriver : MonoBehaviour
     [SerializeField] private float interactCooldown = 0.25f;
     private float lastInteractTime = -999f;
 
+    [Header("Sortie voiture - Sécurité")]
+    [Tooltip("Décalage latéral (porte) appliqué à la sortie par rapport à l'exitPoint")]
+    [SerializeField] private float exitSideOffset = 0.25f;
+
+    [Tooltip("Si coché, on 'snap' la sortie au sol avec un raycast")]
+    [SerializeField] private bool snapExitToGround = true;
+
+    [Tooltip("Distance max du raycast pour snap la sortie au sol")]
+    [SerializeField] private float exitGroundRay = 4f;
+
     // État
     private GameObject player;
     private bool playerInRange = false;
@@ -97,6 +107,9 @@ public class RomainCarDriver : MonoBehaviour
 
         if (interactUI != null)
             interactUI.SetActive(false);
+
+        if (exitPoint != null && !exitPoint.IsChildOf(transform))
+            Debug.LogWarning("RomainCarDriver : ExitPoint n'est PAS enfant de la voiture. Risque de sortie incohérente.");
 
         AlignToGround(true);
     }
@@ -185,14 +198,12 @@ public class RomainCarDriver : MonoBehaviour
 
             if (allowReverseThroughObstacles)
             {
-                // Ancien comportement : on ne check que quand on va vers l'avant
                 float forwardDot = Vector3.Dot(delta.normalized, forward);
                 bool isMovingForward = forwardDot > 0.1f;
                 shouldCheckCollision = isMovingForward;
             }
             else
             {
-                // Nouveau comportement : on check tout le temps (avant ET arrière)
                 shouldCheckCollision = true;
             }
 
@@ -380,10 +391,10 @@ public class RomainCarDriver : MonoBehaviour
         playerRenderers = player.GetComponentsInChildren<Renderer>(true);
 
         if (playerSprites != null)
-            foreach (var sr in playerSprites) sr.enabled = false;
+            foreach (var sr in playerSprites) if (sr) sr.enabled = false;
 
         if (playerRenderers != null)
-            foreach (var r in playerRenderers) r.enabled = false;
+            foreach (var r in playerRenderers) if (r) r.enabled = false;
 
         if (cameraOrbit != null)
         {
@@ -396,20 +407,34 @@ public class RomainCarDriver : MonoBehaviour
 
     private void ExitCar()
     {
-        if (!isPlayerInside)
-            return;
+        if (!isPlayerInside) return;
 
         isPlayerInside = false;
         currentSpeed = 0f;
 
+        // IMPORTANT : on aligne la voiture AVANT de calculer la sortie,
+        // sinon exitPoint (enfant) peut "bouger" après et créer des incohérences.
+        AlignToGround(true);
+
         if (player != null && exitPoint != null)
-            player.transform.position = exitPoint.position;
+        {
+            Vector3 exitPos = exitPoint.position + (exitPoint.right * exitSideOffset);
+            if (snapExitToGround)
+                exitPos = SnapToGround(exitPos);
+
+            TeleportPlayerSafely(player, exitPos, exitPoint.rotation);
+        }
+        else if (player != null && exitPoint == null)
+        {
+            Debug.LogWarning("RomainCarDriver : exitPoint manquant, sortie à la position actuelle du joueur.");
+            TeleportPlayerSafely(player, player.transform.position, player.transform.rotation);
+        }
 
         if (playerSprites != null)
-            foreach (var sr in playerSprites) sr.enabled = true;
+            foreach (var sr in playerSprites) if (sr) sr.enabled = true;
 
         if (playerRenderers != null)
-            foreach (var r in playerRenderers) r.enabled = true;
+            foreach (var r in playerRenderers) if (r) r.enabled = true;
 
         if (playerController != null)
             playerController.SetCanMove(true);
@@ -422,6 +447,59 @@ public class RomainCarDriver : MonoBehaviour
                 cameraOrbit.target = player.transform;
         }
 
+        // Anti double toggle instantané
+        lastInteractTime = Time.time;
+
         AlignToGround(true);
     }
+
+    private void TeleportPlayerSafely(GameObject p, Vector3 pos, Quaternion rot)
+    {
+        // Le CharacterController peut annuler/corriger un teleport si tu le bouges activé
+        var cc = p.GetComponent<CharacterController>();
+        bool ccWasEnabled = false;
+        if (cc != null)
+        {
+            ccWasEnabled = cc.enabled;
+            cc.enabled = false;
+        }
+
+        // Si Rigidbody, on passe par rb.position/rotation + reset vitesses
+        var rb = p.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.position = pos;
+            rb.rotation = rot;
+        }
+        else
+        {
+            p.transform.SetPositionAndRotation(pos, rot);
+        }
+
+        Physics.SyncTransforms();
+
+        if (cc != null && ccWasEnabled)
+            cc.enabled = true;
+    }
+
+    private Vector3 SnapToGround(Vector3 pos)
+    {
+        Vector3 origin = pos + Vector3.up * 1.5f;
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, exitGroundRay, groundLayer, QueryTriggerInteraction.Ignore))
+        {
+            return hit.point + hit.normal * 0.05f;
+        }
+        return pos;
+    }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        // Visualiser le volume d'OverlapBox pour debug collisions
+        Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.up * colliderHalfExtents.y, colliderHalfExtents * 2f);
+    }
+#endif
 }
