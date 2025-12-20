@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 899c54efeace73346a0a16faa3afe726, type: 3}
   m_Name: Vignette
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Vignette
-  active: 0
+  active: 1
   color:
     m_OverrideState: 1
     m_Value: {r: 0, g: 0, b: 0, a: 1}
@@ -21,10 +21,10 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.425
+    m_Value: 0.3
   smoothness:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.25
   rounded:
     m_OverrideState: 0
     m_Value: 0
@@ -40,13 +40,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 221518ef91623a7438a71fef23660601, type: 3}
   m_Name: WhiteBalance
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.WhiteBalance
-  active: 0
+  active: 1
   temperature:
     m_OverrideState: 1
-    m_Value: 14.2
+    m_Value: 0
   tint:
     m_OverrideState: 0
     m_Value: -1.3
+--- !u!114 &-8183619243858275813
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e021b4c809a781e468c2988c016ebbea, type: 3}
+  m_Name: ColorLookup
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ColorLookup
+  active: 0
+  texture:
+    m_OverrideState: 1
+    m_Value: {fileID: 2800000, guid: 78b06834af8bc544da3da025038d9d1c, type: 3}
+    dimension: 1
+  contribution:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &-5859690941785403726
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -83,20 +103,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ColorAdjustments
   active: 1
   postExposure:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 0.1
   contrast:
     m_OverrideState: 1
-    m_Value: 30
+    m_Value: 15
   colorFilter:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: {r: 0.9142804, g: 0.9622642, b: 0.75800997, a: 1}
   hueShift:
     m_OverrideState: 1
     m_Value: 0
   saturation:
     m_OverrideState: 1
-    m_Value: -48
+    m_Value: -5
 --- !u!114 &-3576887441667207129
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -109,7 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97c23e3b12dc18c42a140437e53d3951, type: 3}
   m_Name: Tonemapping
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Tonemapping
-  active: 0
+  active: 1
   mode:
     m_OverrideState: 1
     m_Value: 2
@@ -150,18 +170,17 @@ MonoBehaviour:
   m_Name: Global Volume Profile
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.VolumeProfile
   components:
-  - {fileID: 3191861185166756002}
+  - {fileID: -8382652449527307100}
   - {fileID: -5537153089595725539}
-  - {fileID: 6298865506657613164}
-  - {fileID: 6840614016446770540}
   - {fileID: -5859690941785403726}
   - {fileID: 1233656134819661796}
   - {fileID: 7739580691194540059}
   - {fileID: 8540498158463012329}
   - {fileID: 6074663110407599040}
-  - {fileID: -8382652449527307100}
   - {fileID: -3576887441667207129}
   - {fileID: -8889658037277196698}
+  - {fileID: 3191861185166756002}
+  - {fileID: -8183619243858275813}
 --- !u!114 &1233656134819661796
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -174,27 +193,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558a8e2b6826cf840aae193990ba9f2e, type: 3}
   m_Name: ShadowsMidtonesHighlights
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ShadowsMidtonesHighlights
-  active: 0
+  active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 0.99527246, y: 1, z: 0.9905448, w: -0.5131861}
+    m_Value: {x: 0.99527246, y: 1, z: 0.9905448, w: 0.40249938}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 0.8247538, y: 0.8472263, z: 1, w: 0.06414826}
+    m_Value: {x: 0.8247538, y: 0.8472263, z: 1, w: 0.2514505}
   highlights:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: -0.057020668}
+    m_Value: {x: 1, y: 1, z: 1, w: 0.19725278}
   shadowsStart:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.04
   shadowsEnd:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.8
   highlightsStart:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.23
   highlightsEnd:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
 --- !u!114 &3191861185166756002
 MonoBehaviour:
@@ -216,23 +235,23 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.9
   intensity:
-    m_OverrideState: 0
-    m_Value: 1
+    m_OverrideState: 1
+    m_Value: 1.57
   scatter:
     m_OverrideState: 0
     m_Value: 1
   clamp:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 65472
   tint:
     m_OverrideState: 0
     m_Value: {r: 0.5245282, g: 0.51338404, b: 0.29195437, a: 1}
   highQualityFiltering:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   filter:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 2
   downscale:
     m_OverrideState: 0
     m_Value: 0
@@ -258,7 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70afe9e12c7a7ed47911bb608a23a8ff, type: 3}
   m_Name: SplitToning
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.SplitToning
-  active: 1
+  active: 0
   shadows:
     m_OverrideState: 1
     m_Value: {r: 0.05660379, g: 0.044588834, b: 0.044588834, a: 1}
@@ -267,224 +286,7 @@ MonoBehaviour:
     m_Value: {r: 0.94927555, g: 1, b: 0.76037735, a: 1}
   balance:
     m_OverrideState: 1
-    m_Value: 43.3
---- !u!114 &6298865506657613164
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3eb4b772797da9440885e8bd939e9560, type: 3}
-  m_Name: ColorCurves
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ColorCurves
-  active: 0
-  master:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 2
-      m_Loop: 0
-      m_ZeroValue: 0
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve:
-        - serializedVersion: 3
-          time: 0
-          value: 0
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        - serializedVersion: 3
-          time: 1
-          value: 1
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-  red:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 2
-      m_Loop: 0
-      m_ZeroValue: 0
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve:
-        - serializedVersion: 3
-          time: 0
-          value: 0
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        - serializedVersion: 3
-          time: 1
-          value: 1
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-  green:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 2
-      m_Loop: 0
-      m_ZeroValue: 0
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve:
-        - serializedVersion: 3
-          time: 0
-          value: 0
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        - serializedVersion: 3
-          time: 1
-          value: 1
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-  blue:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 2
-      m_Loop: 0
-      m_ZeroValue: 0
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve:
-        - serializedVersion: 3
-          time: 0
-          value: 0
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        - serializedVersion: 3
-          time: 1
-          value: 1
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-  hueVsHue:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 0
-      m_Loop: 1
-      m_ZeroValue: 0.5
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-  hueVsSat:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 0
-      m_Loop: 1
-      m_ZeroValue: 0.5
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-  satVsSat:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 0
-      m_Loop: 0
-      m_ZeroValue: 0.5
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-  lumVsSat:
-    m_OverrideState: 0
-    m_Value:
-      <length>k__BackingField: 0
-      m_Loop: 0
-      m_ZeroValue: 0.5
-      m_Range: 1
-      m_Curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
---- !u!114 &6840614016446770540
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5e1dc532bcb41949b58bc4f2abfbb7e, type: 3}
-  m_Name: LensDistortion
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.LensDistortion
-  active: 1
-  intensity:
-    m_OverrideState: 1
-    m_Value: -0.3
-  xMultiplier:
-    m_OverrideState: 0
-    m_Value: 0.224
-  yMultiplier:
-    m_OverrideState: 0
-    m_Value: 0.894
-  center:
-    m_OverrideState: 0
-    m_Value: {x: 0.5, y: 0.5}
-  scale:
-    m_OverrideState: 0
-    m_Value: 2.18
+    m_Value: 21
 --- !u!114 &7739580691194540059
 MonoBehaviour:
   m_ObjectHideFlags: 3
