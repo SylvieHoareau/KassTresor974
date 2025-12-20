@@ -32,11 +32,11 @@ RenderSettings:
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 2048
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
-  m_CustomReflection: {fileID: 0}
+  m_CustomReflection: {fileID: 8900000, guid: c8f21f62fdb3e43c5b32917c84683698, type: 3}
   m_Sun: {fileID: 576110154}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
@@ -2677,7 +2677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1899456593397865066, guid: 4c5aca3ad850dda42a6e534efd733d17, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 18.19
+      value: 20.6
       objectReference: {fileID: 0}
     - target: {fileID: 1899456593397865066, guid: 4c5aca3ad850dda42a6e534efd733d17, type: 3}
       propertyPath: m_LocalPosition.z
@@ -21682,6 +21682,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1ff18045e3fc87942af64d5034f68a78, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 2664098864995057252, guid: 1ff18045e3fc87942af64d5034f68a78, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -21690,6 +21694,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: abd4cb33571ead849b1b879f21b00213, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 1ff18045e3fc87942af64d5034f68a78, type: 3}
+      propertyPath: m_AnimatePhysics
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25074,7 +25082,7 @@ MonoBehaviour:
   zoomDuration: 0.3
   zoomFOV: 30
   promptUI: {fileID: 786855733}
-  playerController: {fileID: 0}
+  playerController: {fileID: 1314232074}
   playerCameraLook: {fileID: 1868156831}
 --- !u!4 &798426534 stripped
 Transform:
@@ -30915,7 +30923,7 @@ MonoBehaviour:
   zoomDuration: 0.3
   zoomFOV: 30
   promptUI: {fileID: 786855733}
-  playerController: {fileID: 0}
+  playerController: {fileID: 1314232074}
   playerCameraLook: {fileID: 1868156831}
 --- !u!1001 &945312455
 PrefabInstance:
@@ -42925,7 +42933,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314232071}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -42956,11 +42964,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e9ec2ae369a13b46814fef4f08cd005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThirdPersonMovement
-  walkSpeed: 4
-  runSpeed: 7
-  jumpHeight: 2
-  gravity: -20
-  coyoteTime: 0.15
+  walkSpeed: 10
+  runSpeed: 15
+  jumpHeight: 4
+  gravity: -50
+  coyoteTime: 1
   cameraTransform: {fileID: 1868156832}
   animator: {fileID: 1314232076}
 --- !u!143 &1314232075
@@ -47363,7 +47371,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PanneauLecture
   uiPanneau: {fileID: 441654105}
   promptUI: {fileID: 786855733}
-  playerController: {fileID: 0}
+  playerController: {fileID: 1314232074}
   playerCameraLook: {fileID: 1868156831}
   animDuration: 1
   startScale: {x: 0.8, y: 0.8, z: 1}
@@ -62848,7 +62856,7 @@ MonoBehaviour:
   heightOffset: 20
   distance: 30
   minDistance: 5
-  maxDistance: 50
+  maxDistance: 45
   zoomSpeed: 30
   mouseSensitivity: 10
   minPitch: -20
@@ -65915,7 +65923,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1951402654
 MonoBehaviour:
   m_ObjectHideFlags: 0
