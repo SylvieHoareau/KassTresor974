@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de3fdcb5c5ddf64ca1f51b16e8e331b, type: 3}
   m_Name: VillagerProfile
   m_EditorClassIdentifier: 
-  characterName: KassLaBlag
+  characterName: Gramoun
   nameColor: {r: 0.4454625, g: 0.764151, b: 0.0036044943, a: 1}
   portrait: {fileID: 0}
