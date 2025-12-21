@@ -66,6 +66,27 @@ public class RomainCarDriver : MonoBehaviour
     [Tooltip("Distance max du raycast pour snap la sortie au sol")]
     [SerializeField] private float exitGroundRay = 4f;
 
+    // ===================== AUDIO AJOUTÉ =====================
+    [Header("Audio voiture")]
+    [Tooltip("AudioSource pour le bruit de démarrage (Loop OFF, Play On Awake OFF)")]
+    [SerializeField] private AudioSource engineStartSource;
+
+    [Tooltip("AudioSource pour le bruit moteur léger (Loop ON, Play On Awake OFF)")]
+    [SerializeField] private AudioSource engineLoopSource;
+
+    [Tooltip("Délai avant de lancer le loop moteur après le start")]
+    [SerializeField] private float engineLoopDelay = 0.8f;
+
+    [Tooltip("Pitch moteur au ralenti")]
+    [SerializeField] private float engineMinPitch = 0.9f;
+
+    [Tooltip("Pitch moteur à vitesse max")]
+    [SerializeField] private float engineMaxPitch = 1.2f;
+
+    [Tooltip("Active la variation de pitch selon la vitesse")]
+    [SerializeField] private bool enginePitchWithSpeed = true;
+    // ========================================================
+
     // État
     private GameObject player;
     private bool playerInRange = false;
@@ -110,6 +131,10 @@ public class RomainCarDriver : MonoBehaviour
 
         if (exitPoint != null && !exitPoint.IsChildOf(transform))
             Debug.LogWarning("RomainCarDriver : ExitPoint n'est PAS enfant de la voiture. Risque de sortie incohérente.");
+
+        // Sécurité audio: on démarre éteint
+        if (engineLoopSource != null)
+            engineLoopSource.Stop();
 
         AlignToGround(true);
     }
@@ -246,6 +271,9 @@ public class RomainCarDriver : MonoBehaviour
 
         UpdateWheels(currentSpeed, turnInput);
         AlignToGround(false);
+
+        // =================== AUDIO: pitch moteur ====================
+        UpdateEngineAudio();
     }
 
     private void HandleInteractionInput()
@@ -402,6 +430,18 @@ public class RomainCarDriver : MonoBehaviour
             cameraOrbit.target = transform;
         }
 
+        // ===== AUDIO: start + loop =====
+        if (engineStartSource != null)
+            engineStartSource.Play();
+
+        if (engineLoopSource != null)
+        {
+            // On relance proprement (au cas où)
+            engineLoopSource.Stop();
+            engineLoopSource.pitch = engineMinPitch;
+            engineLoopSource.PlayDelayed(Mathf.Max(0f, engineLoopDelay));
+        }
+
         AlignToGround(true);
     }
 
@@ -411,6 +451,10 @@ public class RomainCarDriver : MonoBehaviour
 
         isPlayerInside = false;
         currentSpeed = 0f;
+
+        // ===== AUDIO: stop loop =====
+        if (engineLoopSource != null)
+            engineLoopSource.Stop();
 
         // IMPORTANT : on aligne la voiture AVANT de calculer la sortie,
         // sinon exitPoint (enfant) peut "bouger" après et créer des incohérences.
@@ -453,6 +497,16 @@ public class RomainCarDriver : MonoBehaviour
         AlignToGround(true);
     }
 
+    private void UpdateEngineAudio()
+    {
+        if (!isPlayerInside) return;
+        if (engineLoopSource == null) return;
+        if (!enginePitchWithSpeed) return;
+
+        float t = (maxSpeed <= 0.0001f) ? 0f : Mathf.Clamp01(Mathf.Abs(currentSpeed) / maxSpeed);
+        engineLoopSource.pitch = Mathf.Lerp(engineMinPitch, engineMaxPitch, t);
+    }
+
     private void TeleportPlayerSafely(GameObject p, Vector3 pos, Quaternion rot)
     {
         // Le CharacterController peut annuler/corriger un teleport si tu le bouges activé
@@ -468,6 +522,7 @@ public class RomainCarDriver : MonoBehaviour
         var rb = p.GetComponent<Rigidbody>();
         if (rb != null)
         {
+            // NOTE: linearVelocity n'existe pas sur Rigidbody Unity standard, c'est velocity.
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.position = pos;
