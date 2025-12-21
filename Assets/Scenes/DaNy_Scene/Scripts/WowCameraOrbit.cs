@@ -3,8 +3,8 @@ using UnityEngine;
 public class WowCameraOrbit : MonoBehaviour
 {
     [Header("Cible")]
-    public Transform target;          // ton joueur
-    public float heightOffset = 1.7f; // hauteur du point à suivre (tête du perso)
+    public Transform target;
+    public float heightOffset = 1.7f;
 
     [Header("Distance")]
     public float distance = 6f;
@@ -18,49 +18,65 @@ public class WowCameraOrbit : MonoBehaviour
     public float maxPitch = 60f;
 
     [Header("Alignement")]
-    [Tooltip("Correction si la caméra n'est pas pile derrière le perso")]
-    public float yawOffset = 0f;   // corrige le décalage gauche/droite
+    public float yawOffset = 0f;
 
-    private float yaw;   // rotation horizontale (autour de Y)
-    private float pitch; // rotation verticale (haut/bas)
+    [Header("Lissage")]
+    [Tooltip("Plus haut = plus doux (mais plus 'flottant')")]
+    public float rotationSmoothTime = 0.08f; // 0.05 - 0.15
+    public float positionSmoothTime = 0.06f; // 0.03 - 0.12
+    public bool smoothOnlyWhenRotating = false;
+
+    private float yaw;
+    private float pitch;
+
+    // valeurs cibles "brutes"
+    private float targetYaw;
+    private float targetPitch;
+
+    // vitesses pour SmoothDamp
+    private float yawVel;
+    private float pitchVel;
+    private Vector3 posVel;
 
     void Start()
     {
         if (target == null)
         {
             Debug.LogWarning("WowCameraOrbit : pas de target assigné !");
+            enabled = false;
             return;
         }
 
-        // On démarre derrière le perso
-        yaw   = target.eulerAngles.y + yawOffset; // <- offset de correction
-        pitch = 15f;
+        targetYaw = target.eulerAngles.y + yawOffset;
+        targetPitch = 15f;
+
+        yaw = targetYaw;
+        pitch = targetPitch;
 
         distance = Mathf.Clamp(distance, minDistance, maxDistance);
 
-        UpdateCameraPosition();
+        // place direct au départ
+        SnapToTarget();
     }
 
     void LateUpdate()
     {
-        if (target == null)
-            return;
+        if (target == null) return;
 
-        // --- Rotation avec la souris (clic gauche OU clic droit) ---
         bool rotateMousePressed = Input.GetMouseButton(0) || Input.GetMouseButton(1);
 
+        // --- Input rotation ---
         if (rotateMousePressed)
         {
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
 
-            yaw   += mouseX * mouseSensitivity;
-            pitch -= mouseY * mouseSensitivity;
-
-            pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+            targetYaw += mouseX * mouseSensitivity;
+            targetPitch -= mouseY * mouseSensitivity;
+            targetPitch = Mathf.Clamp(targetPitch, minPitch, maxPitch);
         }
 
-        // --- Zoom molette ---
+        // --- Zoom ---
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.001f)
         {
@@ -68,14 +84,38 @@ public class WowCameraOrbit : MonoBehaviour
             distance = Mathf.Clamp(distance, minDistance, maxDistance);
         }
 
-        UpdateCameraPosition();
+        // --- Lissage angles ---
+        bool doSmooth = !smoothOnlyWhenRotating || rotateMousePressed;
+
+        if (doSmooth)
+        {
+            yaw = Mathf.SmoothDampAngle(yaw, targetYaw, ref yawVel, rotationSmoothTime);
+            pitch = Mathf.SmoothDampAngle(pitch, targetPitch, ref pitchVel, rotationSmoothTime);
+        }
+        else
+        {
+            yaw = targetYaw;
+            pitch = targetPitch;
+        }
+
+        UpdateCameraPositionSmooth();
     }
 
-    private void UpdateCameraPosition()
+    private void UpdateCameraPositionSmooth()
     {
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
-        Vector3 targetPos   = target.position + Vector3.up * heightOffset;
-        Vector3 desiredPos  = targetPos - rotation * Vector3.forward * distance;
+        Vector3 targetPos = target.position + Vector3.up * heightOffset;
+        Vector3 desiredPos = targetPos - rotation * Vector3.forward * distance;
+
+        transform.position = Vector3.SmoothDamp(transform.position, desiredPos, ref posVel, positionSmoothTime);
+        transform.rotation = rotation;
+    }
+
+    private void SnapToTarget()
+    {
+        Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
+        Vector3 targetPos = target.position + Vector3.up * heightOffset;
+        Vector3 desiredPos = targetPos - rotation * Vector3.forward * distance;
 
         transform.position = desiredPos;
         transform.rotation = rotation;
