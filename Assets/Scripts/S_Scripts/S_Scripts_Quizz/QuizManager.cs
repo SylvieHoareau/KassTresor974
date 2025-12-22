@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI; // Pour Image, Button
 using TMPro; // Pour TMP_Text (TextMeshPro)
-using System.Collections; // Pour IEnumerator et coroutines
-
+using System.Collections;
+using DG.Tweening;
 public class QuizManager : MonoBehaviour
 {
     [Header("Data")]
@@ -35,6 +35,9 @@ public class QuizManager : MonoBehaviour
     private Coroutine timerRunCoroutine;
 
     public static event System.Action<int> OnQuizFinished;
+
+    [Header("Victory Effect")]
+    [SerializeField] private VictoryEffect victoryEffect;
 
     // Start est appelée une seule fois
     void Start()
@@ -116,9 +119,11 @@ public class QuizManager : MonoBehaviour
     {
         if (!timerRunning) return;
 
+        // Arrêter le chronomètre immédiatement
         timerRunning = false;
 
-        Question q = questionData.questions[currentQuestionIndex];
+        // Récupérer le composant AwnserButtonAnimator du bouton cliqué
+        AnswerButtonAnimator clickedButtonAnimator = answerButtons[index].GetComponent<AnswerButtonAnimator>();
 
         foreach (var btn in answerButtons)
         {
@@ -128,19 +133,46 @@ public class QuizManager : MonoBehaviour
         // Arrete le feedback précédent
         if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
 
+        // Récupérer la question actuelle
+        Question q = questionData.questions[currentQuestionIndex];
+
         if (index == q.correctOptionIndex)
         {
             score++;
             UpdateScoreUI();
-            feedbackCoroutine = StartCoroutine(PlayFeedback("Bonne réponse !", goodColor, correctSFX));
+
+            // Appel DOTween pour l'animation locale du bouton
+            if (clickedButtonAnimator != null)
+            {
+                clickedButtonAnimator.AnimateCorrectAnswer();
+            }
+
+            // On démarre la coroutine de feedback
+            feedbackCoroutine = StartCoroutine(PlayFeedback("Bonne réponse !", goodColor, correctSFX, true));
         }
         else
         {
-            feedbackCoroutine = StartCoroutine(PlayFeedback("Ayo... la pas sa ! Réessaye après !", badColor, wrongSFX));
+            // Appel DOTWEEN pour l'animation
+            if (clickedButtonAnimator != null)
+            {
+                clickedButtonAnimator.AnimateIncorrectAnswer();
+            }
+
+            // Afficher également la bonne réponse
+            Button correctButton = answerButtons[q.correctOptionIndex];
+            AnswerButtonAnimator correctAnimator = correctButton.GetComponent<AnswerButtonAnimator>();
+            if (correctAnimator != null)
+            {
+                // Anime la bonne réponse pour la montrer (une version plus légère que la victoire)
+                // Vous devrez ajouter une méthode 'AnimateHint' dans AnswerButtonAnimator.
+                // Par exemple : correctAnimator.AnimateHint(); 
+                correctAnimator.AnimateHint();
+            }
+            feedbackCoroutine = StartCoroutine(PlayFeedback("Ayo... la pas sa ! Réessaye après !", badColor, wrongSFX, false));
         }
     }
 
-    IEnumerator PlayFeedback(string message, Color color, AudioClip sfx)
+    IEnumerator PlayFeedback(string message, Color color, AudioClip sfx, bool isCorrect)
     {
         // Audio
         audioSource.PlayOneShot(sfx);
@@ -153,15 +185,54 @@ public class QuizManager : MonoBehaviour
         Vector3 originalScale = feedbackText.transform.localScale;
         feedbackText.transform.localScale = Vector3.zero;
 
-        float t = 0f;
-        while (t < 1f)
+        // Tuer tout tween en cours sur le texte pour éviter les interférences.
+        DOTween.Kill(feedbackText.transform);
+
+        // Création de la séquence de Tween (Animation Pop)
+        feedbackText.transform.DOScale(1.1f, 0.2f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                feedbackText.transform.DOScale(1f, 0.1f);
+            });
+
+        // Animation spécifique pour le panneau de bon feedback
+        if (isCorrect && goodFeedbackPanel != null)
         {
-            t += Time.deltaTime * 3;
-            feedbackText.transform.localScale = Vector3.Lerp(Vector3.zero, originalScale, t);
-            yield return null;
+            // On rend le panneau visible
+            goodFeedbackPanel.SetActive(true);
+            CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
+            if (cg == null) cg = goodFeedbackPanel.AddComponent<CanvasGroup>();
+            
+            cg.alpha = 0f;
+            cg.DOFade(1f, 0.3f);
         }
 
+        // float t = 0f;
+        // while (t < 1f)
+        // {
+        //     t += Time.deltaTime * 3;
+        //     feedbackText.transform.localScale = Vector3.Lerp(Vector3.zero, originalScale, t);
+        //     yield return null;
+        // }
+
+        // Délai
         yield return new WaitForSeconds(1.2f);
+
+        // Masquer le panneau si nécessaire après le délai
+        if (goodFeedbackPanel != null)
+        {
+            // On peut utiliser un DOFade Out si on veut
+            CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.DOFade(0f, 0.2f).OnComplete(() => goodFeedbackPanel.SetActive(false));
+            }
+            else
+            {
+                goodFeedbackPanel.SetActive(false);
+            }
+        }
 
         NextQuestion();
     }
@@ -212,6 +283,15 @@ public class QuizManager : MonoBehaviour
 
         // Déclenche l'évenement pour les abonnées, en passant le score
         OnQuizFinished?.Invoke(score);
+
+        if (victoryEffect != null)
+        {
+            victoryEffect.PlayVictory();
+        }
+        else
+        {
+            Debug.LogWarning("VictoryEffect non assigné !");
+        }
     }
 
     IEnumerator TimerCoroutine()
@@ -234,7 +314,7 @@ public class QuizManager : MonoBehaviour
 
                     // Lancer le feedback une seule fois
                     if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
-                    feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX));
+                    feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX, false));
                 }
 
                 yield return null; // Toujours céder le contrôle
