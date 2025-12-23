@@ -1,0 +1,11 @@
+{
+    "asset": "94318071f31559844ac4147c94ead0c8",
+    "fileName": "019b4af6-f7fd-7b44-ac1c-88b6dfdfeaec_Preview.png",
+    "prompt": "panneau STOP rouge et blanc",
+    "negativePrompt": "",
+    "model": "44ec3749-963a-44b1-aa54-dc19f6ed8ab2",
+    "modelName": "Unity Texture2D",
+    "customSeed": 1022948460,
+    "w3CTraceId": "49bb2937106ea3398190ecefdf4a5f79",
+    "refinementMode": "Generation"
+}
