@@ -9,6 +9,10 @@ public class RomainPlayerController3D : MonoBehaviour
     [SerializeField] private float sprintSpeed = 9f;
     [SerializeField] private float rotationLerp = 0.15f;
 
+    [Header("Sprint (Toggle)")]
+    [Tooltip("Si vrai: tu appuies 1 fois sur Shift = sprint activé, même si tu t'arrêtes puis repars (pas besoin de rappuyer).")]
+    [SerializeField] private bool sprintTogglePersistsWhenStopping = true;
+
     [Header("Saut")]
     [SerializeField] private float jumpForce = 7f;
 
@@ -67,7 +71,6 @@ public class RomainPlayerController3D : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        // Sécurité: si ton collègue a laissé le RB en kinematic, ça “flotte”
         rb.isKinematic = false;
         rb.useGravity = true;
         rb.freezeRotation = true;
@@ -138,8 +141,10 @@ public class RomainPlayerController3D : MonoBehaviour
 
     private void OnSprintPerformed(InputAction.CallbackContext ctx)
     {
+        // Toggle du sprint (1 pression = ON, 1 autre = OFF)
         sprintLatched = !sprintLatched;
 
+        // Si on bouge déjà, on applique tout de suite
         if (moveInputRaw.sqrMagnitude > 0.01f)
             isSprinting = sprintLatched;
     }
@@ -193,14 +198,20 @@ public class RomainPlayerController3D : MonoBehaviour
 
         jumpPressedThisFrame = false;
 
-        // Sprint toggle logique
-        if (moveInputRaw.sqrMagnitude < 0.01f)
+        // Sprint toggle logique (avec option de persistance)
+        bool hasMove = moveInputRaw.sqrMagnitude >= 0.01f;
+
+        if (!hasMove)
         {
             isSprinting = false;
-            sprintLatched = false;
+
+            // ✅ Option: si faux, on reset le toggle quand on s'arrête (comportement "faut rappuyer")
+            if (!sprintTogglePersistsWhenStopping)
+                sprintLatched = false;
         }
         else
         {
+            // Si on bouge, on suit l'état du toggle
             isSprinting = sprintLatched;
         }
 
@@ -211,7 +222,6 @@ public class RomainPlayerController3D : MonoBehaviour
     {
         if (cam == null) cam = Camera.main;
 
-        // Direction relative caméra
         Vector3 camForward = cam.transform.forward;
         Vector3 camRight   = cam.transform.right;
         camForward.y = 0f;
@@ -232,14 +242,12 @@ public class RomainPlayerController3D : MonoBehaviour
 
         SetLinearVelocity(new Vector3(horizontal.x, vel.y, horizontal.z));
 
-        // Better jump gravity
         vel = GetLinearVelocity();
         if (vel.y < 0f)
             SetLinearVelocity(vel + Vector3.up * Physics.gravity.y * (fallGravityMultiplier - 1f) * Time.fixedDeltaTime);
         else if (vel.y > 0f && !isJumpHeld)
             SetLinearVelocity(vel + Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime);
 
-        // Rotation vers la direction de déplacement
         if (moveDirection.sqrMagnitude > 0.001f && canMove)
         {
             Quaternion targetRot = Quaternion.LookRotation(moveDirection, Vector3.up);
@@ -298,6 +306,7 @@ public class RomainPlayerController3D : MonoBehaviour
             SetLinearVelocity(new Vector3(0f, v.y, 0f));
 
             isSprinting = false;
+            // Quand on coupe le move (cinématique/voiture), on reset le toggle pour éviter un sprint "fantôme"
             sprintLatched = false;
             jumpQueued = false;
         }
@@ -309,7 +318,6 @@ public class RomainPlayerController3D : MonoBehaviour
         transform.position = pos;
     }
 
-    // Utilisé par ta voiture
     public InputAction GetMoveAction()
     {
         return moveAction != null ? moveAction.action : null;

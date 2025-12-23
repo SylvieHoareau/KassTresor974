@@ -3903,9 +3903,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 1}
+    m_HighlightedColor: {r: 0.12941177, g: 0.58431375, b: 0, a: 1}
+    m_PressedColor: {r: 0.12941177, g: 0.58431375, b: 0, a: 1}
+    m_SelectedColor: {r: 0.12941177, g: 0.58431375, b: 0, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -22379,9 +22379,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.5294118, g: 0.5294118, b: 0.5294118, a: 1}
+    m_HighlightedColor: {r: 0.12941177, g: 0.58431375, b: 0, a: 1}
+    m_PressedColor: {r: 0.12941177, g: 0.58431375, b: 0, a: 1}
+    m_SelectedColor: {r: 0.12941177, g: 0.58431375, b: 0, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -29537,8 +29537,8 @@ Rigidbody:
   m_GameObject: {fileID: 1201070080}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 0.15
-  m_AngularDamping: 0.15
+  m_LinearDamping: 0.21
+  m_AngularDamping: 0.5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -31390,6 +31390,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1580479971}
     m_Modifications:
+    - target: {fileID: 7284657314162685512, guid: af90fe2f0f252bf4b8c2ab79bcd41edf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7284657314162685512, guid: af90fe2f0f252bf4b8c2ab79bcd41edf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3695625926862788219, guid: d9d2a98a783a9cb4f85628413e29ce3d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 18.94
@@ -31453,14 +31461,6 @@ PrefabInstance:
     - target: {fileID: 8810494198772119510, guid: d9d2a98a783a9cb4f85628413e29ce3d, type: 3}
       propertyPath: m_Center.z
       value: -0.30470848
-      objectReference: {fileID: 0}
-    - target: {fileID: 7284657314162685512, guid: af90fe2f0f252bf4b8c2ab79bcd41edf, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7284657314162685512, guid: af90fe2f0f252bf4b8c2ab79bcd41edf, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -33327,6 +33327,9 @@ MonoBehaviour:
   yesButton: {fileID: 254408041}
   noButton: {fileID: 764243918}
   sceneName: BatayCok
+  interactKey: 101
+  leftKey: 113
+  rightKey: 100
 --- !u!65 &1541274284
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -41163,6 +41166,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   victoryUI: {fileID: 888297775}
+  validateKey: 101
+  upKey: 122
+  downKey: 115
 --- !u!1 &2022958759
 GameObject:
   m_ObjectHideFlags: 0
@@ -41180,7 +41186,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2022958760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45240,6 +45246,10 @@ PrefabInstance:
       propertyPath: sprintAction
       value: 
       objectReference: {fileID: 1069807500}
+    - target: {fileID: 4894659415887997821, guid: d12b69fa125f01c4abcefd9c1ec0003b, type: 3}
+      propertyPath: sprintTogglePersistsWhenStopping
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
