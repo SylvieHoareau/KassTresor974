@@ -50,6 +50,23 @@ public class RomainPlayerController3D : MonoBehaviour
     [Tooltip("Optionnel: bool sol (ex: IsGrounded). Laisse vide si tu n'en as pas.")]
     [SerializeField] private string animGroundedBool = "";
 
+    [Header("Sons de pas")]
+    [Tooltip("Clips joués aléatoirement quand le joueur marche/court.")]
+    [SerializeField] private AudioClip[] footstepClips;
+
+    [Tooltip("Intervalle entre 2 pas en marche.")]
+    [SerializeField] private float walkStepInterval = 0.5f;
+
+    [Tooltip("Intervalle entre 2 pas en sprint.")]
+    [SerializeField] private float runStepInterval = 0.32f;
+
+    [Tooltip("Random léger sur le pitch pour éviter l'effet mitraillette.")]
+    [Range(0f, 0.3f)]
+    [SerializeField] private float pitchRandom = 0.1f;
+
+    [Tooltip("Optionnel: si vide, prend l'AudioSource sur ce GameObject.")]
+    [SerializeField] private AudioSource footstepSource;
+
     private Rigidbody rb;
     private Camera cam;
 
@@ -67,6 +84,8 @@ public class RomainPlayerController3D : MonoBehaviour
     private bool isSprinting = false;
     private bool sprintLatched = false;
 
+    private float stepTimer;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -80,6 +99,13 @@ public class RomainPlayerController3D : MonoBehaviour
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
+
+        if (footstepSource == null)
+            footstepSource = GetComponent<AudioSource>(); // pas obligatoire, mais pratique
+
+        // Si tu n'as pas d'AudioSource, tu peux en ajouter automatiquement (optionnel)
+        if (footstepSource == null)
+            footstepSource = gameObject.AddComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -88,14 +114,14 @@ public class RomainPlayerController3D : MonoBehaviour
         {
             moveAction.action.Enable();
             moveAction.action.performed += OnMovePerformed;
-            moveAction.action.canceled  += OnMoveCanceled;
+            moveAction.action.canceled += OnMoveCanceled;
         }
 
         if (jumpAction != null)
         {
             jumpAction.action.Enable();
             jumpAction.action.performed += OnJumpPerformed;
-            jumpAction.action.canceled  += OnJumpCanceled;
+            jumpAction.action.canceled += OnJumpCanceled;
         }
 
         if (sprintAction != null)
@@ -110,14 +136,14 @@ public class RomainPlayerController3D : MonoBehaviour
         if (moveAction != null)
         {
             moveAction.action.performed -= OnMovePerformed;
-            moveAction.action.canceled  -= OnMoveCanceled;
+            moveAction.action.canceled -= OnMoveCanceled;
             moveAction.action.Disable();
         }
 
         if (jumpAction != null)
         {
             jumpAction.action.performed -= OnJumpPerformed;
-            jumpAction.action.canceled  -= OnJumpCanceled;
+            jumpAction.action.canceled -= OnJumpCanceled;
             jumpAction.action.Disable();
         }
 
@@ -129,7 +155,7 @@ public class RomainPlayerController3D : MonoBehaviour
     }
 
     private void OnMovePerformed(InputAction.CallbackContext ctx) => moveInputRaw = ctx.ReadValue<Vector2>();
-    private void OnMoveCanceled(InputAction.CallbackContext ctx)  => moveInputRaw = Vector2.zero;
+    private void OnMoveCanceled(InputAction.CallbackContext ctx) => moveInputRaw = Vector2.zero;
 
     private void OnJumpPerformed(InputAction.CallbackContext ctx)
     {
@@ -170,7 +196,7 @@ public class RomainPlayerController3D : MonoBehaviour
             coyoteTimer -= Time.deltaTime;
         }
 
-        bool canFirstJump  = (jumpBufferTimer > 0 && coyoteTimer > 0);
+        bool canFirstJump = (jumpBufferTimer > 0 && coyoteTimer > 0);
         bool canDoubleJump = (!isGrounded && jumpCount < maxJumps && jumpBufferTimer > 0);
 
         if (canMove && !jumpQueued && (canFirstJump || canDoubleJump))
@@ -205,7 +231,7 @@ public class RomainPlayerController3D : MonoBehaviour
         {
             isSprinting = false;
 
-            // ✅ Option: si faux, on reset le toggle quand on s'arrête (comportement "faut rappuyer")
+            // Option: si faux, on reset le toggle quand on s'arrête (comportement "faut rappuyer")
             if (!sprintTogglePersistsWhenStopping)
                 sprintLatched = false;
         }
@@ -215,6 +241,9 @@ public class RomainPlayerController3D : MonoBehaviour
             isSprinting = sprintLatched;
         }
 
+        // Sons de pas (repris du 1er script, adapté au Rigidbody)
+        HandleFootsteps(hasMove, isGrounded, isSprinting);
+
         UpdateAnimatorParameters();
     }
 
@@ -223,9 +252,9 @@ public class RomainPlayerController3D : MonoBehaviour
         if (cam == null) cam = Camera.main;
 
         Vector3 camForward = cam.transform.forward;
-        Vector3 camRight   = cam.transform.right;
+        Vector3 camRight = cam.transform.right;
         camForward.y = 0f;
-        camRight.y   = 0f;
+        camRight.y = 0f;
         camForward.Normalize();
         camRight.Normalize();
 
@@ -253,6 +282,26 @@ public class RomainPlayerController3D : MonoBehaviour
             Quaternion targetRot = Quaternion.LookRotation(moveDirection, Vector3.up);
             Quaternion smoothRot = Quaternion.Slerp(rb.rotation, targetRot, rotationLerp);
             rb.MoveRotation(smoothRot);
+        }
+    }
+
+    private void HandleFootsteps(bool hasInput, bool grounded, bool running)
+    {
+        if (!hasInput || !grounded || footstepClips == null || footstepClips.Length == 0 || footstepSource == null)
+        {
+            stepTimer = 0f;
+            return;
+        }
+
+        stepTimer -= Time.deltaTime;
+        float interval = running ? runStepInterval : walkStepInterval;
+
+        if (stepTimer <= 0f)
+        {
+            AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
+            footstepSource.pitch = 1f + Random.Range(-pitchRandom, pitchRandom);
+            footstepSource.PlayOneShot(clip);
+            stepTimer = interval;
         }
     }
 
@@ -306,9 +355,12 @@ public class RomainPlayerController3D : MonoBehaviour
             SetLinearVelocity(new Vector3(0f, v.y, 0f));
 
             isSprinting = false;
-            // Quand on coupe le move (cinématique/voiture), on reset le toggle pour éviter un sprint "fantôme"
             sprintLatched = false;
+
             jumpQueued = false;
+
+            // Bonus: coupe les pas instant si tu disable le move
+            stepTimer = 0f;
         }
     }
 
