@@ -1,10 +1,10 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Music", menuName = "Audio/Music")]
+[CreateAssetMenu(fileName = "NewMusic", menuName = "Audio/Music")]
 public class Music : ScriptableObject
 {
     [Header("Identification")]
-    public MusicType type;
+    public MusicType type; // Utilise l'enum défini dans AudioDatabaseSO.cs
 
     [Header("Audio")]
     public AudioClip clip;
