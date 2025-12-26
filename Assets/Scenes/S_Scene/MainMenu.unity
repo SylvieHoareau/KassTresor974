@@ -10505,7 +10505,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 13.75, y: -0.0010375977}
+  m_AnchoredPosition: {x: 13.75, y: -0.0010986328}
   m_SizeDelta: {x: 27.5, y: -0.002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1482809333
@@ -10564,7 +10564,7 @@ VideoPlayer:
   m_DataSource: 0
   m_TimeUpdateMode: 2
   m_PlaybackSpeed: 1
-  m_AudioOutputMode: 2
+  m_AudioOutputMode: 1
   m_TargetAudioSources:
   - {fileID: 0}
   m_DirectAudioVolumes:
@@ -18128,6 +18128,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2389218187419590502, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
+      propertyPath: sfxs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2389218187419590502, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
+      propertyPath: musics.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2389218187419590502, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
+      propertyPath: 'sfxs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 92f5c161a2c437c488f244119103f8db, type: 2}
+    - target: {fileID: 2389218187419590502, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
+      propertyPath: 'musics.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 61d90edf6a989f64db3fd2d783972f98, type: 2}
+    - target: {fileID: 2389218187419590502, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
+      propertyPath: 'musics.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 82c7bf2393357db4683a670de76ab466, type: 2}
     - target: {fileID: 5449359056649444128, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
       propertyPath: m_Name
       value: AudioManager
@@ -18170,6 +18190,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8144426206881013466, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8884968875926429987, guid: 869bd9b4da099624fbd9fe9fd1857ecd, type: 3}
+      propertyPath: m_PlayOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
