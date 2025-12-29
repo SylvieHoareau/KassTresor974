@@ -8326,6 +8326,79 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 484480, guid: 5b88acc3fb62ad149b29e835335343a6, type: 3}
   m_PrefabInstance: {fileID: 217886301}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &220108946
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.x
+      value: -11979.123
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -346.6
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 99.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 978.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 83e19501365564e4d88130a2d276ac58, type: 2}
+    - target: {fileID: 919132149155446097, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_Name
+      value: Meshy_AI_Rocky_Tunnel_Pass_1229153413_texture (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
 --- !u!4 &232561109 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 64fb6152ec525e846bdc388efb0ed30a, type: 3}
@@ -20114,6 +20187,79 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22179bcc88e2bae4d8c5801999ddb5df, type: 3}
+--- !u!1001 &533682103
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.x
+      value: -11979.123
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -639.8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 99.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 978.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 83e19501365564e4d88130a2d276ac58, type: 2}
+    - target: {fileID: 919132149155446097, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_Name
+      value: Meshy_AI_Rocky_Tunnel_Pass_1229153413_texture (3)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
 --- !u!1001 &536440388
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22037,6 +22183,79 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 477198, guid: 2ea5c0bfea6934e49a4cca83b603575b, type: 3}
   m_PrefabInstance: {fileID: 595784556}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &599481479
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -122.61
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 99.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 978.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 83e19501365564e4d88130a2d276ac58, type: 2}
+    - target: {fileID: 919132149155446097, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_Name
+      value: Meshy_AI_Rocky_Tunnel_Pass_1229153413_texture
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
 --- !u!1001 &599729379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52591,6 +52810,79 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 252702324}
   m_SourcePrefab: {fileID: 100100000, guid: 8d5f15814e2635b4caac8162f5b244b5, type: 3}
+--- !u!1001 &1262703520
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 11669.872
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -424.4
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 99.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 978.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 83e19501365564e4d88130a2d276ac58, type: 2}
+    - target: {fileID: 919132149155446097, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
+      propertyPath: m_Name
+      value: Meshy_AI_Rocky_Tunnel_Pass_1229153413_texture (2)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3557672cdb0b149459ed4f2e8c4ee6ff, type: 3}
 --- !u!1001 &1264042802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -91052,3 +91344,7 @@ SceneRoots:
   - {fileID: 248569858}
   - {fileID: 1790507473}
   - {fileID: 290855137}
+  - {fileID: 599481479}
+  - {fileID: 1262703520}
+  - {fileID: 220108946}
+  - {fileID: 533682103}
