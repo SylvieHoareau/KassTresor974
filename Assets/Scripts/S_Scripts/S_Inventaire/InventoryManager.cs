@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
-using System.Diagnostics; // Nécessaire pour l'écriture de fichiers
 
 public class InventoryManager : MonoBehaviour
 {
@@ -40,7 +39,7 @@ public class InventoryManager : MonoBehaviour
     public void SaveInventory()
     {
         SaveData data = new SaveData();
-        foreach (ITimer item in listeObjets)
+        foreach (Item item in listeObjets)
         {
             data.nomsObjetsPossedes.Add(item.name); // On stocke le nom de l'objet
         }
