@@ -19,13 +19,24 @@ public class QuizNPC : MonoBehaviour
     [TextArea] public string defeatText = "Faux !";
 
     [Header("Evénements")]
-    public UnityEvent onWin;                     // Quand le joueur valide la bonne réponse
-    public UnityEvent onVictoryUIDisappear;      // Quand le texte disparaît (pour ton timer)
+    public UnityEvent onWin;
+    public UnityEvent onVictoryUIDisappear;
 
     [Header("UI de victoire (optionnel)")]
     public GameObject victoryUI;
 
+    [Header("Contrôles clavier")]
+    public KeyCode validateKey = KeyCode.E;
+    public KeyCode upKey = KeyCode.Z;
+    public KeyCode downKey = KeyCode.S;
+
     private bool hasWon = false;
+    private bool playerInRange = false;
+
+    private enum QuizState { None, Greeting, Question, Victory, Defeat }
+    private QuizState state = QuizState.None;
+
+    private int selectedIndex = 0;
 
     private void Start()
     {
@@ -33,29 +44,56 @@ public class QuizNPC : MonoBehaviour
             victoryUI.SetActive(false);
     }
 
+    private void Update()
+    {
+        if (!playerInRange) return;
+        if (state == QuizState.None) return;
+
+        if (Input.GetKeyDown(upKey))
+            MoveSelection(-1);
+
+        if (Input.GetKeyDown(downKey))
+            MoveSelection(+1);
+
+        if (Input.GetKeyDown(validateKey))
+            ActivateSelection();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && !hasWon)
         {
+            playerInRange = true;
             StartQuiz();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = false;
+            state = QuizState.None;
+            DialogueManager.Instance.CloseDialogue();
         }
     }
 
     void StartQuiz()
     {
+        state = QuizState.Greeting;
+        selectedIndex = 0;
+
         DialogueManager.Instance.ShowMessage(speakerProfile, greeting);
-        DialogueManager.Instance.AddChoice(">", AskQuestion, false);
+        RedrawChoices();
     }
 
     void AskQuestion()
     {
-        DialogueManager.Instance.ShowMessage(speakerProfile, question);
+        state = QuizState.Question;
+        selectedIndex = 0;
 
-        for (int i = 0; i < answers.Length; i++)
-        {
-            int index = i;
-            DialogueManager.Instance.AddChoice(answers[i], () => CheckAnswer(index), false);
-        }
+        DialogueManager.Instance.ShowMessage(speakerProfile, question);
+        RedrawChoices();
     }
 
     void CheckAnswer(int index)
@@ -63,29 +101,26 @@ public class QuizNPC : MonoBehaviour
         if (index == correctAnswerIndex)
         {
             hasWon = true;
+            state = QuizState.Victory;
+            selectedIndex = 0;
 
             DialogueManager.Instance.ShowMessage(speakerProfile, victoryText);
 
-            // Affiche l'UI
             if (victoryUI != null)
                 victoryUI.SetActive(true);
 
-            // Quand le joueur continue → changement de scène ou autre
-            DialogueManager.Instance.AddChoice(">", () =>
-            {
-                onWin.Invoke();
-                DialogueManager.Instance.CloseDialogue();
-            });
+            RedrawChoices();
         }
         else
         {
+            state = QuizState.Defeat;
+            selectedIndex = 0;
+
             DialogueManager.Instance.ShowMessage(speakerProfile, defeatText);
-            DialogueManager.Instance.AddChoice(">", AskQuestion, false);
-            DialogueManager.Instance.AddChoice("Partir", () => DialogueManager.Instance.CloseDialogue());
+            RedrawChoices();
         }
     }
 
-    // --- Fonction que TON TIMER appellera pour cacher l'UI ---
     public void HideVictoryUI()
     {
         if (victoryUI != null)
@@ -94,9 +129,105 @@ public class QuizNPC : MonoBehaviour
         onVictoryUIDisappear.Invoke();
     }
 
-    private void OnTriggerExit(Collider other)
+    private int GetChoiceCount()
     {
-        if (other.CompareTag("Player"))
-            DialogueManager.Instance.CloseDialogue();
+        switch (state)
+        {
+            case QuizState.Greeting: return 1; // ">"
+            case QuizState.Question: return answers != null ? answers.Length : 0;
+            case QuizState.Victory:  return 1; // ">"
+            case QuizState.Defeat:   return 2; // ">" + "Partir"
+            default: return 0;
+        }
+    }
+
+    private void MoveSelection(int delta)
+    {
+        int count = GetChoiceCount();
+        if (count <= 0) return;
+
+        selectedIndex += delta;
+        if (selectedIndex < 0) selectedIndex = count - 1;
+        if (selectedIndex >= count) selectedIndex = 0;
+
+        RedrawChoices(); // ✅ redraw propre (avec ClearChoices)
+    }
+
+    private void ActivateSelection()
+    {
+        switch (state)
+        {
+            case QuizState.Greeting:
+                AskQuestion();
+                break;
+
+            case QuizState.Question:
+                if (answers == null || answers.Length == 0) return;
+                CheckAnswer(selectedIndex);
+                break;
+
+            case QuizState.Victory:
+                onWin.Invoke();
+                DialogueManager.Instance.CloseDialogue();
+                state = QuizState.None;
+                break;
+
+            case QuizState.Defeat:
+                if (selectedIndex == 0) AskQuestion();
+                else
+                {
+                    DialogueManager.Instance.CloseDialogue();
+                    state = QuizState.None;
+                }
+                break;
+        }
+    }
+
+    private void RedrawChoices()
+    {
+        // ✅ LE FIX ANTI-NARUTO
+        DialogueManager.Instance.ClearChoices();
+
+        switch (state)
+        {
+            case QuizState.Greeting:
+                DialogueManager.Instance.AddChoice(FormatChoice(">", 0), AskQuestion, false);
+                break;
+
+            case QuizState.Question:
+                for (int i = 0; i < answers.Length; i++)
+                {
+                    int index = i;
+                    DialogueManager.Instance.AddChoice(
+                        FormatChoice(answers[i], i),
+                        () => CheckAnswer(index),
+                        false
+                    );
+                }
+                break;
+
+            case QuizState.Victory:
+                DialogueManager.Instance.AddChoice(FormatChoice(">", 0), () =>
+                {
+                    onWin.Invoke();
+                    DialogueManager.Instance.CloseDialogue();
+                    state = QuizState.None;
+                });
+                break;
+
+            case QuizState.Defeat:
+                DialogueManager.Instance.AddChoice(FormatChoice(">", 0), AskQuestion, false);
+                DialogueManager.Instance.AddChoice(FormatChoice("Partir", 1), () =>
+                {
+                    DialogueManager.Instance.CloseDialogue();
+                    state = QuizState.None;
+                }, false);
+                break;
+        }
+    }
+
+    private string FormatChoice(string label, int index)
+    {
+        return (index == selectedIndex ? "> " : "  ") + label;
     }
 }

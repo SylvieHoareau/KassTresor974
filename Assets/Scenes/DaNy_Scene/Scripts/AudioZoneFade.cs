@@ -17,65 +17,113 @@ public class AudioZoneFade : MonoBehaviour
     [Header("Déclenchement")]
     public string playerTag = "Player";
 
+    [Header("Comportement")]
+    [Tooltip("Si vrai, Stop() les sources après un fade-out (recommandé pour perf).")]
+    public bool stopOnFadeOut = true;
+
     private Coroutine fadeRoutine;
+
+    // Anti-spam si OnTriggerEnter/Exit se déclenche plusieurs fois
+    private int playerInsideCount = 0;
+    private bool isAudible = false;
+
+    // Buffers réutilisés (évite allocations/GC)
+    private float[] startVolumes;
+    private float[] endVolumes;
 
     void Reset()
     {
-        // aide à config rapide si tu ajoutes le script sur un objet qui a des AudioSources
         sources = GetComponents<AudioSource>();
     }
 
     private void Awake()
     {
-        // sécurité : si targetVolumes pas rempli, on prend les volumes actuels comme cibles
-        if (sources != null && sources.Length > 0)
-        {
-            if (targetVolumes == null || targetVolumes.Length != sources.Length)
-            {
-                targetVolumes = new float[sources.Length];
-                for (int i = 0; i < sources.Length; i++)
-                    targetVolumes[i] = sources[i] != null ? sources[i].volume : 0f;
-            }
+        if (sources == null || sources.Length == 0)
+            return;
 
-            // on démarre silencieux (mais prêts)
+        // Si targetVolumes pas OK, on prend les volumes actuels comme cibles
+        if (targetVolumes == null || targetVolumes.Length != sources.Length)
+        {
+            targetVolumes = new float[sources.Length];
             for (int i = 0; i < sources.Length; i++)
-            {
-                if (sources[i] == null) continue;
-                sources[i].loop = true;
-                sources[i].playOnAwake = false;
-                sources[i].volume = 0f;
-                if (!sources[i].isPlaying) sources[i].Play();
-            }
+                targetVolumes[i] = sources[i] != null ? sources[i].volume : 0f;
+        }
+
+        // Prépare les buffers
+        startVolumes = new float[sources.Length];
+        endVolumes = new float[sources.Length];
+
+        // Prépare les sources : silencieuses et stoppées (pas de Play() en fond)
+        for (int i = 0; i < sources.Length; i++)
+        {
+            if (sources[i] == null) continue;
+
+            sources[i].loop = true;
+            sources[i].playOnAwake = false;
+            sources[i].volume = 0f;
+
+            if (sources[i].isPlaying)
+                sources[i].Stop();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag(playerTag)) return;
-        StartFade(toAudible: true);
+
+        playerInsideCount++;
+        if (playerInsideCount > 1) return; // déjà dedans via un autre collider
+
+        // Fade in uniquement si on n'est pas déjà audible
+        if (!isAudible)
+        {
+            isAudible = true;
+            StartFade(toAudible: true);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag(playerTag)) return;
-        StartFade(toAudible: false);
+
+        playerInsideCount = Mathf.Max(0, playerInsideCount - 1);
+        if (playerInsideCount > 0) return; // encore dedans via un autre collider
+
+        // Fade out uniquement si on était audible
+        if (isAudible)
+        {
+            isAudible = false;
+            StartFade(toAudible: false);
+        }
     }
 
     private void StartFade(bool toAudible)
     {
-        if (fadeRoutine != null) StopCoroutine(fadeRoutine);
+        if (fadeRoutine != null)
+            StopCoroutine(fadeRoutine);
+
         fadeRoutine = StartCoroutine(FadeCoroutine(toAudible));
     }
 
     private IEnumerator FadeCoroutine(bool toAudible)
     {
-        if (sources == null) yield break;
+        if (sources == null || sources.Length == 0)
+            yield break;
 
         float duration = Mathf.Max(0.01f, toAudible ? fadeInTime : fadeOutTime);
 
-        float[] startVolumes = new float[sources.Length];
-        float[] endVolumes = new float[sources.Length];
+        // Si on fade-in, on Play avant de monter le volume
+        if (toAudible)
+        {
+            for (int i = 0; i < sources.Length; i++)
+            {
+                if (sources[i] == null) continue;
+                if (!sources[i].isPlaying)
+                    sources[i].Play();
+            }
+        }
 
+        // Cache volumes départ/arrivée dans buffers (pas de new)
         for (int i = 0; i < sources.Length; i++)
         {
             if (sources[i] == null) continue;
@@ -99,10 +147,24 @@ public class AudioZoneFade : MonoBehaviour
             yield return null;
         }
 
+        // Snap final
         for (int i = 0; i < sources.Length; i++)
         {
             if (sources[i] == null) continue;
             sources[i].volume = endVolumes[i];
         }
+
+        // Si fade-out terminé : Stop pour économiser CPU audio
+        if (!toAudible && stopOnFadeOut)
+        {
+            for (int i = 0; i < sources.Length; i++)
+            {
+                if (sources[i] == null) continue;
+                if (sources[i].isPlaying)
+                    sources[i].Stop();
+            }
+        }
+
+        fadeRoutine = null;
     }
 }

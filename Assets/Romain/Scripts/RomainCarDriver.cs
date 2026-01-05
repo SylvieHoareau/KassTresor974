@@ -52,6 +52,28 @@ public class RomainCarDriver : MonoBehaviour
              "Si désactivé, les collisions sont prises en compte aussi en marche arrière.")]
     public bool allowReverseThroughObstacles = true;
 
+    [Header("Chemin (anti hors-piste)")]
+    [Tooltip("Active le mode 'la voiture suit un chemin' : le joueur avance, et la direction est contrainte/assistée.")]
+    [SerializeField] private bool usePath = true;
+
+    [Tooltip("Points du chemin (dans l'ordre). Place des empties le long de la route.")]
+    [SerializeField] private Transform[] pathPoints;
+
+    [Tooltip("Distance en mètres visée devant la voiture sur le chemin (plus grand = plus doux, moins précis).")]
+    [SerializeField] private float pathLookAhead = 6f;
+
+    [Tooltip("Largeur du corridor: si la voiture s'éloigne plus que ça du chemin, on la ramène.")]
+    [SerializeField] private float pathMaxLateralDistance = 3f;
+
+    [Tooltip("Force de retour vers le chemin (0 = pas de retour).")]
+    [SerializeField] private float pathSnapStrength = 6f;
+
+    [Tooltip("Aide directionnelle. 1 = normal, >1 = plus agressif.")]
+    [SerializeField] private float autoSteerStrength = 1.2f;
+
+    [Tooltip("Si vrai, interdit de reculer (souvent utile en mode 'ride on rails').")]
+    [SerializeField] private bool forbidReverse = false;
+
     [Header("Interaction - Sécurité")]
     [SerializeField] private float interactCooldown = 0.25f;
     private float lastInteractTime = -999f;
@@ -65,6 +87,27 @@ public class RomainCarDriver : MonoBehaviour
 
     [Tooltip("Distance max du raycast pour snap la sortie au sol")]
     [SerializeField] private float exitGroundRay = 4f;
+
+    // ===================== AUDIO AJOUTÉ =====================
+    [Header("Audio voiture")]
+    [Tooltip("AudioSource pour le bruit de démarrage (Loop OFF, Play On Awake OFF)")]
+    [SerializeField] private AudioSource engineStartSource;
+
+    [Tooltip("AudioSource pour le bruit moteur léger (Loop ON, Play On Awake OFF)")]
+    [SerializeField] private AudioSource engineLoopSource;
+
+    [Tooltip("Délai avant de lancer le loop moteur après le start")]
+    [SerializeField] private float engineLoopDelay = 0.8f;
+
+    [Tooltip("Pitch moteur au ralenti")]
+    [SerializeField] private float engineMinPitch = 0.9f;
+
+    [Tooltip("Pitch moteur à vitesse max")]
+    [SerializeField] private float engineMaxPitch = 1.2f;
+
+    [Tooltip("Active la variation de pitch selon la vitesse")]
+    [SerializeField] private bool enginePitchWithSpeed = true;
+    // ========================================================
 
     // État
     private GameObject player;
@@ -88,6 +131,9 @@ public class RomainCarDriver : MonoBehaviour
     // Pour gérer IsPressed proprement
     private bool interactHeldLastFrame = false;
 
+    // Path cache (pour éviter de scanner tous les segments inutilement)
+    private int lastClosestSegment = 0;
+
     private void Start()
     {
         if (frontSteerWheels != null && frontSteerWheels.Length > 0)
@@ -110,6 +156,10 @@ public class RomainCarDriver : MonoBehaviour
 
         if (exitPoint != null && !exitPoint.IsChildOf(transform))
             Debug.LogWarning("RomainCarDriver : ExitPoint n'est PAS enfant de la voiture. Risque de sortie incohérente.");
+
+        // Sécurité audio: on démarre éteint
+        if (engineLoopSource != null)
+            engineLoopSource.Stop();
 
         AlignToGround(true);
     }
@@ -160,10 +210,27 @@ public class RomainCarDriver : MonoBehaviour
         float moveInput = input.y;
         float turnInput = input.x;
 
+        if (forbidReverse)
+            moveInput = Mathf.Max(0f, moveInput);
+
         float targetSpeed = moveInput * maxSpeed;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
 
         Vector3 groundNormal = GetGroundNormal();
+
+        // --------- PATH: calcule un turnInput automatique ----------
+        if (usePath && pathPoints != null && pathPoints.Length >= 2)
+        {
+            float autoTurn = ComputeAutoSteerOnPath(groundNormal);
+            turnInput = Mathf.Clamp(autoTurn * autoSteerStrength, -1f, 1f);
+
+            // Optionnel: si tu veux autoriser un peu le joueur à corriger, décommente:
+            // turnInput = Mathf.Clamp(turnInput + input.x * 0.25f, -1f, 1f);
+
+            // Optionnel: ramener dans le corridor
+            ApplyPathSnapIfNeeded();
+        }
+        // ----------------------------------------------------------
 
         float speedAbs = Mathf.Abs(currentSpeed);
         bool hasTurnInput = Mathf.Abs(turnInput) > 0.01f;
@@ -246,7 +313,155 @@ public class RomainCarDriver : MonoBehaviour
 
         UpdateWheels(currentSpeed, turnInput);
         AlignToGround(false);
+
+        // =================== AUDIO: pitch moteur ====================
+        UpdateEngineAudio();
     }
+
+    // ===================== PATH HELPERS =====================
+
+    private float ComputeAutoSteerOnPath(Vector3 groundNormal)
+    {
+        // On cherche le point le plus proche sur la polyline + un point look-ahead
+        Vector3 closest, tangent;
+        float lateralDist;
+        GetClosestPointAndTangentOnPath(transform.position, out closest, out tangent, out lateralDist);
+
+        Vector3 lookTarget = closest + tangent * pathLookAhead;
+
+        // Direction désirée sur le plan du sol (évite les angles bizarres en pente)
+        Vector3 desiredDir = (lookTarget - transform.position);
+        if (groundNormal != Vector3.zero)
+            desiredDir = Vector3.ProjectOnPlane(desiredDir, groundNormal);
+        desiredDir.y = 0f;
+
+        if (desiredDir.sqrMagnitude < 0.0001f)
+            return 0f;
+
+        desiredDir.Normalize();
+
+        Vector3 fwd = transform.forward;
+        if (groundNormal != Vector3.zero)
+            fwd = Vector3.ProjectOnPlane(fwd, groundNormal).normalized;
+        else
+        {
+            fwd.y = 0f;
+            fwd = fwd.sqrMagnitude < 0.0001f ? Vector3.forward : fwd.normalized;
+        }
+
+        // Angle signé autour de la normale (ou Y si pas de normale)
+        Vector3 axis = (groundNormal != Vector3.zero) ? groundNormal : Vector3.up;
+        float signedAngle = Vector3.SignedAngle(fwd, desiredDir, axis);
+
+        // Map angle -> [-1,1]
+        // "35° = braquage complet" est un bon départ.
+        const float fullSteerAngle = 35f;
+        float turn = Mathf.Clamp(signedAngle / fullSteerAngle, -1f, 1f);
+
+        return turn;
+    }
+
+    private void ApplyPathSnapIfNeeded()
+    {
+        if (pathSnapStrength <= 0f) return;
+
+        Vector3 closest, tangent;
+        float lateralDist;
+        GetClosestPointAndTangentOnPath(transform.position, out closest, out tangent, out lateralDist);
+
+        if (lateralDist <= pathMaxLateralDistance) return;
+
+        // Ramène progressivement vers le chemin (pas un teleport sec)
+        Vector3 toPath = (closest - transform.position);
+        // On évite de changer la hauteur brutalement, AlignToGround gère déjà ça
+        toPath.y = 0f;
+
+        transform.position += toPath * Mathf.Clamp01(Time.deltaTime * pathSnapStrength);
+    }
+
+    private void GetClosestPointAndTangentOnPath(
+        Vector3 worldPos,
+        out Vector3 closestPoint,
+        out Vector3 tangent,
+        out float lateralDistance)
+    {
+        closestPoint = worldPos;
+        tangent = transform.forward;
+        lateralDistance = 0f;
+
+        if (pathPoints == null || pathPoints.Length < 2)
+            return;
+
+        int segCount = pathPoints.Length - 1;
+
+        // On cherche autour du dernier segment trouvé pour optimiser,
+        // mais on reste safe si le joueur arrive n'importe où.
+        int start = Mathf.Clamp(lastClosestSegment - 2, 0, segCount - 1);
+        int end = Mathf.Clamp(lastClosestSegment + 2, 0, segCount - 1);
+
+        float bestSqr = float.MaxValue;
+        int bestSeg = lastClosestSegment;
+        Vector3 bestPoint = worldPos;
+        Vector3 bestTangent = transform.forward;
+
+        // Petit fallback: si path est tordu et qu’on s’est perdu, on scanne tout.
+        // (segCount est souvent petit, donc c’est ok.)
+        bool didFullScan = false;
+
+        for (int pass = 0; pass < 2; pass++)
+        {
+            int a = (pass == 0) ? start : 0;
+            int b = (pass == 0) ? end : segCount - 1;
+
+            for (int i = a; i <= b; i++)
+            {
+                Transform p0t = pathPoints[i];
+                Transform p1t = pathPoints[i + 1];
+                if (p0t == null || p1t == null) continue;
+
+                Vector3 p0 = p0t.position;
+                Vector3 p1 = p1t.position;
+
+                Vector3 pointOnSeg = ClosestPointOnSegment(worldPos, p0, p1);
+                float sqr = (worldPos - pointOnSeg).sqrMagnitude;
+
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    bestSeg = i;
+                    bestPoint = pointOnSeg;
+                    Vector3 segDir = (p1 - p0);
+                    segDir.y = 0f;
+                    bestTangent = segDir.sqrMagnitude < 0.0001f ? transform.forward : segDir.normalized;
+                }
+            }
+
+            if (bestSqr < float.MaxValue * 0.5f) break; // trouvé un truc correct
+            if (pass == 0 && !didFullScan)
+            {
+                didFullScan = true;
+                // deuxième pass = full scan
+            }
+        }
+
+        lastClosestSegment = bestSeg;
+        closestPoint = bestPoint;
+        tangent = bestTangent;
+        lateralDistance = Mathf.Sqrt(bestSqr);
+    }
+
+    private static Vector3 ClosestPointOnSegment(Vector3 p, Vector3 a, Vector3 b)
+    {
+        Vector3 ab = b - a;
+        float abSqr = Vector3.Dot(ab, ab);
+        if (abSqr <= 0.000001f) return a;
+
+        float t = Vector3.Dot(p - a, ab) / abSqr;
+        t = Mathf.Clamp01(t);
+        return a + ab * t;
+    }
+
+    // ===================== END PATH HELPERS =====================
 
     private void HandleInteractionInput()
     {
@@ -402,6 +617,17 @@ public class RomainCarDriver : MonoBehaviour
             cameraOrbit.target = transform;
         }
 
+        // ===== AUDIO: start + loop =====
+        if (engineStartSource != null)
+            engineStartSource.Play();
+
+        if (engineLoopSource != null)
+        {
+            engineLoopSource.Stop();
+            engineLoopSource.pitch = engineMinPitch;
+            engineLoopSource.PlayDelayed(Mathf.Max(0f, engineLoopDelay));
+        }
+
         AlignToGround(true);
     }
 
@@ -412,8 +638,10 @@ public class RomainCarDriver : MonoBehaviour
         isPlayerInside = false;
         currentSpeed = 0f;
 
-        // IMPORTANT : on aligne la voiture AVANT de calculer la sortie,
-        // sinon exitPoint (enfant) peut "bouger" après et créer des incohérences.
+        // ===== AUDIO: stop loop =====
+        if (engineLoopSource != null)
+            engineLoopSource.Stop();
+
         AlignToGround(true);
 
         if (player != null && exitPoint != null)
@@ -447,15 +675,23 @@ public class RomainCarDriver : MonoBehaviour
                 cameraOrbit.target = player.transform;
         }
 
-        // Anti double toggle instantané
         lastInteractTime = Time.time;
 
         AlignToGround(true);
     }
 
+    private void UpdateEngineAudio()
+    {
+        if (!isPlayerInside) return;
+        if (engineLoopSource == null) return;
+        if (!enginePitchWithSpeed) return;
+
+        float t = (maxSpeed <= 0.0001f) ? 0f : Mathf.Clamp01(Mathf.Abs(currentSpeed) / maxSpeed);
+        engineLoopSource.pitch = Mathf.Lerp(engineMinPitch, engineMaxPitch, t);
+    }
+
     private void TeleportPlayerSafely(GameObject p, Vector3 pos, Quaternion rot)
     {
-        // Le CharacterController peut annuler/corriger un teleport si tu le bouges activé
         var cc = p.GetComponent<CharacterController>();
         bool ccWasEnabled = false;
         if (cc != null)
@@ -464,7 +700,6 @@ public class RomainCarDriver : MonoBehaviour
             cc.enabled = false;
         }
 
-        // Si Rigidbody, on passe par rb.position/rotation + reset vitesses
         var rb = p.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -497,9 +732,20 @@ public class RomainCarDriver : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        // Visualiser le volume d'OverlapBox pour debug collisions
+        // OverlapBox collisions debug
         Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
         Gizmos.DrawWireCube(Vector3.up * colliderHalfExtents.y, colliderHalfExtents * 2f);
+
+        // Path debug
+        if (pathPoints != null && pathPoints.Length >= 2)
+        {
+            Gizmos.matrix = Matrix4x4.identity;
+            for (int i = 0; i < pathPoints.Length - 1; i++)
+            {
+                if (pathPoints[i] == null || pathPoints[i + 1] == null) continue;
+                Gizmos.DrawLine(pathPoints[i].position, pathPoints[i + 1].position);
+            }
+        }
     }
 #endif
 }

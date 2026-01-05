@@ -18,6 +18,11 @@ public class RomainInteractBatayCoq : MonoBehaviour
     [Header("Scène")]
     public string sceneName = "BatayCoqScene";
 
+    [Header("Contrôles clavier")]
+    public KeyCode interactKey = KeyCode.E;
+    public KeyCode leftKey = KeyCode.Q;   // Q = gauche (AZERTY)
+    public KeyCode rightKey = KeyCode.D;  // D = droite (AZERTY)
+
     private bool playerInRange = false;
     private bool isChoosing = false;
 
@@ -32,17 +37,47 @@ public class RomainInteractBatayCoq : MonoBehaviour
 
     void Update()
     {
-        if (!playerInRange || isChoosing) 
-            return;
+        // --- Ouvrir le choix ---
+        if (!isChoosing)
+        {
+            if (!playerInRange)
+                return;
 
-        // INTERACTION = E clavier + bouton OUEST manette (JoystickButton2)
-        bool interactPressed =
-            Input.GetKeyDown(KeyCode.E) ||
+            bool interactPressed =
+                Input.GetKeyDown(interactKey) ||
+                Input.GetKeyDown(KeyCode.JoystickButton0);
+
+            if (interactPressed)
+                OpenChoice();
+
+            return;
+        }
+
+        // --- Navigation Oui/Non (quand le panel est ouvert) ---
+        if (Input.GetKeyDown(leftKey))
+            SelectButton(yesButton); // à gauche = Oui (choix classique)
+
+        if (Input.GetKeyDown(rightKey))
+            SelectButton(noButton);
+
+        // --- Valider avec E (ou bouton manette) ---
+        bool validatePressed =
+            Input.GetKeyDown(interactKey) ||
             Input.GetKeyDown(KeyCode.JoystickButton0);
 
-        if (interactPressed)
+        if (validatePressed)
         {
-            OpenChoice();
+            var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+
+            if (selected == null)
+            {
+                // Si rien n’est sélectionné, on force Oui
+                SelectButton(yesButton);
+                selected = yesButton != null ? yesButton.gameObject : null;
+            }
+
+            if (selected == yesButton.gameObject) OnClickYes();
+            else if (selected == noButton.gameObject) OnClickNo();
         }
     }
 
@@ -59,13 +94,16 @@ public class RomainInteractBatayCoq : MonoBehaviour
         if (titleText != null)
             titleText.text = "Voulez-vous jouer à Batay Coq ?";
 
-        // Évite que Unity valide un bouton automatiquement
         if (EventSystem.current != null)
             EventSystem.current.SetSelectedGameObject(null);
 
-        // Sélection automatique du bouton Oui pour navigation manette
-        if (EventSystem.current != null && yesButton != null)
-            EventSystem.current.SetSelectedGameObject(yesButton.gameObject);
+        SelectButton(yesButton);
+    }
+
+    private void SelectButton(Button btn)
+    {
+        if (EventSystem.current == null || btn == null) return;
+        EventSystem.current.SetSelectedGameObject(btn.gameObject);
     }
 
     public void OnClickYes()
@@ -80,14 +118,13 @@ public class RomainInteractBatayCoq : MonoBehaviour
 
         isChoosing = false;
 
-        // Nettoyage de la sélection UI
         if (EventSystem.current != null)
             EventSystem.current.SetSelectedGameObject(null);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player")) 
+        if (!other.CompareTag("Player"))
             return;
 
         playerInRange = true;
@@ -98,7 +135,7 @@ public class RomainInteractBatayCoq : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player")) 
+        if (!other.CompareTag("Player"))
             return;
 
         playerInRange = false;
