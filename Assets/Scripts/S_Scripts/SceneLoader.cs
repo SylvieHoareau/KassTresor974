@@ -66,7 +66,7 @@ public class SceneLoader : MonoBehaviour
     }
     
     public void LoadMainMenu() => StartTransitionToScene("MainMenu");
-    public void LoadMainScene() => StartTransitionToScene("Scene_Balade");
+    public void LoadMainScene() => StartTransitionToScene("Scene_Radio");
     public void LoadParcPoule() => StartTransitionToScene("ParcPouleScene");
     public void LoadBatayCoq() => StartTransitionToScene("BatayCok");
     public void LoadMap() => StartTransitionToScene("MapScene");
@@ -74,6 +74,6 @@ public class SceneLoader : MonoBehaviour
     public void LoadQuizzScene() => StartTransitionToScene("Quizz");
     public void LoadOptionsScene() => StartTransitionToScene("Options");
     public void LoadCredits() => StartTransitionToScene("Credits");
-    public void LoadEnigmeFinale() => StartTransitionToScene("Enigme Finale");
+    public void LoadEnigmeFinale() => StartTransitionToScene("EnigmeFinale");
 
 }

@@ -39,6 +39,10 @@ public class QuizManager : MonoBehaviour
     [Header("Victory Effect")]
     [SerializeField] private VictoryEffect victoryEffect;
 
+    [Header("Récompense")]
+    public Item recompenseQuiz; // L'objet à ajouter à l'inventaire en récompense
+    public int scoreMinimumRequis = 3; // Score minimum pour obtenir la récompense
+
     // Start est appelée une seule fois
     void Start()
     {
@@ -269,8 +273,23 @@ public class QuizManager : MonoBehaviour
             goodFeedbackPanel.SetActive(true);
         }
 
-        // Mise à jour de l'UI
-        feedbackText.text = $"Quiz terminé ! Score : {score}";
+        // --- LOGIQUE D'INVENTAIRE ------------------
+        if (score >= scoreMinimumRequis && recompenseQuiz != null)
+        {
+            // On demande à l'InventoryManager d'ajouter l'objet
+            InventoryManager.Instance.AjouterObjet(recompenseQuiz);
+            feedbackText.text = $"Bravo ! Tu as gagné : {recompenseQuiz.nom}";
+
+            // APPEL DE LA NOTIFICATION ICI
+            NotificationManager.Instance.AfficherNotification($"Nouvel objet : {recompenseQuiz.nom} !");
+        }
+        else
+        {
+            // Mise à jour de l'UI
+            feedbackText.text = $"Quiz terminé ! Score : {score}";
+        }
+        // --------------------------------------------
+
         timerText.text = "";
 
         // Désactiver les éléments du jeu (questions, boutons, etc.)
