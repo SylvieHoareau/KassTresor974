@@ -43,6 +43,9 @@ public class QuizManager : MonoBehaviour
     public Item recompenseQuiz; // L'objet à ajouter à l'inventaire en récompense
     public int scoreMinimumRequis = 3; // Score minimum pour obtenir la récompense
 
+    private bool quizFinished = false;
+
+    public Button replayButton;
     // Start est appelée une seule fois
     void Start()
     {
@@ -223,21 +226,26 @@ public class QuizManager : MonoBehaviour
         // Délai
         yield return new WaitForSeconds(1.2f);
 
-        // Masquer le panneau si nécessaire après le délai
-        if (goodFeedbackPanel != null)
+        // On ne masque le panneau QUE si ce n'est pas la dernière question
+        if (currentQuestionIndex < questionData.questions.Length - 1)
         {
-            // On peut utiliser un DOFade Out si on veut
-            CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
-            if (cg != null)
+             // Masquer le panneau si nécessaire après le délai
+            if (goodFeedbackPanel != null)
             {
-                cg.DOFade(0f, 0.2f).OnComplete(() => goodFeedbackPanel.SetActive(false));
-            }
-            else
-            {
-                goodFeedbackPanel.SetActive(false);
+                // On peut utiliser un DOFade Out si on veut
+                CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
+                if (cg != null)
+                {
+                    cg.DOFade(0f, 0.2f).OnComplete(() => goodFeedbackPanel.SetActive(false));
+                }
+                else
+                {
+                    goodFeedbackPanel.SetActive(false);
+                }
             }
         }
 
+        // Passer à la question suivante
         NextQuestion();
     }
 
@@ -260,6 +268,8 @@ public class QuizManager : MonoBehaviour
         // Arrêter la logique du quiz
         timerRunning = false;
 
+        quizFinished = true;
+
         // Arrêter explicitement la coroutine
         if (timerRunCoroutine != null)
         {
@@ -271,7 +281,12 @@ public class QuizManager : MonoBehaviour
         if (goodFeedbackPanel != null)
         {
             goodFeedbackPanel.SetActive(true);
+            CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
+            if (cg != null) cg.alpha = 1f; // On force la visibilité
         }
+
+        // On calcule le nombre total de questions
+        int nombreTotalQuestions = questionData.questions.Length;
 
         // --- LOGIQUE D'INVENTAIRE ------------------
         if (score >= scoreMinimumRequis && recompenseQuiz != null)
@@ -286,7 +301,7 @@ public class QuizManager : MonoBehaviour
         else
         {
             // Mise à jour de l'UI
-            feedbackText.text = $"Quiz terminé ! Score : {score}";
+            feedbackText.text = $"Quiz terminé ! Score : {score} / {nombreTotalQuestions}. Réessaie pour gagner la récompense !";
         }
         // --------------------------------------------
 
@@ -295,27 +310,65 @@ public class QuizManager : MonoBehaviour
         // Désactiver les éléments du jeu (questions, boutons, etc.)
         questionText.gameObject.SetActive(false);
         questionImage.gameObject.SetActive(false);
+
         foreach (var btn in answerButtons)
         {
             btn.gameObject.SetActive(false);
         }
 
+        replayButton.gameObject.SetActive(true);
+
         // Déclenche l'évenement pour les abonnées, en passant le score
         OnQuizFinished?.Invoke(score);
 
-        if (victoryEffect != null)
+        // --- NOUVELLE LOGIQUE : SCORE PARFAIT UNIQUEMENT ---
+        // On vérifie si le score est égal au nombre total de questions.
+        // On ajoute aussi une sécurité (> 0) pour éviter de lancer l'effet si le quiz était vide.
+        if (score == nombreTotalQuestions && nombreTotalQuestions > 0)
         {
-            victoryEffect.PlayVictory();
+            Debug.Log("Score parfait ! Lancement de l'effet de victoire.");
+            if (victoryEffect != null)
+            {
+                victoryEffect.PlayVictory();
+                // Optionnel : Tu peux ajouter un message spécial pour le score parfait
+                // feedbackText.text += "\nSCORE PARFAIT ! INCROYABLE !";
+            }
+            else
+            {
+                Debug.LogWarning("Attention : Un score parfait a été atteint, mais le VictoryEffect n'est pas assigné dans l'inspecteur !");
+            }
         }
-        else
+        // ---------------------------------------------------
+    }
+
+    public void RejouerQuiz()
+    {
+        // 1. On remet les compteurs à zéro
+        currentQuestionIndex = 0;
+        score = 0;
+        quizFinished = false; // Très important pour débloquer ton Timer !
+
+        // 2. On prépare l'UI
+        UpdateScoreUI();
+        replayButton.gameObject.SetActive(false); // On cache le bouton rejouer
+        
+        // On réactive les éléments que FinishQuiz avait cachés
+        questionText.gameObject.SetActive(true);
+        // questionImage.gameObject.SetActive(true); // Optionnel selon ton setup
+        foreach (var btn in answerButtons)
         {
-            Debug.LogWarning("VictoryEffect non assigné !");
+            btn.gameObject.SetActive(true);
         }
+
+        // 3. On relance la machine
+        if (timerRunCoroutine != null) StopCoroutine(timerRunCoroutine);
+        timerRunCoroutine = StartCoroutine(TimerCoroutine());
+        DisplayQuestion();
     }
 
     IEnumerator TimerCoroutine()
     {
-        while(currentQuestionIndex < questionData.questions.Length)
+        while(currentQuestionIndex < questionData.questions.Length && !quizFinished)
         {
             if (timerRunning)
             {

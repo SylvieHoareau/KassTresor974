@@ -4,10 +4,10 @@ public class VictoryEffect : MonoBehaviour
 {
     [SerializeField] private ParticleSystem confetti;
 
-    void Start()
-    {
-        PlayVictory();
-    }
+    // void Start()
+    // {
+    //     PlayVictory();
+    // }
 
     public void PlayVictory()
     {
