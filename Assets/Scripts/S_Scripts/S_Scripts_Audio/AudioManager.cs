@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // Ajout indispensable pour les Coroutines
 using System.Collections.Generic;
 
 // Utilisation d'un attribut pour forcer l'ajout de composants AudioSource
@@ -17,31 +18,30 @@ public class AudioManager : MonoBehaviour
     [Tooltip("Source pour les effets sonores (SFX)")]
     [SerializeField] private AudioSource sfxAudioSource;
 
-    // --- Configuration (Volumes) ---
+    [Header("Settings")]
+    [SerializeField] private AudioDatabase audioDatabase;
+    [SerializeField] private float fadeDuration = 1.0f; // Durée du fondu en secondes
 
-    // Clés pour la sauvegarde des volumes dans les PlayerPrefs
-    private const string MusicVolumeKey = "MusicVolume";
-    private const string SFXVolumeKey = "SFXVolume";
+    private Dictionary<MusicType, Music> musicDict;
+    private Dictionary<SFXType, SFX> sfxDict;
+
+    // --- Configuration (Volumes) ---
 
     // Propriétés pour l'accès et la modification des volumes
     public float MusicVolume
     {
-        get => musicAudioSource.volume;
+        get => PlayerPrefs.GetFloat("MusicVolume", 0.5f);
         set
         {
-            musicAudioSource.volume = Mathf.Clamp01(value);
-            PlayerPrefs.SetFloat(MusicVolumeKey, musicAudioSource.volume); // Sauvegarde immédiate
+            PlayerPrefs.SetFloat("MusicVolume", value); // Sauvegarde immédiate
+            musicAudioSource.volume = value;
         }
     }
 
     public float SFXVolume
     {
-        get => sfxAudioSource.volume;
-        set
-        {
-            sfxAudioSource.volume = Mathf.Clamp01(value);
-            PlayerPrefs.SetFloat(SFXVolumeKey, sfxAudioSource.volume); // Sauvegarde immédiate
-        }
+        get => PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+        set => PlayerPrefs.SetFloat("SFXVolume", value); // Sauvegarde immédiate
     }
 
     // --- Initialisation ---
@@ -53,56 +53,85 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject); // Persiste entre les scènes
             InitializeAudioSources();
+            InitializeDatabase();
         }
         else
         {
             Destroy(gameObject); // Évite les doublons
-            return;
         }
 
-        // Chargement des volumes sauvegardés ou réglage par défaut
-        musicAudioSource.volume = PlayerPrefs.GetFloat(MusicVolumeKey, 0.5f); // Par défaut à 0.5
-        sfxAudioSource.volume = PlayerPrefs.GetFloat(SFXVolumeKey, 0.5f); // Par défaut à 0.5
     }
 
     private void InitializeAudioSources()
     {
-        // Assure que les AudioSources sont assignées
-        if (musicAudioSource == null)
-        {
-            musicAudioSource = gameObject.AddComponent<AudioSource>();
-            musicAudioSource.loop = true; // La musique de fond doit boucler
-        }
-        if (sfxAudioSource == null)
-        {
-            sfxAudioSource = gameObject.AddComponent<AudioSource>();
-        }
-
-        // Charge les volumes sauvegardés, sinon utilise la valeur par défaut
-        musicAudioSource.volume = PlayerPrefs.GetFloat(MusicVolumeKey, musicAudioSource.volume);
-        sfxAudioSource.volume = PlayerPrefs.GetFloat(SFXVolumeKey, sfxAudioSource.volume);
-
-        // Configuration MusicSource : Loop par défait pour la musique
+        if (musicAudioSource == null) musicAudioSource = gameObject.AddComponent<AudioSource>();
+        if (sfxAudioSource == null) sfxAudioSource = gameObject.AddComponent<AudioSource>();
+        
         musicAudioSource.loop = true;
-
-        // Configuration SFXSource : ne doit pas boucler
-        sfxAudioSource.loop = false;
+        musicAudioSource.volume = MusicVolume;
     }
+
+    private void InitializeDatabase()
+    {
+        if (audioDatabase == null)
+        {
+            Debug.LogError("AudioDatabase non assigné dans l'AudioManager !");
+            return;
+        }
+        
+        musicDict = new Dictionary<MusicType, Music>();
+        sfxDict = new Dictionary<SFXType, SFX>();
+
+        foreach (var m in audioDatabase.musics) 
+            if (m != null) musicDict[m.type] = m;
+
+        foreach (var s in audioDatabase.sfxs) 
+            if (s != null) sfxDict[s.type] = s;
+    }
+
 
     // --- Méthodes publiques pour le Gameplay ---
     /// <summary>
     /// Démarre ou change la lecture d'une musique de fond (BGM)
     /// </summary>
     /// <param name="clip">Clip audio à jouer en boucle</param>
-    public void PlayMusic(AudioClip clip)
+    public void PlayMusic(MusicType type)
     {
-        if (clip == null) return;
 
-        if (musicAudioSource.clip == clip && musicAudioSource.isPlaying)
-            return; // La musique est déjà en cours de lecture
+        if (!musicDict.ContainsKey(type)) return;
 
-        musicAudioSource.clip = clip;
+        Music targetMusic = musicDict[type];
+        if (musicAudioSource.clip == targetMusic.clip) return; // La musique est déjà en cours de lecture
+
+        StopAllCoroutines(); // Arrête le fondu précédent si un nouveau commence
+        StartCoroutine(FadeMusicTransition(targetMusic));
+    }
+
+    private IEnumerator FadeMusicTransition(Music newMusic)
+    {
+        // Fondu sortant
+        float startVolume = musicAudioSource.volume;
+
+        // Fondu sortant
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
+            musicAudioSource.volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
+            yield return null;
+        }
+
+        musicAudioSource.clip = newMusic.clip;
+        musicAudioSource.loop = newMusic.loop;
         musicAudioSource.Play();
+
+        // Fondu entrant
+        float targetVol = newMusic.volume * MusicVolume;
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
+            musicAudioSource.volume = Mathf.Lerp(0, targetVol, t / fadeDuration);
+            yield return null;
+        }
+
+        musicAudioSource.volume = targetVol;
     }
 
     /// <summary>
@@ -110,36 +139,32 @@ public class AudioManager : MonoBehaviour
     /// Utilise PlayOneShot pour permettre la superposition des sons
     /// </summary>
     /// <param name="clip">Clip audio à jouer</param>
-    public void PlaySFX(AudioClip clip)
+    public void PlaySFX(SFXType type)
     {
-        if (clip == null) return;
-        sfxAudioSource.PlayOneShot(clip, SFXVolume);
+        if (!sfxDict.ContainsKey(type)) return;
+        SFX sfx = sfxDict[type];
+
+        // On applique le volume spécifique du SFX Multiplié par le volume global
+        float finalVolume = sfx.volume * SFXVolume;
+        float finalPitch = sfx.useRandomPitch ? sfx.pitch + Random.Range(-0.1f, 0.1f) : sfx.pitch;
+        
+        sfxAudioSource.pitch = finalPitch;
+        sfxAudioSource.PlayOneShot(sfx.clip, finalVolume);
     }
 
     // Méthode pour jouer un SFX à une position 3D spécifique
-    public void PlaySFXAtPosition(AudioClip clip, Vector3 position, float spatialBlend = 1f)
-    {
-        // Crée un AudioSource temporaire sur place pour les sons 3D
-        GameObject tempAudioObject = new GameObject("TempSFX_3D");
-        tempAudioObject.transform.position = position;
-        AudioSource tempSource = tempAudioObject.AddComponent<AudioSource>();
+    // public void PlaySFXAtPosition(AudioClip clip, Vector3 position, float spatialBlend = 1f)
+    // {
+    //     // Crée un AudioSource temporaire sur place pour les sons 3D
+    //     GameObject tempAudioObject = new GameObject("TempSFX_3D");
+    //     tempAudioObject.transform.position = position;
+    //     AudioSource tempSource = tempAudioObject.AddComponent<AudioSource>();
         
-        tempSource.clip = clip;
-        tempSource.spatialBlend = spatialBlend; // 1 = 3D,
-        tempSource.volume = SFXVolume;
-        tempSource.Play();
+    //     tempSource.clip = clip;
+    //     tempSource.spatialBlend = spatialBlend; // 1 = 3D,
+    //     tempSource.volume = SFXVolume;
+    //     tempSource.Play();
 
-        Destroy(tempAudioObject, clip.length); // Détruit après la lecture
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //     Destroy(tempAudioObject, clip.length); // Détruit après la lecture
+    // }
 }

@@ -972,11 +972,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 7eeb27a4-9056-4cea-aa0d-4e7efc80883f
+  cloudProjectId: 8dd872fa-ad75-448d-9cd0-104e22712d24
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Chef d'oeuvre
-  organizationId: unity_0f98b7a81537a8f1e3dd
+  projectName: KassTresor974
+  organizationId: sylviehoareau
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
