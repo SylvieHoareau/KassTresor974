@@ -286,7 +286,7 @@ public class QuizManager : MonoBehaviour
                 if (timer <= 0)
                 {
                     timerRunning = false;
-                    foreach (var btn in answerButtons) btn.interatable = false;
+                    foreach (var btn in answerButtons) btn.interactable = false;
                     feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX, false));
                 }
             }
