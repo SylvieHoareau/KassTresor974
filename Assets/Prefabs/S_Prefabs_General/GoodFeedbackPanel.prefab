@@ -301,7 +301,6 @@ GameObject:
   - component: {fileID: 3407921409633163140}
   - component: {fileID: 703237579964971051}
   - component: {fileID: 1677919522093531568}
-  - component: {fileID: 5690941747480110474}
   m_Layer: 5
   m_Name: GoodFeedbackPanel
   m_TagString: Untagged
@@ -368,19 +367,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5690941747480110474
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5976586131011726075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20d6b2b6397063545988ea544ec81e21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
-  finalScoreText: {fileID: 0}
 --- !u!1 &6797107129133073920
 GameObject:
   m_ObjectHideFlags: 0
