@@ -135,7 +135,7 @@ public class QuizManager : MonoBehaviour
         // Récupérer la question actuelle
         Question q = questionData.questions[currentQuestionIndex];
         // Récupérer le composant AwnserButtonAnimator du bouton cliqué
-        AnswerButtonAnimator clickedButtonAnimator = answerButtons[index].GetComponent<AnswerButtonAnimator>();
+        AnswerButtonAnimator animator = answerButtons[index].GetComponent<AnswerButtonAnimator>();
 
         if (index == q.correctOptionIndex)
         {
@@ -144,19 +144,13 @@ public class QuizManager : MonoBehaviour
 
             if (animator != null) animator.AnimateCorrectAnswer();
             feedbackCoroutine = StartCoroutine(PlayFeedback("Bonne réponse !", goodColor, correctSFX, true));
-
-            // Appel DOTween pour l'animation locale du bouton
-            if (clickedButtonAnimator != null)
-            {
-                clickedButtonAnimator.AnimateCorrectAnswer();
-            }
-           
+        } 
         else
         {
             // Appel DOTWEEN pour l'animation
-            if (clickedButtonAnimator != null)
+            if (animator != null)
             {
-                clickedButtonAnimator.AnimateIncorrectAnswer();
+                animator.AnimateIncorrectAnswer();
             }
 
             // Afficher également la bonne réponse
@@ -270,7 +264,6 @@ public class QuizManager : MonoBehaviour
 
         OnQuizFinished?.Invoke(score);
     }
-    }
 
     public void RejouerQuiz()
     {
@@ -287,13 +280,13 @@ public class QuizManager : MonoBehaviour
         {
             if (timerRunning)
             {
-                timer -= TimeOnly.deltaTime;
+                timer -= Time.deltaTime;
                 timerText.text = "Temps : " + Mathf.CeilToInt(timer).ToString();
 
                 if (timer <= 0)
                 {
                     timerRunning = false;
-                    foreach (var btn in answerButtons) btn.intercatable = false;
+                    foreach (var btn in answerButtons) btn.interatable = false;
                     feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX, false));
                 }
             }
