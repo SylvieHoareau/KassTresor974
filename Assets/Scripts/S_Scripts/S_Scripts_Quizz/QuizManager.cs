@@ -12,12 +12,14 @@ public class QuizManager : MonoBehaviour
     public TMP_Text questionText;
     public Image questionImage;
     public Button[] answerButtons;
-    public TMP_Text feedbackText;
+    public TMP_Text feedbackText; // Message dans le endGamePanel
     public TMP_Text scoreText;
     public TMP_Text timerText;
-    public GameObject goodFeedbackPanel;
+    public GameObject goodFeedbackPanel; // Petit panel de feedback
+    public GameObject endGamePanel; // Le panneau de fin de quiz
 
-    [Header("Feedback")]
+
+    [Header("Feedback Assets")]
     public AudioSource audioSource;
     public AudioClip correctSFX;
     public AudioClip wrongSFX;
@@ -26,35 +28,55 @@ public class QuizManager : MonoBehaviour
 
     [Header("Settings")]
     public float timePerQuestion = 15f;
+    public Item recompenseQuiz; // L'objet à ajouter à l'inventaire en récompense
+    public int scoreMinimumRequis = 3; // Score minimum pour obtenir la récompense
+
+    [Header("Victory Effect")]
+    [SerializeField] private VictoryEffect victoryEffect;
 
     private int currentQuestionIndex = 0;
     private int score = 0;
     private float timer = 15f;
     private bool timerRunning = true;
+    private bool quizFinished = false;
     private Coroutine feedbackCoroutine;
     private Coroutine timerRunCoroutine;
 
+    
+    public Button replayButton;
     public static event System.Action<int> OnQuizFinished;
 
-    [Header("Victory Effect")]
-    [SerializeField] private VictoryEffect victoryEffect;
-
-    [Header("Récompense")]
-    public Item recompenseQuiz; // L'objet à ajouter à l'inventaire en récompense
-    public int scoreMinimumRequis = 3; // Score minimum pour obtenir la récompense
 
     // Start est appelée une seule fois
     void Start()
     {
         // Au début du jeu, on s'assure que le panneau est MASQUE au début du jeu
-        if (goodFeedbackPanel != null)
-        {
-            goodFeedbackPanel.SetActive(false);
-        }
+        if (goodFeedbackPanel != null) goodFeedbackPanel.SetActive(false);
+
+        if (endGamePanel != null) endGamePanel.SetActive(false);
+
         // Les écouteurs de boutons sont attachés UNE SEULE FOIS
         SetupAnswerButtons();
 
+        // UpdateScoreUI();
+        // timerRunCoroutine = StartCoroutine(TimerCoroutine());
+        // DisplayQuestion();
+        StartQuiz();
+    }
+
+    void StartQuiz()
+    {
+        currentQuestionIndex = 0;
+        score = 0;
+        quizFinished = false;
+
         UpdateScoreUI();
+
+        // On s'assure que les éléments du quiz sont visibles
+        questionText.gameObject.SetActive(true);
+        foreach (var btn in answerButtons) btn.gameObject.SetActive(true);
+
+        if (timerRunCoroutine != null) StopCoroutine(timerRunCoroutine);
         timerRunCoroutine = StartCoroutine(TimerCoroutine());
         DisplayQuestion();
     }
@@ -74,21 +96,9 @@ public class QuizManager : MonoBehaviour
     void DisplayQuestion()
     {
         // Vérification de sécurité au cas où questionData serait null ou vide
-        if (questionData == null || questionData.questions == null || questionData.questions.Length == 0)
-        {
-            Debug.LogError("Question Data est manquant ou vide !");
-            return;
-        }
-
-        // On vérifie la fin du quiz au cas où cet appel serait mal placé
-        if (currentQuestionIndex >= questionData.questions.Length)
-        {
-            FinishQuiz();
-            return;
-        }
+       if (questionData == null || questionData.questions.Length == 0) return;
 
         Question q = questionData.questions[currentQuestionIndex];
-
         // Texte de la question
         questionText.text = q.question;
 
@@ -111,9 +121,6 @@ public class QuizManager : MonoBehaviour
             answerButtons[i].interactable = true; // Rendre cliquable   
         }
 
-        feedbackText.text = "";
-        feedbackText.transform.localScale = Vector3.one;
-
         // Reset timer pour cette question
         timer = timePerQuestion;
         timerRunning = true;
@@ -121,39 +128,29 @@ public class QuizManager : MonoBehaviour
 
     void OnAnswerClicked(int index)
     {
-        if (!timerRunning) return;
-
+        if (!timerRunning || quizFinished) return;
         // Arrêter le chronomètre immédiatement
         timerRunning = false;
 
-        // Récupérer le composant AwnserButtonAnimator du bouton cliqué
-        AnswerButtonAnimator clickedButtonAnimator = answerButtons[index].GetComponent<AnswerButtonAnimator>();
-
-        foreach (var btn in answerButtons)
-        {
-            btn.interactable = false;
-        }
-
-        // Arrete le feedback précédent
-        if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
-
         // Récupérer la question actuelle
         Question q = questionData.questions[currentQuestionIndex];
+        // Récupérer le composant AwnserButtonAnimator du bouton cliqué
+        AnswerButtonAnimator clickedButtonAnimator = answerButtons[index].GetComponent<AnswerButtonAnimator>();
 
         if (index == q.correctOptionIndex)
         {
             score++;
             UpdateScoreUI();
 
+            if (animator != null) animator.AnimateCorrectAnswer();
+            feedbackCoroutine = StartCoroutine(PlayFeedback("Bonne réponse !", goodColor, correctSFX, true));
+
             // Appel DOTween pour l'animation locale du bouton
             if (clickedButtonAnimator != null)
             {
                 clickedButtonAnimator.AnimateCorrectAnswer();
             }
-
-            // On démarre la coroutine de feedback
-            feedbackCoroutine = StartCoroutine(PlayFeedback("Bonne réponse !", goodColor, correctSFX, true));
-        }
+           
         else
         {
             // Appel DOTWEEN pour l'animation
@@ -164,6 +161,7 @@ public class QuizManager : MonoBehaviour
 
             // Afficher également la bonne réponse
             Button correctButton = answerButtons[q.correctOptionIndex];
+            if (animator != null) animator.AnimateIncorrectAnswer();
             AnswerButtonAnimator correctAnimator = correctButton.GetComponent<AnswerButtonAnimator>();
             if (correctAnimator != null)
             {
@@ -172,6 +170,7 @@ public class QuizManager : MonoBehaviour
                 // Par exemple : correctAnimator.AnimateHint(); 
                 correctAnimator.AnimateHint();
             }
+
             feedbackCoroutine = StartCoroutine(PlayFeedback("Ayo... la pas sa ! Réessaye après !", badColor, wrongSFX, false));
         }
     }
@@ -181,63 +180,37 @@ public class QuizManager : MonoBehaviour
         // Audio
         audioSource.PlayOneShot(sfx);
 
-        // Texte feedback
+        // Texte feedback avec animation
         feedbackText.text = message;
         feedbackText.color = color;
-
-        // Mini amination scale
-        Vector3 originalScale = feedbackText.transform.localScale;
         feedbackText.transform.localScale = Vector3.zero;
+        feedbackText.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack);
 
-        // Tuer tout tween en cours sur le texte pour éviter les interférences.
-        DOTween.Kill(feedbackText.transform);
-
-        // Création de la séquence de Tween (Animation Pop)
-        feedbackText.transform.DOScale(1.1f, 0.2f)
-            .SetEase(Ease.OutBack)
-            .OnComplete(() =>
-            {
-                feedbackText.transform.DOScale(1f, 0.1f);
-            });
-
-        // Animation spécifique pour le panneau de bon feedback
+        // Feedback visuel rapide
         if (isCorrect && goodFeedbackPanel != null)
         {
-            // On rend le panneau visible
             goodFeedbackPanel.SetActive(true);
             CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
             if (cg == null) cg = goodFeedbackPanel.AddComponent<CanvasGroup>();
-            
-            cg.alpha = 0f;
-            cg.DOFade(1f, 0.3f);
+            cg.alpha = 0;
+            cg.DOFade(1f, 0.2f);
         }
-
-        // float t = 0f;
-        // while (t < 1f)
-        // {
-        //     t += Time.deltaTime * 3;
-        //     feedbackText.transform.localScale = Vector3.Lerp(Vector3.zero, originalScale, t);
-        //     yield return null;
-        // }
 
         // Délai
         yield return new WaitForSeconds(1.2f);
 
-        // Masquer le panneau si nécessaire après le délai
-        if (goodFeedbackPanel != null)
+        // On ne masque le panneau QUE si ce n'est pas la dernière question
+        if (currentQuestionIndex < questionData.questions.Length - 1)
         {
-            // On peut utiliser un DOFade Out si on veut
-            CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
-            if (cg != null)
+             // Masquer le panneau si nécessaire après le délai
+            if (goodFeedbackPanel != null)
             {
-                cg.DOFade(0f, 0.2f).OnComplete(() => goodFeedbackPanel.SetActive(false));
-            }
-            else
-            {
-                goodFeedbackPanel.SetActive(false);
+               goodFeedbackPanel.GetComponent<CanvasGroup>()?.DOFade(0f, 0.2f)
+                    .OnComplete(() => goodFeedbackPanel.SetActive(false));
             }
         }
 
+        // Passer à la question suivante
         NextQuestion();
     }
 
@@ -248,10 +221,12 @@ public class QuizManager : MonoBehaviour
         if (currentQuestionIndex >= questionData.questions.Length)
         {
             FinishQuiz();
-            return;
+        }
+        else
+        {
+            DisplayQuestion();
         }
 
-        DisplayQuestion();
     }
 
     // Méthode pour gérer la fin du quizz 
@@ -259,90 +234,70 @@ public class QuizManager : MonoBehaviour
     {
         // Arrêter la logique du quiz
         timerRunning = false;
-
-        // Arrêter explicitement la coroutine
-        if (timerRunCoroutine != null)
-        {
-            StopCoroutine(timerRunCoroutine);
-            timerRunCoroutine = null;
-        }
-
-        // Afficher le panneau de récompense 
-        if (goodFeedbackPanel != null)
-        {
-            goodFeedbackPanel.SetActive(true);
-        }
-
-        // --- LOGIQUE D'INVENTAIRE ------------------
-        if (score >= scoreMinimumRequis && recompenseQuiz != null)
-        {
-            // On demande à l'InventoryManager d'ajouter l'objet
-            InventoryManager.Instance.AjouterObjet(recompenseQuiz);
-            feedbackText.text = $"Bravo ! Tu as gagné : {recompenseQuiz.nom}";
-
-            // APPEL DE LA NOTIFICATION ICI
-            NotificationManager.Instance.AfficherNotification($"Nouvel objet : {recompenseQuiz.nom} !");
-        }
-        else
-        {
-            // Mise à jour de l'UI
-            feedbackText.text = $"Quiz terminé ! Score : {score}";
-        }
-        // --------------------------------------------
-
+        quizFinished = true;
         timerText.text = "";
 
-        // Désactiver les éléments du jeu (questions, boutons, etc.)
+        // On cache le HUD de jeu
         questionText.gameObject.SetActive(false);
         questionImage.gameObject.SetActive(false);
-        foreach (var btn in answerButtons)
+        foreach (var btn in answerButtons) btn.gameObject.SetActive(false);
+
+        // --- ACTIVATION DU PANNEAU FINAL ---
+        if (endGamePanel != null)
         {
-            btn.gameObject.SetActive(false);
+            endGamePanel.SetActive(true);
+            // On peut aussi ajouter un petit effet de fade avec DOTween si tu as un CanvasGroup
+            CanvasGroup cg = endGamePanel.GetComponent<CanvasGroup>();
+            if (cg != null) { cg.alpha = 0; cg.DOFade(1f, 0.5f); }
         }
 
-        // Déclenche l'évenement pour les abonnées, en passant le score
-        OnQuizFinished?.Invoke(score);
-
-        if (victoryEffect != null)
+        // Logique de score et récompense
+        int total = questionData.questions.Length;
+        if (score >= scoreMinimumRequis)
         {
-            victoryEffect.PlayVictory();
+            if (recompenseQuiz != null) InventoryManager.Instance?.AjouterObjet(recompenseQuiz);
+            feedbackText.text = $"Bravo ! {score}/{total}\nTu as gagné : {recompenseQuiz?.nom}";
+            NotificationManager.Instance?.AfficherNotification("Récompense obtenue !");
         }
         else
         {
-            Debug.LogWarning("VictoryEffect non assigné !");
+            feedbackText.text = $"Terminé ! {score}/{total}\nRéessaye pour la récompense !";
         }
+
+       // Victoire parfaite
+        if (score == total && victoryEffect != null) victoryEffect.PlayVictory();
+        // ---------------------------------------------------
+
+        OnQuizFinished?.Invoke(score);
+    }
+    }
+
+    public void RejouerQuiz()
+    {
+        // On cache les panneaux avant de relancer
+        if (endGamePanel != null) endGamePanel.SetActive(false);
+        if (goodFeedbackPanel != null) goodFeedbackPanel.SetActive(false);
+        
+        StartQuiz();
     }
 
     IEnumerator TimerCoroutine()
     {
-        while(currentQuestionIndex < questionData.questions.Length)
+        while (!quizFinished)
         {
             if (timerRunning)
             {
-                timer -= Time.deltaTime;
-                timerText.text = "Temps : " + Mathf.Ceil(timer);
+                timer -= TimeOnly.deltaTime;
+                timerText.text = "Temps : " + Mathf.CeilToInt(timer).ToString();
 
-                if (timer <= 0f)
+                if (timer <= 0)
                 {
                     timerRunning = false;
-
-                    foreach (var btn in answerButtons)
-                    {
-                        btn.interactable = false;
-                    }
-
-                    // Lancer le feedback une seule fois
-                    if (feedbackCoroutine != null) StopCoroutine(feedbackCoroutine);
+                    foreach (var btn in answerButtons) btn.intercatable = false;
                     feedbackCoroutine = StartCoroutine(PlayFeedback("Temps écoulé !", badColor, wrongSFX, false));
                 }
-
-                yield return null; // Toujours céder le contrôle
             }
-            else
-            {
-                // Si le minuteur est arrêté (une réponse a été donnée), on attend simplement
-                yield return null;
-            }
+            yield return null;
         }
     }
 

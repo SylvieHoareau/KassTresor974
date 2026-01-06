@@ -21,7 +21,7 @@ MonoBehaviour:
     - 17 juillet 1730
     - 7 septembre 1730
     correctOptionIndex: 1
-    questionImage: {fileID: 0}
+    questionImage: {fileID: 21300000, guid: 3351ab01eb2ca7e4a8fcacceb40abe59, type: 3}
   - question: "Quel navire c\xE9l\xE8bre La Buse a-t-il pill\xE9 ? "
     replies:
     - Le Queen Anne'sRevenge
@@ -29,7 +29,7 @@ MonoBehaviour:
     - Le Black Pearl
     - Le Royal Fortune
     correctOptionIndex: 1
-    questionImage: {fileID: 0}
+    questionImage: {fileID: 21300000, guid: 3351ab01eb2ca7e4a8fcacceb40abe59, type: 3}
   - question: "Quelle phrase l\xE9g\xE8re La Buse aurait-il lanc\xE9 avant d'\xEAtre
       ex\xE9cut\xE9 ? "
     replies:
@@ -38,7 +38,7 @@ MonoBehaviour:
     - "J'ai cach\xE9 mon tr\xE9sor \xE0 Sainte-Marie !"
     - "Le vrai tr\xE9sor, c'est l'amiti\xE9 !"
     correctOptionIndex: 0
-    questionImage: {fileID: 0}
+    questionImage: {fileID: 21300000, guid: 3351ab01eb2ca7e4a8fcacceb40abe59, type: 3}
   - question: "Dans quel endroit de l\u2019oc\xE9an Indien La Buse a-t-il pass\xE9
       une partie de sa vie de pirate ?"
     replies:
