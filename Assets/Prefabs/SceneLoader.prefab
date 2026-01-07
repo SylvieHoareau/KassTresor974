@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6551801714179161836}
-  - component: {fileID: 2697328529372856183}
+  - component: {fileID: 2985169749744564725}
   m_Layer: 0
   m_Name: SceneLoader
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2697328529372856183
+--- !u!114 &2985169749744564725
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,5 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122e511e14ebf224c964f7cfd563b4f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
-  buttonClickSFX: {fileID: 8300000, guid: 7abf44d16857efd43b26a762625361d3, type: 3}
   transitionDelay: 0.2

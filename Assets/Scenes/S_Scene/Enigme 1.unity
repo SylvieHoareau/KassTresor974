@@ -7546,13 +7546,17 @@ MonoBehaviour:
   scoreText: {fileID: 1977145720}
   timerText: {fileID: 33988717}
   goodFeedbackPanel: {fileID: 1649118464}
+  endGamePanel: {fileID: 0}
   audioSource: {fileID: 1625468747}
   correctSFX: {fileID: 8300000, guid: 7acfa8e994647874ea1e0b0b250840fb, type: 3}
   wrongSFX: {fileID: 8300000, guid: 1ddad9836b441964686ca2605165ca98, type: 3}
   goodColor: {r: 0, g: 1, b: 0, a: 1}
   badColor: {r: 1, g: 0, b: 0, a: 1}
   timePerQuestion: 15
+  recompenseQuiz: {fileID: 0}
+  scoreMinimumRequis: 3
   victoryEffect: {fileID: 1782335776}
+  replayButton: {fileID: 0}
 --- !u!114 &1782335776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8208,7 +8212,7 @@ PrefabInstance:
       objectReference: {fileID: 1712024063}
     - target: {fileID: 997788788030905755, guid: 356f8b9741d5f7547bf586c53f66c6fd, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadMainMenu
+      value: LoadParcPoule
       objectReference: {fileID: 0}
     - target: {fileID: 7853853887523104674, guid: 356f8b9741d5f7547bf586c53f66c6fd, type: 3}
       propertyPath: m_Pivot.x
