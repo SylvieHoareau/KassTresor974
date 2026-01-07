@@ -4,10 +4,7 @@ using System.Collections; // pour les Coroutines
 
 public class SceneLoader : MonoBehaviour
 {
-    // Configuration
-    [Header("Audio Settings")]
-    [Tooltip("L'effet sonore joué au clic du bouton.")]
-    [SerializeField] private SFXType buttonClickSFX;
+   
 
     [Tooltip("Délai en secondes avant de charger la scène ou quitter")]
     [SerializeField] private float transitionDelay = 0.2f;
@@ -19,12 +16,6 @@ public class SceneLoader : MonoBehaviour
     /// <param name="sceneName">Nom de la scène à changer.</param>
     private void StartTransitionToScene(string sceneName)
     {
-        // Jouer le SFX de clic
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlaySFX(buttonClickSFX);
-        }
-
         // Démarrer la Coroutine responsable du délai
         StartCoroutine(LoadSceneAfterDelay(sceneName));
     } 
@@ -39,19 +30,6 @@ public class SceneLoader : MonoBehaviour
 
         // Charger la nouvelle scène
         SceneManager.LoadScene(sceneName);
-    }
-
-    public void Quit()
-    {
-        // 1. Jouer le SFX de clic
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlaySFX(buttonClickSFX);
-        }
-
-        // 2. Utiliser Invoke pour exécuter l'arrêt après le délai
-        // C'est souvent plus simple que les Coroutines pour un seul appel sans argument.
-        Invoke(nameof(QuitApplication), transitionDelay);
     }
 
     private void QuitApplication()
