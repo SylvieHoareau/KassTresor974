@@ -4,35 +4,12 @@ using System.Collections; // pour les Coroutines
 
 public class SceneLoader : MonoBehaviour
 {
-   
-
-    [Tooltip("Délai en secondes avant de charger la scène ou quitter")]
-    [SerializeField] private float transitionDelay = 0.2f;
-
-    // Méthodes des transition (Patron)
-    /// <summary>
-    /// Méthode patron générique pour jouer un SFX puis charger une scène après un 
-    /// </summary>
-    /// <param name="sceneName">Nom de la scène à changer.</param>
-    private void StartTransitionToScene(string sceneName)
+    private void LoadScene(string sceneName)
     {
-        // Démarrer la Coroutine responsable du délai
-        StartCoroutine(LoadSceneAfterDelay(sceneName));
+        SceneManager.LoadScene(sceneName);
     } 
 
-    /// <summary>
-    /// Coroutine qui attend un certain temps avant de charger la scène
-    /// </summary>
-    private IEnumerator LoadSceneAfterDelay(string sceneName)
-    {
-        // Attendre le délai configuré (permet au SFX de jouer)
-        yield return new WaitForSeconds(transitionDelay);
-
-        // Charger la nouvelle scène
-        SceneManager.LoadScene(sceneName);
-    }
-
-    private void QuitApplication()
+    private void Quit()
     {
         // Quitter l'application (Fonction réelle)
         Application.Quit();
@@ -41,6 +18,12 @@ public class SceneLoader : MonoBehaviour
         // Ligne ajoutée pour permettre de tester l'arrêt dans l'éditeur Unity
         UnityEditor.EditorApplication.isPlaying = false;
         #endif
+    }
+
+    private void StartTransitionToScene(string sceneName)
+    {
+        // Ici, vous pouvez ajouter des animations de transition si nécessaire
+        LoadScene(sceneName);
     }
     
     public void LoadMainMenu() => StartTransitionToScene("MainMenu");

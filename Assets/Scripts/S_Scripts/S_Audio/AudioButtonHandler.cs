@@ -22,7 +22,7 @@ public class AudioButtonHandler : MonoBehaviour
         StartCoroutine(ExecuteActionAfterDelay());
     }
 
-    private IEnumerator ExecuteAfterDelay()
+    private IEnumerator ExecuteActionAfterDelay()
     {
         yield return new WaitForSeconds(delay);
         onActionTriggered.Invoke(); // Appelle la fonction de chargement de scène
