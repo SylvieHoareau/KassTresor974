@@ -1756,6 +1756,33 @@ MonoBehaviour:
     m_Bits: 1665
   colliderHalfExtents: {x: 0.8, y: 0.5, z: 1.5}
   allowReverseThroughObstacles: 0
+  usePath: 0
+  pathPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  pathLookAhead: 6
+  pathMaxLateralDistance: 3
+  pathSnapStrength: 6
+  autoSteerStrength: 1.2
+  forbidReverse: 0
   interactCooldown: 0.25
   exitSideOffset: 0.25
   snapExitToGround: 1
