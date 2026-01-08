@@ -1,7 +1,11 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CarRadioOnEnter : MonoBehaviour
 {
+    // Singleton pour éviter plusieurs radios persistantes
+    private static CarRadioOnEnter Instance;
+
     [Header("Références")]
     [SerializeField] private RomainCameraOrbit cameraOrbit;
     [SerializeField] private Transform carTransform;
@@ -60,6 +64,18 @@ public class CarRadioOnEnter : MonoBehaviour
 
     private void Awake()
     {
+        // Singleton + persistance entre scènes
+        if (Instance != null && Instance != this)
+        {
+            // Si un autre existe déjà, celui-ci dégage
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
         if (radioSource != null)
         {
             radioSource.playOnAwake = false;
@@ -74,11 +90,7 @@ public class CarRadioOnEnter : MonoBehaviour
     {
         if (carTransform == null) carTransform = transform;
 
-        if (playerTransform == null)
-        {
-            var p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) playerTransform = p.transform;
-        }
+        ResolveSceneReferences();
 
         if (radioSource == null) return;
 
@@ -96,8 +108,12 @@ public class CarRadioOnEnter : MonoBehaviour
 
     private void Update()
     {
-        if (cameraOrbit == null || carTransform == null || radioSource == null)
+        if (radioSource == null)
             return;
+
+        // Si on a perdu des refs (changement de scène), on retente doucement
+        if (playerTransform == null || cameraOrbit == null)
+            ResolveSceneReferences();
 
         bool inside = IsInside();
 
@@ -127,9 +143,45 @@ public class CarRadioOnEnter : MonoBehaviour
         if (lowPass != null) lowPass.cutoffFrequency = currentCutoff;
     }
 
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // À chaque nouvelle scène: on retente de retrouver Player et CameraOrbit
+        ResolveSceneReferences();
+
+        // Recalcule l'état (sinon ça peut rester dans un mix incohérent)
+        bool inside = IsInside();
+        ApplyStateInstant(inside);
+        wasInside = inside;
+    }
+
+    private void ResolveSceneReferences()
+    {
+        // Player
+        if (playerTransform == null)
+        {
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) playerTransform = p.transform;
+        }
+
+        // CameraOrbit (si tu en as une par scène)
+        if (cameraOrbit == null)
+        {
+            cameraOrbit = FindFirstObjectByType<RomainCameraOrbit>();
+        }
+
+        // Car transform:
+        // - si l'objet persiste, carTransform reste bon
+        // - si tu changes de scène et que la voiture n'existe plus, carTransform reste l'ancien (invalide si détruit)
+        //   -> on ne force pas un remplacement ici, car c'est contextuel.
+        //   Si tu veux, tu peux exposer une méthode publique SetCar(Transform newCar).
+        if (carTransform == null) carTransform = transform;
+    }
+
     private bool IsInside()
     {
-        return cameraOrbit != null && cameraOrbit.target == carTransform;
+        // Si on ne retrouve pas la caméra ou la voiture, on considère "dehors"
+        if (cameraOrbit == null || carTransform == null) return false;
+        return cameraOrbit.target == carTransform;
     }
 
     private void SetTargets(bool inside)
@@ -147,9 +199,7 @@ public class CarRadioOnEnter : MonoBehaviour
         currentVol = targetVol * distanceFactor;
         currentCutoff = targetCutoff;
 
-        if (radioSource != null)
-            radioSource.volume = currentVol;
-
+        radioSource.volume = currentVol;
         if (lowPass != null)
             lowPass.cutoffFrequency = currentCutoff;
     }
@@ -157,6 +207,7 @@ public class CarRadioOnEnter : MonoBehaviour
     private float ComputeDistanceFactor()
     {
         if (playerTransform == null) return 1f;
+        if (carTransform == null) return minDistanceFactor;
 
         float d = Vector3.Distance(playerTransform.position, carTransform.position);
 
@@ -200,5 +251,20 @@ public class CarRadioOnEnter : MonoBehaviour
             CancelInvoke(nameof(StartRadioDelayed));
             radioStartScheduled = false;
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // Optionnel: si dans une nouvelle scène tu veux relier la radio à une nouvelle voiture
+    public void SetCar(Transform newCarTransform)
+    {
+        carTransform = newCarTransform;
+        bool inside = IsInside();
+        ApplyStateInstant(inside);
+        wasInside = inside;
     }
 }
