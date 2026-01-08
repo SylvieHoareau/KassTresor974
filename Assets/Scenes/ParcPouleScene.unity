@@ -46264,10 +46264,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 66218678}
     - target: {fileID: 4236556947274826801, guid: b7b00083334342e4d880a9302e7ff249, type: 3}
-      propertyPath: usePath
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4236556947274826801, guid: b7b00083334342e4d880a9302e7ff249, type: 3}
       propertyPath: interactUI
       value: 
       objectReference: {fileID: 955379095}
@@ -46287,10 +46283,6 @@ PrefabInstance:
       propertyPath: engineStartSource
       value: 
       objectReference: {fileID: 1610829797}
-    - target: {fileID: 4236556947274826801, guid: b7b00083334342e4d880a9302e7ff249, type: 3}
-      propertyPath: pathPoints.Array.size
-      value: 20
-      objectReference: {fileID: 0}
     - target: {fileID: 4236556947274826801, guid: b7b00083334342e4d880a9302e7ff249, type: 3}
       propertyPath: 'pathPoints.Array.data[0]'
       value: 
