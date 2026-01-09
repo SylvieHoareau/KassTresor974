@@ -16,6 +16,7 @@ public class QuizManager : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text timerText;
     public GameObject goodFeedbackPanel; // Petit panel de feedback
+    public GameObject badFeedbackPanel; // Petit panel de feedback
     public GameObject endGamePanel; // Le panneau de fin de quiz
 
 
@@ -52,6 +53,7 @@ public class QuizManager : MonoBehaviour
     {
         // Au début du jeu, on s'assure que le panneau est MASQUE au début du jeu
         if (goodFeedbackPanel != null) goodFeedbackPanel.SetActive(false);
+        if (badFeedbackPanel != null) badFeedbackPanel.SetActive(false);
 
         if (endGamePanel != null) endGamePanel.SetActive(false);
 
@@ -180,12 +182,15 @@ public class QuizManager : MonoBehaviour
         feedbackText.transform.localScale = Vector3.zero;
         feedbackText.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack);
 
+        // Gestion du panneau de feedback
+        GameObject panelToUse = isCorrect ? goodFeedbackPanel : badFeedbackPanel;
+
         // Feedback visuel rapide
-        if (isCorrect && goodFeedbackPanel != null)
+        if (panelToUse != null)
         {
-            goodFeedbackPanel.SetActive(true);
-            CanvasGroup cg = goodFeedbackPanel.GetComponent<CanvasGroup>();
-            if (cg == null) cg = goodFeedbackPanel.AddComponent<CanvasGroup>();
+            panelToUse.SetActive(true);
+            CanvasGroup cg = panelToUse.GetComponent<CanvasGroup>();
+            if (cg == null) cg = panelToUse.AddComponent<CanvasGroup>();
             cg.alpha = 0;
             cg.DOFade(1f, 0.2f);
         }
@@ -197,11 +202,17 @@ public class QuizManager : MonoBehaviour
         if (currentQuestionIndex < questionData.questions.Length - 1)
         {
              // Masquer le panneau si nécessaire après le délai
-            if (goodFeedbackPanel != null)
+            if (panelToUse != null)
             {
-               goodFeedbackPanel.GetComponent<CanvasGroup>()?.DOFade(0f, 0.2f)
-                    .OnComplete(() => goodFeedbackPanel.SetActive(false));
+                panelToUse.GetComponent<CanvasGroup>()?.DOFade(0f, 0.2f)
+                    .OnComplete(() => panelToUse.SetActive(false));
             }
+        }
+        else
+        {
+            // Sécurité : masquer les deux si on arrive au dernier index
+            if (goodFeedbackPanel != null) goodFeedbackPanel.SetActive(false);
+            if (badFeedbackPanel != null) badFeedbackPanel.SetActive(false);
         }
 
         // Passer à la question suivante
@@ -270,7 +281,8 @@ public class QuizManager : MonoBehaviour
         // On cache les panneaux avant de relancer
         if (endGamePanel != null) endGamePanel.SetActive(false);
         if (goodFeedbackPanel != null) goodFeedbackPanel.SetActive(false);
-        
+        if (badFeedbackPanel != null) badFeedbackPanel.SetActive(false);
+
         StartQuiz();
     }
 
