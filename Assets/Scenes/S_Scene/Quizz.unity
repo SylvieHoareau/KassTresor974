@@ -447,7 +447,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Rejouer
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1370,7 +1370,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -14, y: -165}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1107.9841, y: 273.3665}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &508394102
@@ -1394,7 +1394,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Ot\xE9\u2026 la foir\xE9 un ti p\xE9 ! Al\xE9, r\xE9essaye, ou va casse
-    la baraque !\n"
+    la baraque !\nMauvaise r\xE9ponse, galet dann marmite !\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1531,7 +1531,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3b4a60344a37fae479fa3d2f327f2ac4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9577951a26885e84a9c6f50b58d343e4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1854,7 +1854,7 @@ MonoBehaviour:
   scoreText: {fileID: 1977145720}
   timerText: {fileID: 33988717}
   goodFeedbackPanel: {fileID: 6336044035725358655}
-  endGamePanel: {fileID: 0}
+  endGamePanel: {fileID: 808820915}
   audioSource: {fileID: 1625468747}
   correctSFX: {fileID: 8300000, guid: 7acfa8e994647874ea1e0b0b250840fb, type: 3}
   wrongSFX: {fileID: 8300000, guid: 1ddad9836b441964686ca2605165ca98, type: 3}
@@ -2020,7 +2020,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &808820916
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2193,6 +2193,10 @@ PrefabInstance:
     - target: {fileID: 3936488520072554201, guid: 6417db4f297df2e41a03005c40b43e25, type: 3}
       propertyPath: m_Name
       value: MapButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936488520072554201, guid: 6417db4f297df2e41a03005c40b43e25, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6880310117518233969, guid: 6417db4f297df2e41a03005c40b43e25, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -2548,12 +2552,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 508394101}
+  - {fileID: 1737000998}
   m_Father: {fileID: 1768135135}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -600, y: -600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &979238751
 MonoBehaviour:
@@ -8268,8 +8273,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3, y: 284.1139}
-  m_SizeDelta: {x: 877.0729, y: 190.2113}
+  m_AnchoredPosition: {x: -12.875, y: 284.1139}
+  m_SizeDelta: {x: 1092.2678, y: 190.2113}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1602348972
 MonoBehaviour:
@@ -8291,7 +8296,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Ou la gagn\xE9 !\nTrape out premier zarlor : un porte-bonheur"
+  m_text: "Ou la gagn\xE9 !\nVoil\xE0 ! Prends ce caillou ! La Buse la dit : mardi
+    lu attire la chance. \nPourquoi mardi ? \nMi connais pas ... Le caillou i ve
+    pas dire. Peut-\xEAtre li l\xE9 timide les autres jours..."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -8640,6 +8647,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1700736102}
+  m_CullTransparentMesh: 1
+--- !u!1 &1737000997
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1737000998}
+  - component: {fileID: 1737001000}
+  - component: {fileID: 1737000999}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1737000998
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737000997}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 979238750}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 25, y: 127}
+  m_SizeDelta: {x: 200, y: 150}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1737000999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737000997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e5dab72a17a26144a99d13aee42b07dc, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1737001000
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737000997}
   m_CullTransparentMesh: 1
 --- !u!1001 &1739381801
 PrefabInstance:
@@ -9697,11 +9779,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2029020626400183438, guid: 872cc7b7d84f5f040a4ddb880daab810, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -100
+      value: -600
       objectReference: {fileID: 0}
     - target: {fileID: 2029020626400183438, guid: 872cc7b7d84f5f040a4ddb880daab810, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -100
+      value: -600
       objectReference: {fileID: 0}
     - target: {fileID: 2029020626400183438, guid: 872cc7b7d84f5f040a4ddb880daab810, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9761,13 +9843,11 @@ PrefabInstance:
       objectReference: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 5914818090738033299, guid: 872cc7b7d84f5f040a4ddb880daab810, type: 3}
       propertyPath: m_text
-      value: "Voil\xE0 ! Prends ce caillou ! La Buse la dit : mardi lu attire la
-        chance. Pourquoi mardi ? Mi connais pas ... Le caillou i ve pas dire. Peut-\xEAtre
-        li l'est timide les autres jours..."
+      value: "Bonne r\xE9ponse, galet i solide !"
       objectReference: {fileID: 0}
     - target: {fileID: 5914818090738033299, guid: 872cc7b7d84f5f040a4ddb880daab810, type: 3}
       propertyPath: m_fontSize
-      value: 28.25
+      value: 59.65
       objectReference: {fileID: 0}
     - target: {fileID: 7030893755286616561, guid: 872cc7b7d84f5f040a4ddb880daab810, type: 3}
       propertyPath: m_Name

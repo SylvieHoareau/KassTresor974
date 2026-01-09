@@ -11,6 +11,25 @@ public class Inventory : MonoBehaviour
     void Start()
     {
         AfficherInventaire();
+        RefreshUI();
+    }
+
+    private void OnEnable()
+    {
+        // On s'abonne à l'événement de changement d'inventaire
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged += RefreshUI;
+        }
+    }
+
+    private void OnDisable()
+    {
+        // On se désabonne de l'événement pour éviter les fuites de mémoire
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged -= RefreshUI;
+        }
     }
 
     public void AfficherInventaire()
@@ -41,5 +60,11 @@ public class Inventory : MonoBehaviour
             }
         }
 
+    }
+
+    public void RefreshUI()
+    {
+        // On appelle AfficherInventaire pour rafraîchir l'affichage
+        AfficherInventaire();
     }
 }

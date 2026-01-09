@@ -7,6 +7,8 @@ public class InventoryManager : MonoBehaviour
     // Instance statique pour y accéder depuis n'importe quel script
     public static InventoryManager Instance;
 
+    public System.Action OnInventoryChanged;
+
     public List<Item> listeObjets = new List<Item>();
 
     private string savePath;
@@ -34,6 +36,9 @@ public class InventoryManager : MonoBehaviour
         listeObjets.Add(nouvelObjet);
         Debug.Log("Objet ajouté à l'inventaire: " + nouvelObjet.nom);
         SaveInventory(); // Sauvegarder après l'ajout
+
+        // On prévient tous ceux qui écoutent (comme l'UI) que çà a changé
+        OnInventoryChanged?.Invoke();
     }
 
     public void SaveInventory()
