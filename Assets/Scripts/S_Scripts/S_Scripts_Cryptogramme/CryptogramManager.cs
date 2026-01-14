@@ -1,139 +1,103 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq; // Pour LINQ (compte les éléments)
+using System;
+using System.Linq;
 
 public class CryptogramManager : MonoBehaviour
 {
+    public static CryptogramManager Instance;
+
     [Header("Configuration")]
-    [Tooltip("Référence au ScriptableObject contenant la clé de chiffrement du Forban")]
-    public CipherMapping CipherKey;
+    [SerializeField] private CipherMapping cipherMapping; // Ta clé de substitution
+    [SerializeField, TextArea] private string secretPhrase = "LE TRESOR EST ICI";
 
-    [Tooltip("Le message chiffré à décoder, ligne par ligne")]
-    // Il faut saisir ici le message exact en utilisant les symboles de l'image 
-    // et en séparant les "mots" par un espace.
+    [Header("Données du Jeu")]
+    [SerializeField] private List<CipherLetter> _gameLetters = new List<CipherLetter>();
 
-    // Le début du message de La Buse
-    [TextArea(5, 10)]
-    public string CipherText = 
-        "F1 U1 P1 L1 D1 I1 L1 A1 T1 L1 A1 N1 J1 O1 F1 L1 U1 I1 E1 N1 D1 O1 R1 T1 V1 O1 R1 L1 Y1 C1 E1 L1 V1 Z1 U1 R1 L1 T1 V1 F1 V1 E1 L1 J1 O1 V1 L1 V1 L1 U1 I1 E1 J1 E1 I1 L1 A1 T1 L1 E1 N1 T1 V1 L1 O1 C1 V1 V1 B1 V1 J1 D1 B1 L1 T1 V1 L1 U1 I1 E1 N1 F1 I1 E1 I1 J1 L1 A1 T1 L1 A1 C1 C1 B1 I1 R1 L1 U1 L1 T1 O1 B1 I1 E1 C1 C1 L1 L1 A1 R1 V1 I1 L1 L1 A1 V1 L1 T1 I1 J1 L1 O1 V1 I1 E1 V1 T1 E1 R1 A1 T1 J1 V1 R1 E1 V1 V1 E1 A1 Y1 R1 E1 I1 N1 J1 A1 N1 L1 U1 I1 E1 C1 J1 N1 L1 F1 V1 R1 V1 O1 B1 V1 R1 A1 V1 I1 <1 N1 A1 C1 L1 A1 N1 C1 E1 L1 V1 N1 F1 I1 R1 L1 T1 E1 A1 S1 Z1 C1 L1 V1 J1 V1 V1 Y1 L1 V1 E1 A1 R1 C1 L1 U1 J1 L1 I1 T1 O1 B1 I1 C1 L1 A1 Y1 F1 A1 L1 V1 V1 N1 A1 V1 Y1 J1 T1 R1 O1 V1 O1 L1 U1 N1 A1 C1 C1 L1 N1 A1 R1 <1 L1 I1 N1 J1 L1 U1 B1 L1 A1 J1 T1 I1 L1 L1 I1 T1 L1 U1 I1 C1 J1 T1 L1 U1 J1 V1 E1 Y1 <1 N1 E1 V1 T1 J1 C1 L1 F1 A1 I1 <1 R1 A1 V1 V1 L1 G1 I1 R1 L1 E1 C1 J1 U1 R1 J1 J1 A1 U1 M1 L1 J1 V1 R1 N1 N1 R1 <1 L1 T1 J1 J1 F1 B1 V1 V1 N1 A1 F1 N1 L1 B1 T1 J1 C1 E1 N1 A1 L1 O1 A1 <1 B1 C1 L1 V1 J1 V1 F1 E1 A1 T1 L1 B1 C1 O1 T1 A1 R1 <1 R1 E1 J1 O1 B1 N1 O1 V1 L1 R1 T1 Z1 H1 J1 B1 A1 T1 V1 A1 N1 F1 E1 <1 T1 C1 L1 T1 B1 J1 U1 E1 C1 J1 D1 F1 I1 G1 U1 B1 L1 J1 O1 V1 T1 I1 N1 O1 L1 L1 V1 V1 A1 R1 R1 I1 A1 I1 R1 <1 E1 L1 T1 F1 <1 A1 E1 C1 T1 O1 V1 B1 D1 L1 E1 A1 U1 L1 E1 <1 L1 E1 E1 L1 G1 R1 F1 F1 B1 <1 L1 E1 V1 V1 E1 L1 L1 J1 B1 F1 L1 U1 I1 A1 T1 I1 V1 L1 V1 V1 L1 U1 B1 L1 V1 L1 K1 W1 C1 L1 U1 J1 T1 V1 U1 A1 <1 <1 B1 *1 N1 R1 F1 T1 U1 A1 R1 T1 O1 F1 R1 T1 E1 R1 I1 A1 T1 U1 J1 R1 P1 P1 L1 V1 V1 U1 L1 <1 <1 I1 /1 M1 E1 I1 L1 E1 L1 C1 F1 V1 T1 O1 R1 L1 U1 E1 F1 <1 E1 J1 U1 D1 L1 L1 A1 F1 F1 L1 Y1 B1 E1 L1 L1 <1 R1 J1 V1 E1 L1 V1 C1 L1 V1 E1 L1 V1 C1";
+    // Événement pour prévenir l'UI qu'une lettre a changé
+    public Action OnLetterUpdated;
 
-    // La liste de tous les objets 'CipherLetter' représentant le jeu
-    private List<CipherLetter> _gameLetters;
-
-    // Evénement déclenché quand le joueur change une lettre (pour rafraîchir l'UI)
-    public event System.Action OnLetterUpdated; 
-
-    // Pour un accès plus rapide aux lettres uniques (utile pour la désaffectation)
-    private Dictionary<string, char> _currentGuesses = new Dictionary<string, char>();
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void Start()
+    private void Awake()
     {
-        InitializeCryptogram();
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+
+        PrepareGame(); // Généère les lettres au démarrage
     }
 
-    private void InitializeCryptogram()
+    // Prépare les données du jeu en chiffrant la phrase secrète
+    private void PrepareGame()
     {
-        if (CipherKey == null)
+        _gameLetters.Clear();
+        // On récupère le dictionnaire ultra-rapide
+        var solutionMap = cipherMapping.GetSolutionMap();
+
+        // On parcourt chaque caractère de la phrase secrète
+        foreach (char c in secretPhrase.ToUpper())
         {
-            Debug.LogError("CipherKey is not assigned in CryptogramManager.");
-            return;
-        }
+            if (c == ' ')
+            {
+                // Ajouter un espace sans chiffrement
+                _gameLetters.Add(new CipherLetter(" ", ' '));
+                continue; // Pour arrêter la boucle ici
+            }
+           
+           // On cherche quel symbole correspond à cette lettre dans ton Mapping
+            string associatedSymbol = "";
+            foreach (var pair in cipherMapping.KeyPairs)
+            {
+                if (char.ToUpper(pair.SolutionLetter) == c)
+                {
+                    associatedSymbol = pair.CipherSymbol;
+                    break;
+                }
+            }
 
-        // Obtient la carte de solution (symbole -> lettre claire)
-        Dictionary<string, char> solutionMap = CipherKey.GetSolutionMap();
-
-        _gameLetters = new List<CipherLetter>();
-        // Divise le texte chiffré en symboles individuels
-        string[] symbols = CipherText.Split(new char[] { ' ', '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (string symbol in symbols)
-        {
-            // Trouver la solution pour ce symbole
-            char solution = solutionMap.ContainsKey(symbol) ? solutionMap[symbol] : '?';
-
-            _gameLetters.Add(new CipherLetter(symbol, solution));
-        }
-
-        Debug.Log($"Cryptogramme initialisé. Nombre de symboles à déchiffrer : {_gameLetters.Count}");
-    }
-
-    // --- LOGIQUE D'INTERACTION DU JOUEUR ---
-
-    /// <summary>
-    /// Met à jour la supposition du joueur pour un symbole donné.
-    /// </summary>
-    /// <param name="targetSymbol">Le symbole chiffré à mettre à jour.</param>
-    /// <param name="guess">La lettre que le joueur a devinée.</param>
-    public void PlayerAssignLetter(string targetSymbol, char guess)
-    {
-        char upperGuess = char.ToUpper(guess);
-
-        // Appliquer le changement à TOUTES les instance de ce symbole
-        foreach (var letter in _gameLetters.Where(l => l.CipherSymbol == targetSymbol))
-        {
-            letter.PlayerGuess = upperGuess;
-        }
-
-        // Informer l'UI qu'elle doit se rafraîchir
-        OnLetterUpdated?.Invoke();
-
-        // Vérifier si le jeu est terminé
-        if (IsGameComplete())
-        {
-            Debug.Log("Félicitations ! Vous avez déchiffré le message !");  
-            // Fin du jeu et révélation du trésor
+            if (!string.IsNullOrEmpty(associatedSymbol))
+            {
+                // On crée l'objet de donnée pour cette lettre précise
+                _gameLetters.Add(new CipherLetter(associatedSymbol, c));
+            }
         }
     }
 
-    /// <summary>
-    /// Retire la supposition du joueur pour un symbole, le remettant à l'état non deviné (' ').
-    /// </summary>
-    /// <param name="targetSymbol">Le symbole chiffré à réinitialiser.</param>
-    public void PlayerUnassignLetter(string targetSymbol)
+    public List<CipherLetter> GetGameLetters() => _gameLetters;
+
+    // --- LA MÉTHODE DE VÉRIFICATION ---
+    public bool CheckIfLetterIsCorrect(string symbol, char guess)
     {
-        // 1. Retirer du mapping des devinettes
-        if (_currentGuesses.ContainsKey(targetSymbol))
+        foreach (var letter in _gameLetters) 
         {
-            _currentGuesses.Remove(targetSymbol);
+            if (letter.CipherSymbol == symbol)
+            {
+                // On utilise SolutionLetter (le vrai nom dans ton script CipherLetter)
+                return char.ToUpper(guess) == letter.SolutionLetter;
+            }
         }
+        return false;
+    }
 
-        // 2. Appliquer la devinette vide à TOUTES les instances de ce symbole
-        foreach (var letter in _gameLetters.Where(l => l.CipherSymbol == targetSymbol))
+    // Assigne la lettre et déclenche la mise à jour visuelle
+    public void PlayerAssignLetter(string symbol, char guess)
+    {
+        foreach (var letter in _gameLetters)
         {
-            letter.PlayerGuess = ' ';
+            if (letter.CipherSymbol == symbol)
+            {
+               // IsCorrect se mettra à jour tout seul dans CipherLetter !
+                letter.PlayerGuess = char.ToUpper(guess);
+            }
         }
-
-        // 3. Informer l'UI
+        // On prévient l'UI qu'il faut se redessiner
         OnLetterUpdated?.Invoke();
     }
 
-    // --- LOGIQUE DE JEU ET D'ETAT ---
-
-    // Permet à l'UI d'accéder à la liste pour laffichage
-    public List<CipherLetter> GetGameLetters()
-    {
-        return _gameLetters;
-    }
-
-    /// <summary>
-    /// Calcule le pourcentage de symboles correctement déchiffrés par le joueur.
-    /// </summary>
-    /// <returns>Pourcentage de progression (0.0f à 1.0f).</returns>
+    // Calcule le pourcentage de progression
     public float GetCompletionProgress()
     {
-        if (_gameLetters == null || _gameLetters.Count == 0) return 0f;
+       if (_gameLetters == null || _gameLetters.Count == 0) return 0f;
 
-        int correctCount = _gameLetters.Count(letter => letter.IsCorrect);
+        int correctCount = _gameLetters.Count(l => l.IsCorrect);
         return (float)correctCount / _gameLetters.Count;
-    }
-
-    /// <summary>
-    /// Vérifie si toutes les lettres ont été correctement devinées.
-    /// </summary>
-    public bool IsGameComplete()
-    {
-        // Le jeu est complet si toutes les lettres sont correctes
-        return _gameLetters.All(letter => letter.IsCorrect);
     }
 }

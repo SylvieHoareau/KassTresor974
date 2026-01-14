@@ -35,6 +35,6 @@ public class SceneLoader : MonoBehaviour
     public void LoadQuizzScene() => StartTransitionToScene("Quizz");
     public void LoadOptionsScene() => StartTransitionToScene("Options");
     public void LoadCredits() => StartTransitionToScene("Credits");
-    public void LoadEnigmeFinale() => StartTransitionToScene("EnigmeFinale");
+    public void LoadCryptogramme() => StartTransitionToScene("Cryptogramme");
 
 }
