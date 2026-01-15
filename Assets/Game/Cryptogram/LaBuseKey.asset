@@ -13,57 +13,19 @@ MonoBehaviour:
   m_Name: LaBuseKey
   m_EditorClassIdentifier: 
   KeyPairs:
-  - CipherSymbol: F1
-    SolutionLetter: 84
-  - CipherSymbol: U1
-    SolutionLetter: 82
-  - CipherSymbol: P1
-    SolutionLetter: 79
-  - CipherSymbol: L1
-    SolutionLetter: 85
-  - CipherSymbol: D1
-    SolutionLetter: 86
-  - CipherSymbol: I1
-    SolutionLetter: 83
-  - CipherSymbol: A1
-    SolutionLetter: 69
-  - CipherSymbol: T1
+  - CipherSymbol: "\u0393"
     SolutionLetter: 76
-  - CipherSymbol: N1
-    SolutionLetter: 77
-  - CipherSymbol: J1
-    SolutionLetter: 67
-  - CipherSymbol: O1
-    SolutionLetter: 78
-  - CipherSymbol: E1
-    SolutionLetter: 65
-  - CipherSymbol: R1
-    SolutionLetter: 68
-  - CipherSymbol: V1
+  - CipherSymbol: "\u0394"
+    SolutionLetter: 69
+  - CipherSymbol: "\u03A6"
+    SolutionLetter: 84
+  - CipherSymbol: "\u03A9"
+    SolutionLetter: 82
+  - CipherSymbol: "\u03A8"
+    SolutionLetter: 83
+  - CipherSymbol: "\u03A3"
+    SolutionLetter: 79
+  - CipherSymbol: "\u03A0"
     SolutionLetter: 73
-  - CipherSymbol: Y1
-    SolutionLetter: 66
-  - CipherSymbol: C1
-    SolutionLetter: 88
-  - CipherSymbol: Z1
-    SolutionLetter: 71
-  - CipherSymbol: B1
-    SolutionLetter: 80
-  - CipherSymbol: <1
-    SolutionLetter: 70
-  - CipherSymbol: S1
-    SolutionLetter: 72
-  - CipherSymbol: G1
-    SolutionLetter: 89
-  - CipherSymbol: M1
-    SolutionLetter: 75
-  - CipherSymbol: K1
-    SolutionLetter: 74
-  - CipherSymbol: W1
-    SolutionLetter: 81
-  - CipherSymbol: H1
-    SolutionLetter: 90
-  - CipherSymbol: '*1'
-    SolutionLetter: 45
-  - CipherSymbol: /1
-    SolutionLetter: 39
+  - CipherSymbol: "\u039B"
+    SolutionLetter: 67

@@ -33,7 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/S_Scene/Enigme 1.unity
     guid: 8ff73760f41fec045a3baaceb2792aec
   - enabled: 1
-    path: Assets/Scenes/S_Scene/EnigmeFinale.unity
+    path: Assets/Scenes/S_Scene/Cryptogramme.unity
     guid: b1aa09dd7e0e8ae4aa88a4f11bf6c4e4
   - enabled: 1
     path: Assets/Scenes/S_Scene/Options.unity
