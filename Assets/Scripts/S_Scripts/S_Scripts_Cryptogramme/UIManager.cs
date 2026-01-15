@@ -71,23 +71,31 @@ public class UIManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(_currentSymbolToGuess) || string.IsNullOrEmpty(guessStr)) return;
 
-        char guessChar = guessStr[0];
+        char guessChar = char.ToUpper(guessStr[0]); // Mise en majuscule par sécurité
+        bool isCorrect = false; // On initialise par défaut à faux
 
-        // ON APPELLE LE MANAGER POUR VÉRIFIER
-        bool isCorrect = cryptogramManager.CheckIfLetterIsCorrect(_currentSymbolToGuess, guessChar);
+       // on récupère la liste des lettres pour trouver la solution
+        var targetLetter = cryptogramManager.GetGameLetters()
+            .Find(l => l.CipherSymbol == _currentSymbolToGuess);
 
-        // Feedback sonore
-        if (audioSource != null)
+        if (targetLetter != null)
         {
-            if (guessChar != ' ') 
-                audioSource.PlayOneShot(isCorrect ? soundCorrect : soundWrong);
-            else 
-                audioSource.PlayOneShot(soundClick);
+            isCorrect = (guessChar == targetLetter.SolutionLetter);
+
+            // Feedback sonore
+            if (audioSource != null)
+            {
+                if (guessChar != ' ') 
+                    audioSource.PlayOneShot(isCorrect ? soundCorrect : soundWrong);
+                else 
+                    audioSource.PlayOneShot(soundClick);
+            }
         }
 
         // On envoie la décision finale au manager
         cryptogramManager.PlayerAssignLetter(_currentSymbolToGuess, guessChar);
         
+        // Nettoyage de l'interface
         if (letterSelectionPanel != null) letterSelectionPanel.SetActive(false);
         _currentSymbolToGuess = null; 
     }
