@@ -31,6 +31,8 @@ public class CipherSymbolUI : MonoBehaviour
         // Initialiser l'affichage UI Affichage du symbole chiffré
         cipherText.text = _data.CipherSymbol;
 
+        // Retirer les anciens clics avant d'en mettre un nouveau
+        symbolButton.onClick.RemoveAllListeners();
         // Ajouter le listener au bouton
         symbolButton.onClick.AddListener(OnSymbolClicked);
 
@@ -40,6 +42,16 @@ public class CipherSymbolUI : MonoBehaviour
     // Appelé par le Manager via l'événement OnLetterUpdated
     public void UpdateVisuals()
     {
+        if (_data.CipherSymbol == " ")
+        {
+            cipherText.text = "";
+            guessText.text = "";
+            backgroundSquare.enabled = false; // Cache le fond
+            symbolButton.interactable = false; // Désactive le clic
+            return;
+        }
+        backgroundSquare.enabled = true; // Réaffiche pour les vraies lettres
+        
         // Met à jour le texte de la devinette
         bool hasGuessed = _data.PlayerGuess != ' ';
         // Feedback visuel si la devinette est correcte

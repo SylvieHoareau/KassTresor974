@@ -119,12 +119,13 @@ public class CipherSolver : MonoBehaviour
                 {
                     char playerChar = playerSubstitutions[cipherChar];
 
-                    // Trouver la vraie lettre correspondante
-                    int index = SubstitutionKey.IndexOf(cipherChar);
-                    char realLetter = SecretPhrase.Replace(" ", "")[index];
+                   // 1. Trouver où se trouve la lettre chiffrée dans la clé
+                    int indexInKey = SubstitutionKey.IndexOf(cipherChar);
+                    // 2. La lettre originale est celle au même index dans l'alphabet normal
+                    char realOriginalLetter = CipherAlphabet[indexInKey];
 
-                    // Choisir la couleur
-                    string color = (playerChar == realLetter) ? "#33FF33" : "#FF5555";
+                    // Comparaison simple : est-ce que le joueur a deviné la bonne lettre originale ?
+                    string color = (playerChar == realOriginalLetter) ? "#33FF33" : "#FF5555";
 
                     // Afficher la substitution choisie par le joueur
                     displayText.Append($"<color={color}>{playerChar}</color>");
