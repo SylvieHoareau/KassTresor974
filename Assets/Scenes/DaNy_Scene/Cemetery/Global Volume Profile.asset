@@ -103,11 +103,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ColorAdjustments
   active: 1
   postExposure:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0.1
   contrast:
     m_OverrideState: 1
-    m_Value: 15
+    m_Value: 100
   colorFilter:
     m_OverrideState: 1
     m_Value: {r: 0.9142804, g: 0.9622642, b: 0.75800997, a: 1}
