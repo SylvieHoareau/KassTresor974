@@ -8795,7 +8795,7 @@ PrefabInstance:
       objectReference: {fileID: 416837085}
     - target: {fileID: 997788788030905755, guid: 356f8b9741d5f7547bf586c53f66c6fd, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadParcPoule
+      value: LoadMap
       objectReference: {fileID: 0}
     - target: {fileID: 7853853887523104674, guid: 356f8b9741d5f7547bf586c53f66c6fd, type: 3}
       propertyPath: m_Pivot.x

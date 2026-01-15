@@ -844,7 +844,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sequence:
   - speaker: {fileID: 11400000, guid: 6813abf958bacff4e80f58984fee61e7, type: 2}
-    text: Ecoutons les nouvelles du jour.
+    text: "\xC9coutons les nouvelles du jour."
   - speaker: {fileID: 11400000, guid: 68ff7f8cf3b26ea409742d14db8b2a03, type: 2}
     text: Flash infos
   - speaker: {fileID: 11400000, guid: 68ff7f8cf3b26ea409742d14db8b2a03, type: 2}
