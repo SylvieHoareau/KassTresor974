@@ -8,19 +8,19 @@ public class CipherSolver : MonoBehaviour
 {
     // --- VARIABLES PUBLIQUES ---
     public TextMeshProUGUI cipherTextDisplay; // Référence au composant TextMeshProUGUI pour afficher le texte chiffré
+    public GameObject victoryPanel;
 
     [Header("Messages de fin")]
     [Tooltip("Message affiché lorsque le joueur réussit à déchiffrer le message")]
     public string winMessage = "Bravo ! Vous avez trouvé le trésor de la Buse !";
 
     // --- VARIABLES PRIVÉES ---
-    private const string SecretPhrase = "LE TRESOR EST SOUS LA ROCHE";
+    private const string SecretPhrase = "LE TRESOR EST ICI";
     private string CipherAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // private string SubstitutionAlphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"; // Exemple de substitution
     private string SubstitutionKey; // La clé de substitution générée
     private Dictionary<char, char> playerSubstitutions = new Dictionary<char, char>();
     private char currentlySelectedCipherLetter = '\0'; // La lettre chiffrée que 
-    public GameObject victoryPanel;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -115,9 +115,9 @@ public class CipherSolver : MonoBehaviour
             if (char.IsLetter(cipherChar))
             {
                // Si la lettre chiffrée a été substituée par le joueur
-                if (playerSubstitutions.ContainsKey(cipherChar) && playerSubstitutions[cipherChar] != '\0')
+                if (playerSubstitutions.TryGetValue(cipherChar, out char playerChar) && playerChar != '\0')
                 {
-                    char playerChar = playerSubstitutions[cipherChar];
+                    // char playerChar = playerSubstitutions[cipherChar];
 
                    // 1. Trouver où se trouve la lettre chiffrée dans la clé
                     int indexInKey = SubstitutionKey.IndexOf(cipherChar);
@@ -128,7 +128,7 @@ public class CipherSolver : MonoBehaviour
                     string color = (playerChar == realOriginalLetter) ? "#33FF33" : "#FF5555";
 
                     // Afficher la substitution choisie par le joueur
-                    displayText.Append($"<color={color}>{playerChar}</color>");
+                    displayText.Append($"<link=\"{cipherChar}\"><color={color}>{playerChar}</color></link>");
                 }
                 else
                 {
@@ -155,34 +155,53 @@ public class CipherSolver : MonoBehaviour
         // Reconstruite la phrase décryptée basée sur les substitutions du joueur
         // StringBuilder solved = new StringBuilder();
         string encrypted = EncryptPhrase(SecretPhrase);
+        StringBuilder playerResult = new StringBuilder();
 
-        StringBuilder solved = new StringBuilder();
-
-        // On vérifie si toutes les lettres ont été correctement substituées
-        foreach (char cipherChar in encrypted)
+        foreach (char c in encrypted)
         {
-            if (char.IsLetter(cipherChar))
+            if (char.IsLetter(c))
             {
-                // Si une lettre n'est pas encore résolue -> pas de victoire
-                if (playerSubstitutions[cipherChar] == '\0')
-                    return;
-
-                solved.Append(playerSubstitutions[cipherChar]);
+                char guess = playerSubstitutions[c];
+                playerResult.Append(guess == '\0' ? '?' : guess);
             }
             else
             {
-                solved.Append(cipherChar); // Ajouter les espaces et ponctuations tels quels
+                playerResult.Append(c);
             }
         }
 
-        // Comparaison finale (on enlève les espaces pour une comparaison robuste, 
-        // car la mise en forme de la phrase secrète peut varier légèrement)
-        if (solved.ToString().Replace(" ", "") == SecretPhrase.Replace(" ", ""))
+        if (playerResult.ToString() == SecretPhrase.ToUpper())
         {
-            Debug.Log("PHRASE VALIDEE !");
-            // AJOUTER ICI une logique de fin de jeu (écran de victoire, désactiver l'interaction, etc.)
             OnWin();
         }
+
+        // StringBuilder solved = new StringBuilder();
+
+        // // On vérifie si toutes les lettres ont été correctement substituées
+        // foreach (char cipherChar in encrypted)
+        // {
+        //     if (char.IsLetter(cipherChar))
+        //     {
+        //         // Si une lettre n'est pas encore résolue -> pas de victoire
+        //         if (playerSubstitutions[cipherChar] == '\0')
+        //             return;
+
+        //         solved.Append(playerSubstitutions[cipherChar]);
+        //     }
+        //     else
+        //     {
+        //         solved.Append(cipherChar); // Ajouter les espaces et ponctuations tels quels
+        //     }
+        // }
+
+        // // Comparaison finale (on enlève les espaces pour une comparaison robuste, 
+        // // car la mise en forme de la phrase secrète peut varier légèrement)
+        // if (solved.ToString().Replace(" ", "") == SecretPhrase.Replace(" ", ""))
+        // {
+        //     Debug.Log("PHRASE VALIDEE !");
+        //     // AJOUTER ICI une logique de fin de jeu (écran de victoire, désactiver l'interaction, etc.)
+        //     OnWin();
+        // }
     }
 
     private void OnWin()
@@ -218,6 +237,8 @@ public class CipherSolver : MonoBehaviour
             currentlySelectedCipherLetter = linkID[0];
 
             Debug.Log($"Lettre chiffrée sélectionnée : {currentlySelectedCipherLetter}");
+
+            EncryptAndDisplay();
         }
     } 
 

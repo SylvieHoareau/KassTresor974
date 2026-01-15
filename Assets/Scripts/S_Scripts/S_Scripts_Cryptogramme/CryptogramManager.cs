@@ -8,96 +8,88 @@ public class CryptogramManager : MonoBehaviour
     public static CryptogramManager Instance;
 
     [Header("Configuration")]
-    [SerializeField] private CipherMapping cipherMapping; // Ta clé de substitution
+    [SerializeField] private CipherMapping cipherMapping; 
     [SerializeField, TextArea] private string secretPhrase = "LE TRESOR EST ICI";
+    
+    [Header("Paramètres de Victoire")]
+    public GameObject victoryPanel;
 
-    [Header("Données du Jeu")]
-    [SerializeField] private List<CipherLetter> _gameLetters = new List<CipherLetter>();
-
-    // Événement pour prévenir l'UI qu'une lettre a changé
+    private List<CipherLetter> _gameLetters = new List<CipherLetter>();
     public Action OnLetterUpdated;
+    private bool _isGameFinished = false;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        PrepareGame(); // Généère les lettres au démarrage
+        PrepareGame();
     }
 
-    // Prépare les données du jeu en chiffrant la phrase secrète
     private void PrepareGame()
     {
         _gameLetters.Clear();
-        // On récupère le dictionnaire ultra-rapide
+        _isGameFinished = false;
+
+        // On utilise la solution du CipherMapping
         var solutionMap = cipherMapping.GetSolutionMap();
 
-        // On parcourt chaque caractère de la phrase secrète
         foreach (char c in secretPhrase.ToUpper())
         {
             if (c == ' ')
             {
-                // Ajouter un espace sans chiffrement
                 _gameLetters.Add(new CipherLetter(" ", ' '));
-                continue; // Pour arrêter la boucle ici
-            }
-           
-           // On cherche quel symbole correspond à cette lettre dans ton Mapping
-            string associatedSymbol = "";
-            foreach (var pair in cipherMapping.KeyPairs)
-            {
-                if (char.ToUpper(pair.SolutionLetter) == c)
-                {
-                    associatedSymbol = pair.CipherSymbol;
-                    break;
-                }
+                continue;
             }
 
+            // On cherche le symbole associé à cette lettre dans le ScriptableObject
+            string associatedSymbol = solutionMap.FirstOrDefault(x => x.Value == c).Key;
+            
             if (!string.IsNullOrEmpty(associatedSymbol))
             {
-                // On crée l'objet de donnée pour cette lettre précise
                 _gameLetters.Add(new CipherLetter(associatedSymbol, c));
             }
         }
     }
 
-    public List<CipherLetter> GetGameLetters() => _gameLetters;
-
-    // --- LA MÉTHODE DE VÉRIFICATION ---
-    public bool CheckIfLetterIsCorrect(string symbol, char guess)
-    {
-        foreach (var letter in _gameLetters) 
-        {
-            if (letter.CipherSymbol == symbol)
-            {
-                // On utilise SolutionLetter (le vrai nom dans ton script CipherLetter)
-                return char.ToUpper(guess) == letter.SolutionLetter;
-            }
-        }
-        return false;
-    }
-
-    // Assigne la lettre et déclenche la mise à jour visuelle
     public void PlayerAssignLetter(string symbol, char guess)
     {
+        if (_isGameFinished) return;
+
         foreach (var letter in _gameLetters)
         {
             if (letter.CipherSymbol == symbol)
             {
-               // IsCorrect se mettra à jour tout seul dans CipherLetter !
                 letter.PlayerGuess = char.ToUpper(guess);
             }
         }
-        // On prévient l'UI qu'il faut se redessiner
+
         OnLetterUpdated?.Invoke();
+        CheckWinCondition();
     }
 
-    // Calcule le pourcentage de progression
+    private void CheckWinCondition()
+    {
+        // On vérifie si toutes les lettres (hors espaces) sont correctes
+        bool allCorrect = _gameLetters
+            .Where(l => l.CipherSymbol != " ")
+            .All(l => l.IsCorrect);
+
+        if (allCorrect && !_isGameFinished)
+        {
+            _isGameFinished = true;
+            if (victoryPanel != null) victoryPanel.SetActive(true);
+            Debug.Log("Félicitations ! Message déchiffré.");
+        }
+    }
+
+    public List<CipherLetter> GetGameLetters() => _gameLetters;
+    
     public float GetCompletionProgress()
     {
-       if (_gameLetters == null || _gameLetters.Count == 0) return 0f;
-
-        int correctCount = _gameLetters.Count(l => l.IsCorrect);
-        return (float)correctCount / _gameLetters.Count;
+        var lettersOnly = _gameLetters.Where(l => l.CipherSymbol != " ").ToList();
+        if (lettersOnly.Count == 0) return 0f;
+        float correct = lettersOnly.Count(l => l.IsCorrect);
+        return correct / lettersOnly.Count;
     }
 }

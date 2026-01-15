@@ -7546,6 +7546,7 @@ MonoBehaviour:
   scoreText: {fileID: 1977145720}
   timerText: {fileID: 33988717}
   goodFeedbackPanel: {fileID: 1649118464}
+  badFeedbackPanel: {fileID: 0}
   endGamePanel: {fileID: 0}
   audioSource: {fileID: 1625468747}
   correctSFX: {fileID: 8300000, guid: 7acfa8e994647874ea1e0b0b250840fb, type: 3}
