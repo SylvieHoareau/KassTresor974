@@ -18,14 +18,14 @@ public class Unity6WebGLOptimizer : EditorWindow
         PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
 
         // 3. Désactivation des exceptions C# pour accélérer l'exécution du code
-        // (SetStackTraceType à None réduit la taille du binaire compilé WebAssembly)
-        PlayerSettings.SetStackTraceType(ScriptBackingLayer.IL2CPP, StackTraceType.None);
+        // WebGLExceptionSupport.None supprime le code de suivi des exceptions,
+        // ce qui réduit considérablement la taille du binaire WebAssembly (.wasm).
+        PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.None;
 
-        // 4. Optimisation de l'utilisation mémoire WebGL
-        // Autorise le navigateur à étendre la mémoire de façon dynamique si besoin
-        PlayerSettings.WebGL.memorySize = 512; // Taille initiale en Mo
+        // 4. Optimisation de l'utilisation mémoire WebGL (taille initiale en Mo)
+        PlayerSettings.WebGL.memorySize = 512;
 
-        // 5. Désactivation des fonctionnalités inutiles sur le Web pour gagner du poids
+        // 5. Désactivation des fonctionnalités de diagnostic inutiles en production
         PlayerSettings.WebGL.showDiagnostics = false;
 
         Debug.Log("[WebGL Optimizer] Configuration WebGL terminée avec succès !");
@@ -49,7 +49,7 @@ public class Unity6WebGLOptimizer : EditorWindow
                 TextureImporterPlatformSettings webglSettings = textureImporter.GetPlatformTextureSettings("WebGL");
                 webglSettings.overridden = true;
                 webglSettings.maxTextureSize = 1024; // Seuil recommandé sur WebGL pour préserver la RAM
-                webglSettings.format = TextureImporterFormat.ASTC_6x6; // Format très léger
+                webglSettings.format = TextureImporterFormat.ASTC_6x6; // Format de compression très léger
 
                 textureImporter.SetPlatformTextureSettings(webglSettings);
                 textureImporter.SaveAndReimport();
