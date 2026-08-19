@@ -16432,6 +16432,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Terrain (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 3310377923591361534, guid: ef364721104685f4fb7f30942a03927f, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 1560575207a7b4f27bcd4ab2aeb2e3a1, type: 2}
     - target: {fileID: 5096625868844856060, guid: ef364721104685f4fb7f30942a03927f, type: 3}
       propertyPath: m_LocalScale.x
       value: 30
