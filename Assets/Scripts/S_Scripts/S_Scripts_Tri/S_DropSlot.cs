@@ -1,26 +1,24 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Linq; // Pour utiliser .Contains() sur un tableau d'int
+using System.Linq;
 
 public enum SlotType
 {
-    AGarder, // Pour les vrais trésors
-    AEcarter // Pour les faux trésors (butin)
+    AGarder, // Pour les objets volés par la Buse (croix, médaille, collier)
+    AEcarter  // Pour les autres objets à laisser de côté
 }
 
 public class S_DropSlot : MonoBehaviour, IDropHandler
 {
     [Header("Configuration du slot")]
-    // La liste des ID des cartes considérées comme "bonnes" pour le jeu
-    // 1, 3 et 5 sont les ID des objets "A GARDER"
-    private static readonly int[] IDs_A_Garder = { 0, 2, 4 };
-    // Pour définir si ce slot est pour les cartes "A GARDER" ou "A ECARTER"
+    [Tooltip("Type de zone : A Garder ou A Ecarter")]
     public SlotType slotType = SlotType.AGarder;
-    [Header("Nom attendu de la carte")]
-    // public string expectedItemName;
 
-    // public int expectedID; 
+    [Tooltip("Les ID des objets considérés comme de VRAIS trésors à garder (ex: croix, médaille, collier)")]
+    public int[] validKeepIDs = { 0, 1, 2 }; // Modifiable depuis l'Inspector
+
+    [Header("Composants & Visuels")]
     public Image slotImage;
     public Color correctColor = Color.green;
     public Color incorrectColor = Color.red;
@@ -28,66 +26,57 @@ public class S_DropSlot : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
-        S_Draggable card =  eventData.pointerDrag.GetComponent<S_Draggable>();
+        if (eventData.pointerDrag == null) return;
 
-        if (card == null)
-            return;
+        S_Draggable card = eventData.pointerDrag.GetComponent<S_Draggable>();
 
-        // Slot déjà occupé
+        if (card == null) return;
+
+        // Si le slot est déjà occupé, on refuse la nouvelle carte
         if (cardInSlot != null)
         {
-            // On rejette la carte
             card.ResetPos();
             return;
         }
 
-        // On dépose la carte
+        // On dépose la carte dans ce slot
         cardInSlot = card;
         card.current_slot = this;
         card.transform.SetParent(transform);
         card.rectTransform.anchoredPosition = Vector2.zero;
     }
 
+    /// <summary>
+    /// Vérifie si la carte actuellement placée dans ce slot correspond à la consigne.
+    /// </summary>
     public bool CheckSlot()
     {
-        if(cardInSlot == null) return false;
+        if (cardInSlot == null) return false;
 
-        // Vérifier si la carte est un objet "A GARDER"
-        bool isCardToKeep = IDs_A_Garder.Contains(cardInSlot.id);
+        // La carte déposée fait-elle partie de la liste des trésors à garder ?
+        bool isCardToKeep = validKeepIDs.Contains(cardInSlot.id);
 
-        // Vérifier si le type de la carte correspond au type de slot
         bool isCorrectMatch;
 
         if (slotType == SlotType.AGarder)
         {
+            // Dans la zone "À garder", la carte doit être un vrai trésor
             isCorrectMatch = isCardToKeep;
         }
         else // SlotType.AEcarter
         {
+            // Dans la zone "À écarter", la carte NE DOIT PAS être un vrai trésor
             isCorrectMatch = !isCardToKeep;
         }
-       
-        // Changer la couleur du slot en fonction du résultat
-        if (isCorrectMatch)
+
+        // Retour visuel (couleur du slot)
+        if (slotImage != null)
         {
-            Debug.Log($"{gameObject.name} (Type: {slotType}) : Correct match with card ID {cardInSlot.id}");
-            if (slotImage != null)
-            {
-                slotImage.color = correctColor; // Affiche en vert
-            }
-
-            return true;    
+            slotImage.color = isCorrectMatch ? correctColor : incorrectColor;
         }
-        else
-        {
-            Debug.Log($"{gameObject.name} (Type: {slotType}) : Bad match with card ID {cardInSlot.id}");
 
-            if (slotImage != null)
-            {
-                slotImage.color = incorrectColor; // Affiche en rouge
-            }
+        Debug.Log($"Slot [{gameObject.name}] ({slotType}) -> Carte ID {cardInSlot.id} : {(isCorrectMatch ? "VALIDE" : "INVALIDE")}");
 
-            return false;
-        }
+        return isCorrectMatch;
     }
 }

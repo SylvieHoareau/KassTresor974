@@ -329,7 +329,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 64, y: 196}
+  m_AnchoredPosition: {x: 105, y: 213}
   m_SizeDelta: {x: 1392.1, y: 53.241}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &286992513
@@ -748,7 +748,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 388574153}
-  - component: {fileID: 388574154}
   m_Layer: 5
   m_Name: Slot_A_Ecarter_2
   m_TagString: Untagged
@@ -777,24 +776,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &388574154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 388574152}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::S_DropSlot
-  slotType: 1
-  validKeepIDs: 000000000100000002000000
-  slotImage: {fileID: 0}
-  correctColor: {r: 0, g: 1, b: 0, a: 1}
-  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  cardInSlot: {fileID: 0}
 --- !u!1001 &404407127
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -910,7 +891,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 421678895}
-  - component: {fileID: 421678896}
   m_Layer: 5
   m_Name: Slot_A_Garder_1
   m_TagString: Untagged
@@ -939,24 +919,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &421678896
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 421678894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::S_DropSlot
-  slotType: 0
-  validKeepIDs: 000000000100000002000000
-  slotImage: {fileID: 856914413}
-  correctColor: {r: 0, g: 1, b: 0, a: 1}
-  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  cardInSlot: {fileID: 0}
 --- !u!1 &502445601
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,7 +928,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 502445602}
-  - component: {fileID: 502445603}
   m_Layer: 5
   m_Name: Slot_A_Ecarter_1
   m_TagString: Untagged
@@ -995,24 +956,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &502445603
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 502445601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::S_DropSlot
-  slotType: 1
-  validKeepIDs: 000000000100000002000000
-  slotImage: {fileID: 0}
-  correctColor: {r: 0, g: 1, b: 0, a: 1}
-  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  cardInSlot: {fileID: 0}
 --- !u!1 &570616965
 GameObject:
   m_ObjectHideFlags: 0
@@ -1022,7 +965,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 570616966}
-  - component: {fileID: 570616967}
   m_Layer: 5
   m_Name: Slot_A_Garder_3
   m_TagString: Untagged
@@ -1051,24 +993,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &570616967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570616965}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::S_DropSlot
-  slotType: 0
-  validKeepIDs: 000000000100000002000000
-  slotImage: {fileID: 2080892646}
-  correctColor: {r: 0, g: 1, b: 0, a: 1}
-  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  cardInSlot: {fileID: 0}
 --- !u!1 &595841152
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,6 +1137,7 @@ GameObject:
   - component: {fileID: 701416032}
   - component: {fileID: 701416034}
   - component: {fileID: 701416033}
+  - component: {fileID: 701416035}
   m_Layer: 5
   m_Name: Image_Keep_Medaillon
   m_TagString: Untagged
@@ -1277,6 +1202,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 701416031}
   m_CullTransparentMesh: 1
+--- !u!114 &701416035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701416031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotType: 0
+  validKeepIDs: 000000000100000002000000
+  slotImage: {fileID: 701416033}
+  correctColor: {r: 0, g: 1, b: 0, a: 1}
+  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
+  cardInSlot: {fileID: 0}
 --- !u!1 &722317685
 GameObject:
   m_ObjectHideFlags: 0
@@ -1528,7 +1471,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 737333802}
-  - component: {fileID: 737333803}
   m_Layer: 5
   m_Name: Slot_A_Garder_2
   m_TagString: Untagged
@@ -1557,24 +1499,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &737333803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 737333801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::S_DropSlot
-  slotType: 0
-  validKeepIDs: 000000000100000002000000
-  slotImage: {fileID: 701416033}
-  correctColor: {r: 0, g: 1, b: 0, a: 1}
-  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  cardInSlot: {fileID: 0}
 --- !u!1 &761814202
 GameObject:
   m_ObjectHideFlags: 0
@@ -1798,6 +1722,7 @@ GameObject:
   - component: {fileID: 856914411}
   - component: {fileID: 856914414}
   - component: {fileID: 856914413}
+  - component: {fileID: 856914412}
   m_Layer: 5
   m_Name: Image_Keep_Croix (1)
   m_TagString: Untagged
@@ -1824,6 +1749,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &856914412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856914410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotType: 0
+  validKeepIDs: 000000000100000002000000
+  slotImage: {fileID: 856914413}
+  correctColor: {r: 0, g: 1, b: 0, a: 1}
+  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
+  cardInSlot: {fileID: 0}
 --- !u!114 &856914413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1871,7 +1814,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 888982194}
-  - component: {fileID: 888982195}
   m_Layer: 5
   m_Name: Slot_A_Ecarter_3
   m_TagString: Untagged
@@ -1900,24 +1842,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &888982195
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 888982193}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::S_DropSlot
-  slotType: 1
-  validKeepIDs: 000000000100000002000000
-  slotImage: {fileID: 0}
-  correctColor: {r: 0, g: 1, b: 0, a: 1}
-  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  cardInSlot: {fileID: 0}
 --- !u!1 &962773325
 GameObject:
   m_ObjectHideFlags: 0
@@ -4506,12 +4430,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slots:
-  - {fileID: 421678896}
-  - {fileID: 737333803}
-  - {fileID: 570616967}
-  - {fileID: 502445603}
-  - {fileID: 388574154}
-  - {fileID: 888982195}
+  - {fileID: 1780369993}
+  - {fileID: 701416035}
+  - {fileID: 2080892648}
   wrongFeedbackPanel: {fileID: 2021769900}
   goodFeedbackPanel: {fileID: 1851586338}
   wrongClip: {fileID: 8300000, guid: 1ddad9836b441964686ca2605165ca98, type: 3}
@@ -4906,6 +4827,7 @@ GameObject:
   - component: {fileID: 2080892645}
   - component: {fileID: 2080892647}
   - component: {fileID: 2080892646}
+  - component: {fileID: 2080892648}
   m_Layer: 5
   m_Name: Image_Keep_Collier
   m_TagString: Untagged
@@ -4970,6 +4892,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2080892644}
   m_CullTransparentMesh: 1
+--- !u!114 &2080892648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080892644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a6ab755954db9543add1869c6028d54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotType: 0
+  validKeepIDs: 000000000100000002000000
+  slotImage: {fileID: 2080892646}
+  correctColor: {r: 0, g: 1, b: 0, a: 1}
+  incorrectColor: {r: 1, g: 0, b: 0, a: 1}
+  cardInSlot: {fileID: 0}
 --- !u!1001 &2083828275
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5040,11 +4980,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7853853887523104674, guid: 356f8b9741d5f7547bf586c53f66c6fd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 162
+      value: 198
       objectReference: {fileID: 0}
     - target: {fileID: 7853853887523104674, guid: 356f8b9741d5f7547bf586c53f66c6fd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -96
+      value: -98
       objectReference: {fileID: 0}
     - target: {fileID: 7853853887523104674, guid: 356f8b9741d5f7547bf586c53f66c6fd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5106,7 +5046,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 48, y: 261}
+  m_AnchoredPosition: {x: 38, y: 318}
   m_SizeDelta: {x: 1392.1, y: 53.241}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2095120629
@@ -5448,7 +5388,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6872186096716661488, guid: 964b3c365d49ca74eb0082fa323bbf16, type: 3}
       propertyPath: id
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8409333838546925831, guid: 964b3c365d49ca74eb0082fa323bbf16, type: 3}
       propertyPath: m_Pivot.x
@@ -5549,7 +5489,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3706867886500551113, guid: f60c51f1344f003449fc6baec9cf8273, type: 3}
       propertyPath: id
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8725958355500579344, guid: f60c51f1344f003449fc6baec9cf8273, type: 3}
       propertyPath: m_Pivot.x
@@ -5646,7 +5586,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 646391795858260291, guid: 04a9854b82d57f747b5593c8147cb838, type: 3}
       propertyPath: id
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3821027008217889080, guid: 04a9854b82d57f747b5593c8147cb838, type: 3}
       propertyPath: m_Name
@@ -5751,7 +5691,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1472924469074417607, guid: 99de60ec0bc124b4da2dfaf5230ad004, type: 3}
       propertyPath: id
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3270158229739076667, guid: 99de60ec0bc124b4da2dfaf5230ad004, type: 3}
       propertyPath: m_Pivot.x

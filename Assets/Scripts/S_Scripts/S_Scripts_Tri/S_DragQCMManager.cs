@@ -3,76 +3,92 @@ using UnityEngine.SceneManagement;
 
 public class S_DragQCMManager : MonoBehaviour
 {
+    [Header("Slots & Configuration")]
     [SerializeField] private S_DropSlot[] slots;
+    [SerializeField] private bool requireAllSlotsFilled = false;
+
+    [Header("Panneaux de retour")]
     [SerializeField] private GameObject wrongFeedbackPanel;
     [SerializeField] private GameObject goodFeedbackPanel;
+
     [Header("SFX")]
     [SerializeField] private AudioClip wrongClip;
     [SerializeField] private AudioClip rightClip;
     [SerializeField] private AudioSource sfxAudioSource;
-    [Range(0f,1f)] [SerializeField] private float sfxVolume = 1f;
+    [Range(0f, 1f)] [SerializeField] private float sfxVolume = 1f;
 
     public void CheckAnswers()
     {
-        // S'assurer que tous les slots soient remplis
-        if (!AllSlotsFilled())
+        // Si l'option exige que tous les slots soient remplis et que ce n'est pas le cas
+        if (requireAllSlotsFilled && !AllSlotsFilled())
         {
             Debug.Log("CheckAnswers: Tous les slots ne sont pas remplis.");
-            // Optionnel: Afficher un message à l'utilisateur pour remplir tous les slots
-            wrongFeedbackPanel.SetActive(true);
-            PlaySound(wrongClip);
+            ShowWrongFeedback();
             return;
         }
 
-        bool all_correct = true;
+        // On initialise la variable avec le bon nom : allCorrect
+        bool allCorrect = true;
+        int checkedSlotsCount = 0;
+
         for (int i = 0; i < slots.Length; i++)
         {
-            if (!slots[i].isActiveAndEnabled) continue;
-            bool result = slots[i].CheckSlot();
-            Debug.Log($"Slot {i} → CheckSlot() = {result}, cardInSlot = {slots[i].cardInSlot}");
-            if(!result) all_correct = false;
+            if (slots[i] == null || !slots[i].isActiveAndEnabled) continue;
+
+            // Si le slot a une carte, on vérifie si elle est au bon endroit
+            if (slots[i].cardInSlot != null)
+            {
+                checkedSlotsCount++;
+                bool result = slots[i].CheckSlot();
+                Debug.Log($"Slot {i} ({slots[i].gameObject.name}) -> CheckSlot = {result}");
+
+                if (!result)
+                {
+                    allCorrect = false;
+                }
+            }
+            else if (slots[i].slotType == SlotType.AGarder)
+            {
+                // Si un slot "À garder" est laissé vide, la réponse est incomplète
+                allCorrect = false;
+            }
         }
 
-        Debug.Log($"CheckAnswers: all_correct = {all_correct}");
-
-        if(all_correct)
+        // S'assurer qu'au moins un objet a été déposé
+        if (checkedSlotsCount == 0)
         {
-            // Continue to next game
-            Debug.Log("Showing good feedback panel");
-            if (wrongFeedbackPanel != null)
-            {
-                wrongFeedbackPanel.SetActive(false);
-            }
-            if (goodFeedbackPanel != null)
-            {
-                // SceneManager.LoadScene("HugoLabo");
-                // KeepInLoad.Instance.ShowDialogue(true);
-                // DialogueManager.Instance.isTalking = true;
-                goodFeedbackPanel.SetActive(true);
-                PlaySound(rightClip);
-            }
-            else
-            {
-                Debug.LogWarning("goodFeedbackPanel is not assigned!");
-            }
+            allCorrect = false;
+        }
+
+        Debug.Log($"CheckAnswers : Résultat final = {allCorrect}");
+
+        if (allCorrect)
+        {
+            ShowGoodFeedback();
         }
         else
         {
-            // Play wrong feedback
-            Debug.Log("Showing wrong feedback panel");
-            if (goodFeedbackPanel != null)
-            {
-                goodFeedbackPanel.SetActive(false);
-            }
-            if (wrongFeedbackPanel != null)
-            {
-                wrongFeedbackPanel.SetActive(true);
-                PlaySound(wrongClip);
-            }
-            else
-            {
-                Debug.LogWarning("wrongFeedbackPanel is not assigned!");
-            }
+            ShowWrongFeedback();
+        }
+    }
+
+    private void ShowGoodFeedback()
+    {
+        if (wrongFeedbackPanel != null) wrongFeedbackPanel.SetActive(false);
+        if (goodFeedbackPanel != null)
+        {
+            goodFeedbackPanel.SetActive(true);
+            PlaySound(rightClip);
+        }
+    }
+
+    private void ShowWrongFeedback()
+    {
+        if (goodFeedbackPanel != null) goodFeedbackPanel.SetActive(false);
+        if (wrongFeedbackPanel != null)
+        {
+            wrongFeedbackPanel.SetActive(true);
+            PlaySound(wrongClip);
         }
     }
 
@@ -90,27 +106,16 @@ public class S_DragQCMManager : MonoBehaviour
         }
     }
 
-    // Called by the UI "Rejouer" button (or from code) to restart the current scene
     public void Replay()
     {
-        // Désactive le panneau de feedback
-        if (wrongFeedbackPanel != null)
-        {
-            wrongFeedbackPanel.SetActive(false);
-        }
-
-        // Recharge la scène actuelle pour redémarrer le niveau
+        if (wrongFeedbackPanel != null) wrongFeedbackPanel.SetActive(false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void NextScene()
     {
-        if (goodFeedbackPanel != null)
-        {
-            goodFeedbackPanel.SetActive(false);
-        }
+        if (goodFeedbackPanel != null) goodFeedbackPanel.SetActive(false);
 
-        // Load the next scene in Build Settings if it exists.
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         int nextIndex = currentIndex + 1;
 
@@ -120,22 +125,20 @@ public class S_DragQCMManager : MonoBehaviour
         }
         else
         {
-            // Last scene reached: reload first scene (index 0) or change behaviour as needed.
-            Debug.Log("NextScene: last scene reached, loading scene 0.");
+            Debug.Log("NextScene: dernière scène atteinte, chargement de la scène 0.");
             SceneManager.LoadScene(0);
         }
     }
 
-    // Fonction utilitaire pour vérifier si tous les slots sont remplis
     private bool AllSlotsFilled()
     {
         foreach (var slot in slots)
         {
-            if (slot.isActiveAndEnabled && slot.cardInSlot == null)
+            if (slot != null && slot.isActiveAndEnabled && slot.cardInSlot == null)
             {
-                return false; // Au moins un slot actif est vide
+                return false;
             }
         }
-        return true; // Tous les slots actifs sont remplis
+        return true;
     }
 }
