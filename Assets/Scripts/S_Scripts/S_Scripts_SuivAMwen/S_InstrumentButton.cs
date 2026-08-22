@@ -35,18 +35,17 @@ public class S_InstrumentButton : MonoBehaviour
     public void ActiverBoutonAutomatiquement()
     {
         StartCoroutine(AnimationFlash(couleurDemonstration));
-        S_SuivAMwen_AudioManager.Instance.JouerInstrument(idDirection);
     }
 
     // Petite animation de couleur
     IEnumerator AnimationFlash(Color flashColor)
     {
-        if(imageBouton != null) 
-            imageBouton.color = flashColor;  // Utilise la couleur passée en paramètres      
-        
+        if(imageBouton != null)
+            imageBouton.color = flashColor;  // Utilise la couleur passée en paramètres
+
         yield return new WaitForSeconds(0.3f);
-        
-        if(imageBouton != null) 
+
+        if(imageBouton != null)
             imageBouton.color = couleurNormale;
     }
 }

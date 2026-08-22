@@ -1,28 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class SuivAMwen_GameManager : MonoBehaviour
 {
     [Header("Configuration")]
-    public float vitesseSequence = 1.0f; // Temps entre chaque indication
+    [Tooltip("Temps de pause entre deux notes de la séquence")]
+    public float pauseEntreNotes = 0.1f;
 
-    [Header("Références UI")]
-    public List<S_InstrumentButton> boutonsInstruments; // Liste de nos 4 boutons
-    public TextMeshProUGUI messageText; // Pour afficher "Ecoutez..." ou "A vous !"
-    public GameObject boutonRejouer; // Bouton pour rejouer après une défaite
+    [Header("Références UI - Instruments (Bas de l'écran)")]
+    [Tooltip("Les 4 boutons d'instruments (Kayamb, Triangle, Roulèr, Djembe)")]
+    public List<S_InstrumentButton> boutonsInstruments;
+
+    [Header("Références UI - Séquence Visuelle (Haut de l'écran)")]
+    [Tooltip("Les 4 flèches de la séquence visuelle (Haut, Droite, Bas, Gauche)")]
+    public List<S_InstrumentButton> boutonsFlechesSequence;
+
+    [Header("Références UI - Textes & Boutons")]
+    public TextMeshProUGUI messageText;
+    public TextMeshProUGUI scoreText;
+    public GameObject boutonRejouer;
 
     // Variables internes
-    private List<int> sequenceDeJeu = new List<int>(); // La séquence à mémoriser
-    private int indexJoueur = 0; // Où en est le joueur dans la séquence actuelle
-    private bool tourDuJoueur = false; // Est-ce au joueur de joueur ?
+    private List<int> sequenceDeJeu = new List<int>();
+    private int indexJoueur = 0;
+    private bool tourDuJoueur = false;
+    private int scoreActuel = 0;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // On commence une nouvelle partie
         DemarreNouvellePartie();
     }
 
@@ -30,99 +37,97 @@ public class SuivAMwen_GameManager : MonoBehaviour
     {
         sequenceDeJeu.Clear();
         indexJoueur = 0;
+        scoreActuel = 0;
+        MettreAJourScoreUI();
         StartCoroutine(LancerProchainTour());
     }
 
-    // Ajoute une étape et joue la séquence
     IEnumerator LancerProchainTour()
     {
-        // Logique d'accélération
-        vitesseSequence = Mathf.Max(0.2f, vitesseSequence - 0.05f); // Accélère légèrement la séquence
-
         tourDuJoueur = false;
         indexJoueur = 0;
         messageText.text = "Ecoute bien la musique...";
 
         yield return new WaitForSeconds(1f);
 
-        // Ajoute une direction aléatorie (0 à 3)
-        // 0=Haut, 1=Droite, 2=Bas, 3=Gauche
+        // Ajout d'une direction aléatoire (0=Haut, 1=Droite, 2=Bas, 3=Gauche)
         sequenceDeJeu.Add(Random.Range(0, 4));
 
-        // Joue la séquence pour le joueur
+        // Joue la séquence (son + flash instrument + flash flèche)
         foreach (int indexInstrument in sequenceDeJeu)
         {
-            // Coupe l'éventuel son en cours avant de jouer le suivant
-            S_SuivAMwen_AudioManager.Instance.CouperInstruments();
-
-            // Joue le son de l'instrument
+            // 1. Joue le son de l'instrument
             S_SuivAMwen_AudioManager.Instance.JouerInstrument(indexInstrument);
 
-            // Active visuellement et sonorement le bouton correspondant
-            boutonsInstruments[indexInstrument].ActiverBoutonAutomatiquement();
-            
-            // Met le jeu en pause pour la durée définie par vitesseSequence
-            yield return new WaitForSeconds(vitesseSequence);
+            // 2. Flash visuel sur le bouton instrument (bas)
+            if (indexInstrument < boutonsInstruments.Count && boutonsInstruments[indexInstrument] != null)
+            {
+                boutonsInstruments[indexInstrument].ActiverBoutonAutomatiquement();
+            }
+
+            // 3. Flash visuel sur la flèche correspondante (haut)
+            if (indexInstrument < boutonsFlechesSequence.Count && boutonsFlechesSequence[indexInstrument] != null)
+            {
+                boutonsFlechesSequence[indexInstrument].ActiverBoutonAutomatiquement();
+            }
+
+            // 4. Pause basée sur la durée du clip audio
+            float dureeNote = S_SuivAMwen_AudioManager.Instance.ObtenirDureeClip(indexInstrument);
+            yield return new WaitForSeconds(dureeNote + pauseEntreNotes);
         }
 
         messageText.text = "Té suiv' à mwen ! (A toi)";
         tourDuJoueur = true;
     }
 
-    // Cette fonction est appelée par les boutons quand le joueur clique
     public void TraiterInputJoueur(int idButton)
     {
-        // Le joueur ne peut cliquer QUE pendant son tour
-        if (!tourDuJoueur) return; 
+        if (!tourDuJoueur) return;
 
-        // Vérification
         if (idButton != sequenceDeJeu[indexJoueur])
         {
-            // Mauvaise note
             GameOver();
             return;
         }
 
-        // C'est correct !
         indexJoueur++;
 
-        // Si on a fini toute la séquences actuelle
         if (indexJoueur >= sequenceDeJeu.Count)
         {
             tourDuJoueur = false;
+            scoreActuel += 100;
+            MettreAJourScoreUI();
+
             messageText.text = "Gayar ! (Bravo)";
             S_SuivAMwen_AudioManager.Instance.JouerVictoire();
-            StartCoroutine(LancerProchainTour()); // On lance la suite
+            StartCoroutine(LancerProchainTour());
         }
     }
 
-    // Fonction appelée par le bouton "Rejouer"
+    private void MettreAJourScoreUI()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "Score : " + scoreActuel;
+        }
+    }
+
     public void RejouerPartie()
     {
-
-        // Cacher le bouton avant de commencer
         if (boutonRejouer != null)
         {
             boutonRejouer.SetActive(false);
         }
 
-        // Réinitialiser la vitesse au niveau de départ (1.0f)
-        vitesseSequence = 1.0f;
-
-        // Relancer la partie
         DemarreNouvellePartie();
     }
 
-    // Gérer l'état de défaite
     void GameOver()
     {
         tourDuJoueur = false;
-        messageText.text = "Aie aie aie... Perdu !";
-
-        // Jouer le son de défaite
+        messageText.text = "Aie aie aie... Ou la perdu !";
         S_SuivAMwen_AudioManager.Instance.JouerDefaite();
 
-        // Afficher la bouton Rejouer
         if (boutonRejouer != null)
         {
             boutonRejouer.SetActive(true);

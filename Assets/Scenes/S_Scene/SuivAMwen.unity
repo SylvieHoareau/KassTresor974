@@ -1680,13 +1680,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 211471e7473393141aa76fc3db46dd88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vitesseSequence: 1
+  pauseEntreNotes: 0.1
   boutonsInstruments:
   - {fileID: 1250982430}
   - {fileID: 121984467}
   - {fileID: 860807745}
   - {fileID: 1170745534}
+  boutonsFlechesSequence:
+  - {fileID: 1854589697}
+  - {fileID: 2043243885}
+  - {fileID: 1836978412}
+  - {fileID: 1120476797}
   messageText: {fileID: 587274686}
+  scoreText: {fileID: 1621881160}
   boutonRejouer: {fileID: 2092147377}
 --- !u!114 &1836978412 stripped
 MonoBehaviour:
@@ -2562,7 +2568,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 882011557895613107, guid: 3361ea2ec93976a4f8c8088e41444a81, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3361ea2ec93976a4f8c8088e41444a81, type: 3}
@@ -3481,6 +3488,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Btn_Haut
       objectReference: {fileID: 0}
+    - target: {fileID: 2904117835317975492, guid: b106e45ed2a65754482182ee9ecd3bb1, type: 3}
+      propertyPath: m_CullTransparentMesh
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8843035868890570523, guid: b106e45ed2a65754482182ee9ecd3bb1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3562,7 +3573,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 5624335231305203445, guid: b106e45ed2a65754482182ee9ecd3bb1, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b106e45ed2a65754482182ee9ecd3bb1, type: 3}
@@ -3719,7 +3731,8 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2062621344723117689, guid: ac7367921f382c946a46d6c3480784c3, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac7367921f382c946a46d6c3480784c3, type: 3}
@@ -3876,7 +3889,8 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8945293484545605983, guid: 2f164397b14847b42bad1c1f34353a88, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f164397b14847b42bad1c1f34353a88, type: 3}

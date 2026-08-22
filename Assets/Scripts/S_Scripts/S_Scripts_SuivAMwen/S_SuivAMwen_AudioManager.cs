@@ -36,15 +36,28 @@ public class S_SuivAMwen_AudioManager : MonoBehaviour
    {
         if (id >= 0 && id <clipsInstruments.Length)
         {
+            // Stop le son précédent pour éviter les chevauchements désagréables
+            sourceSFX.Stop();
             // PlayOneShot permet de superposer les sons sans couper le précédent
             sourceSFX.PlayOneShot(clipsInstruments[id]);
         }
    }
 
+   // Récupère la durée du clip audio en secondes
+    public float ObtenirDureeClip(int id)
+    {
+        if (id >= 0 && id < clipsInstruments.Length && clipsInstruments[id] != null)
+        {
+            return clipsInstruments[id].length;
+        }
+        return 0.5f; // Valeur par défaut si le clip est absent
+    }
+
    public void JouerVictoire()
    {
         if (soundVictory != null)
         {
+            sourceSFX.Stop();
             sourceSFX.PlayOneShot(soundVictory);
         }
    }
@@ -53,6 +66,7 @@ public class S_SuivAMwen_AudioManager : MonoBehaviour
    {
         if (soundDefeat != null)
         {
+            sourceSFX.Stop();
             sourceSFX.PlayOneShot(soundDefeat);
         }
    }
@@ -63,5 +77,5 @@ public class S_SuivAMwen_AudioManager : MonoBehaviour
         // Stoppe tous les sons joués par cette source
         sourceSFX.Stop();
     }
-   
+
 }
